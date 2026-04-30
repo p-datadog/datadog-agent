@@ -1,0 +1,14 @@
+load("@rules_python//python:py_test.bzl", "py_test")
+
+package(default_visibility = ["//visibility:public"])
+
+py_test(
+    name = "verify_flavor_tags",
+    srcs = ["verify_flavor_tags.py"],
+    data = [
+        "defs.bzl",
+        "//tasks:build_tags.py",
+        "//tasks:flavor.py",
+    ],
+    deps = ["@py_dev_requirements//invoke"],
+)
