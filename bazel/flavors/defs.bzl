@@ -155,6 +155,12 @@ def flavor_gotags(flavor_name):
 
     Tags in LINUX_ONLY_TAGS are wrapped in a select() so they are only active
     on Linux, matching the behaviour of dda inv test.
+
+    Args:
+        flavor_name: the flavor name, must be a key of FLAVOR_UNIT_TEST_TAGS.
+
+    Returns:
+        A list of build tags, with Linux-only tags guarded by a select().
     """
     tags = FLAVOR_UNIT_TEST_TAGS[flavor_name]
     always = [t for t in tags if t not in LINUX_ONLY_TAGS]
