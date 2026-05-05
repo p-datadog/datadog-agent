@@ -53,3 +53,4 @@ bazel:run-go-mod-tidy:
     - bazel run //:go_mod_tidy_all -- -diff
   variables:
     FIX_COMMAND: "bazel run //:go_mod_tidy_all"
+
