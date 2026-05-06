@@ -2907,6 +2907,7 @@ func (p *EBPFProbe) initManagerOptionsMapSpecEditors() {
 		EventSamplingConnectEnabled:   p.config.RuntimeSecurity.EventSamplingConnectEnabled,
 		EventSamplingBindEnabled:      p.config.RuntimeSecurity.EventSamplingBindEnabled,
 		EventSamplingDNSEnabled:       p.config.RuntimeSecurity.EventSamplingDNSEnabled,
+		BasenameApproversSize:         p.config.Probe.BasenameApproversSize,
 	}
 
 	if p.config.Probe.SpanTrackingEnabled {
