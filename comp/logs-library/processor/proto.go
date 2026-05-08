@@ -6,7 +6,6 @@
 package processor
 
 import (
-	"errors"
 	"fmt"
 	"time"
 
@@ -22,8 +21,8 @@ type protoEncoder struct{}
 
 // Encode encodes a message into a protobuf byte array.
 func (p *protoEncoder) Encode(msg *message.Message, hostname string) error {
-	if msg.State != message.StateRendered {
-		return errors.New("message passed to encoder isn't rendered")
+	if err := msg.EnsureRendered(); err != nil {
+		return fmt.Errorf("can't render the message: %v", err)
 	}
 
 	log := &pb.Log{
