@@ -1,0 +1,21 @@
+// Unless explicitly stated otherwise all files in this repository are licensed
+// under the Apache License Version 2.0.
+// This product includes software developed at Datadog (https://www.datadoghq.com/).
+// Copyright 2016-present Datadog, Inc.
+
+//go:build test
+
+// Package fx provides the fx module for the mock autodiscovery component.
+package fx
+
+import (
+	autodiscoveryimpl "github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
+	"github.com/DataDog/datadog-agent/pkg/util/fxutil"
+)
+
+// MockModule provides the default autoconfig without other components configured, and not started.
+func MockModule() fxutil.Module {
+	return fxutil.Component(
+		fxutil.ProvideComponentConstructor(autodiscoveryimpl.NewMockComponent),
+	)
+}
