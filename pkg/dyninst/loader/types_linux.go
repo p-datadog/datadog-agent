@@ -45,9 +45,15 @@ type throttlerParams struct {
 	Budget int64
 }
 type stats struct {
-	Cpu_ns        uint64
-	Hit_cnt       uint64
-	Throttled_cnt uint64
+	Cpu_ns                   uint64
+	Hit_cnt                  uint64
+	Throttled_cnt            uint64
+	Recovery_fires           uint64
+	Recovery_evicted_frames  uint64
+	Recovery_submit_failures uint64
+	Recovery_no_open_calls   uint64
+	Recovery_filtered_goexit uint64
+	Recovery_invalid_state   uint64
 }
 
 func opcodeByte(opcode compiler.Opcode) uint8 {
@@ -150,6 +156,10 @@ func opcodeByte(opcode compiler.Opcode) uint8 {
 		return 0x2f
 	case compiler.OpcodeGoContextChainHop:
 		return 0x30
+	case compiler.OpcodePanicUnwindPrepare:
+		return 0x31
+	case compiler.OpcodePanicUnwindEvictSlots:
+		return 0x32
 	default:
 		panic(fmt.Sprintf("unknown opcode: %s", opcode))
 	}

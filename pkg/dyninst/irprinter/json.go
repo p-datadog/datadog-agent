@@ -419,6 +419,10 @@ func makeOperationMarshaler(
 			toMarshal = newWithKind(op)
 		case *ir.ConditionCheckPreserveErrorOp:
 			toMarshal = newWithKind(op)
+		case *ir.PanicUnwindPrepareOp:
+			toMarshal = newWithKind(op)
+		case *ir.PanicUnwindEvictSlotsOp:
+			toMarshal = newWithKind(op)
 		default:
 			return fmt.Errorf("unknown operation: %T", op)
 		}

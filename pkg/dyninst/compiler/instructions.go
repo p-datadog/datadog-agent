@@ -384,6 +384,18 @@ func makeInstruction(functionID FunctionID, op Op) codeFragment {
 			bytes:  []byte{},
 		}
 
+	case PanicUnwindPrepareOp:
+		return staticInstruction{
+			opcode: OpcodePanicUnwindPrepare,
+			bytes:  []byte{},
+		}
+
+	case PanicUnwindEvictSlotsOp:
+		return staticInstruction{
+			opcode: OpcodePanicUnwindEvictSlots,
+			bytes:  []byte{},
+		}
+
 	default:
 		panic(fmt.Sprintf("unsupported op: %T", op))
 	}

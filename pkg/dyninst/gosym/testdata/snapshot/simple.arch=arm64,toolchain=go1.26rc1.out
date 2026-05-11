@@ -322,6 +322,10 @@ LocatePC: 0xce430
 LocatePC: 0xce470
 	fmt.Println@fmt/print.go:315
 	main.genericIdentity[go.shape.int]@github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/simple/main.go:1002
+LocatePC: 0x621c0
+	runtime.recovery@runtime/panic.go:1296
+LocatePC: 0x62320
+	runtime.recovery@runtime/panic.go:1353
 LocatePC: 0xcb120
 	main.inlined@github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/simple/main.go:377
 LocatePC: 0xcb158

@@ -1,5 +1,12 @@
 ID: 1
 Probes:
+    - instances:
+        - subprogram: {subprogram: 189}
+          events:
+            - Kind: Entry
+              Type: 1811 EventRootType Probe[runtime.recovery]
+              InjectionPoints: [{PC: "0x43f5e0", Frameless: false}]
+              Condition: null
     - id: stackC
       version: 0
       type: LOG_PROBE
@@ -361,7 +368,7 @@ Probes:
       captureSnapshot: false
       captureExpressions: [{name: x_val, expr: {dsl: x, json: {ref: x}}}]
       instances:
-        - subprogram: {subprogram: 189}
+        - subprogram: {subprogram: 190}
           events:
             - Kind: Line
               Type: 1794 EventRootType Probe[main.testInlinedPrint]Line
@@ -391,7 +398,7 @@ Probes:
       captureSnapshot: false
       captureExpressions: [{name: x_val, expr: {dsl: x, json: {ref: x}}}]
       instances:
-        - subprogram: {subprogram: 189}
+        - subprogram: {subprogram: 190}
           events:
             - Kind: Line
               Type: 1795 EventRootType Probe[main.testInlinedPrint]Line
@@ -410,7 +417,7 @@ Probes:
                 Type: 6 BaseType bool
                 Operations:
                     - __kind: LocationOp
-                      Variable: {subprogram: 189, index: 0, name: x}
+                      Variable: {subprogram: 190, index: 0, name: x}
                       Offset: 0
                       ByteSize: 8
                     - __kind: ExprPushOffsetOp
@@ -437,7 +444,7 @@ Probes:
       captureSnapshot: false
       captureExpressions: [{name: x_val, expr: {dsl: x, json: {ref: x}}}]
       instances:
-        - subprogram: {subprogram: 189}
+        - subprogram: {subprogram: 190}
           events:
             - Kind: Line
               Type: 1796 EventRootType Probe[main.testInlinedPrint]Line
@@ -1781,7 +1788,7 @@ Probes:
       segments: [testInlinedBBB]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 190}
+        - subprogram: {subprogram: 191}
           events:
             - Kind: Entry
               Type: 1800 EventRootType Probe[main.testInlinedBBB]
@@ -1821,7 +1828,7 @@ Probes:
       segments: [testInlinedBCA]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 191}
+        - subprogram: {subprogram: 192}
           events:
             - Kind: Entry
               Type: 1801 EventRootType Probe[main.testInlinedBCA]
@@ -1842,7 +1849,7 @@ Probes:
       segments: [testInlinedBCA]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 191}
+        - subprogram: {subprogram: 192}
           events:
             - Kind: Line
               Type: 1802 EventRootType Probe[main.testInlinedBCA]Line
@@ -1860,7 +1867,7 @@ Probes:
       segments: [testInlinedBCB]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 192}
+        - subprogram: {subprogram: 193}
           events:
             - Kind: Entry
               Type: 1803 EventRootType Probe[main.testInlinedBCB]
@@ -1881,7 +1888,7 @@ Probes:
       segments: [testInlinedBCB]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 192}
+        - subprogram: {subprogram: 193}
           events:
             - Kind: Line
               Type: 1804 EventRootType Probe[main.testInlinedBCB]Line
@@ -1899,7 +1906,7 @@ Probes:
       segments: [testInlinedFuncFromOtherPackage]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 196}
+        - subprogram: {subprogram: 197}
           events:
             - Kind: Entry
               Type: 1810 EventRootType Probe[github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/lib.InlinedFunc]
@@ -1922,7 +1929,7 @@ Probes:
       segments: [{json: {ref: x}, dsl: x}]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 189}
+        - subprogram: {subprogram: 190}
           events:
             - Kind: Entry
               Type: 1797 EventRootType Probe[main.testInlinedPrint]
@@ -1961,7 +1968,7 @@ Probes:
       segments: [{json: {ref: x}, dsl: x}]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 189}
+        - subprogram: {subprogram: 190}
           events:
             - Kind: Line
               Type: 1799 EventRootType Probe[main.testInlinedPrint]Line
@@ -1993,7 +2000,7 @@ Probes:
       segments: [{json: {ref: x}, dsl: x}]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 193}
+        - subprogram: {subprogram: 194}
           events:
             - Kind: Entry
               Type: 1805 EventRootType Probe[main.testInlinedSq]
@@ -2018,7 +2025,7 @@ Probes:
       segments: [{json: {ref: x}, dsl: x}]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 193}
+        - subprogram: {subprogram: 194}
           events:
             - Kind: Line
               Type: 1806 EventRootType Probe[main.testInlinedSq]Line
@@ -2041,7 +2048,7 @@ Probes:
       segments: [{json: {ref: a}, dsl: a}]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 194}
+        - subprogram: {subprogram: 195}
           events:
             - Kind: Entry
               Type: 1807 EventRootType Probe[main.testInlinedSumArray]
@@ -5974,7 +5981,7 @@ Probes:
       segments: [testWhollyInlinedSubroutine]
       captureSnapshot: true
       instances:
-        - subprogram: {subprogram: 195}
+        - subprogram: {subprogram: 196}
           events:
             - Kind: Entry
               Type: 1808 EventRootType Probe[main.firstBehavior.DoSomething]
@@ -6033,7 +6040,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 109 ArrayType [2]uint8
+          Type: 110 ArrayType [2]uint8
           Locations:
             - Range: 0xcd5c00..0xcd5c01
               Pieces: [{Size: 2, Op: {CfaOffset: 0}}]
@@ -6046,7 +6053,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 110 ArrayType [2]int32
+          Type: 111 ArrayType [2]int32
           Locations:
             - Range: 0xcd5c20..0xcd5c21
               Pieces: [{Size: 8, Op: {CfaOffset: 0}}]
@@ -6059,7 +6066,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 111 ArrayType [2]string
+          Type: 112 ArrayType [2]string
           Locations:
             - Range: 0xcd5c40..0xcd5c41
               Pieces: [{Size: 32, Op: {CfaOffset: 0}}]
@@ -6072,7 +6079,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 112 ArrayType [2]bool
+          Type: 113 ArrayType [2]bool
           Locations:
             - Range: 0xcd5c60..0xcd5c61
               Pieces: [{Size: 2, Op: {CfaOffset: 0}}]
@@ -6085,7 +6092,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 113 ArrayType [2]int
+          Type: 114 ArrayType [2]int
           Locations:
             - Range: 0xcd5c80..0xcd5c81
               Pieces: [{Size: 16, Op: {CfaOffset: 0}}]
@@ -6098,7 +6105,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 114 ArrayType [2]int8
+          Type: 115 ArrayType [2]int8
           Locations:
             - Range: 0xcd5ca0..0xcd5ca1
               Pieces: [{Size: 2, Op: {CfaOffset: 0}}]
@@ -6111,7 +6118,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 115 ArrayType [2]int16
+          Type: 116 ArrayType [2]int16
           Locations:
             - Range: 0xcd5cc0..0xcd5cc1
               Pieces: [{Size: 4, Op: {CfaOffset: 0}}]
@@ -6124,7 +6131,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 110 ArrayType [2]int32
+          Type: 111 ArrayType [2]int32
           Locations:
             - Range: 0xcd5ce0..0xcd5ce1
               Pieces: [{Size: 8, Op: {CfaOffset: 0}}]
@@ -6137,7 +6144,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 116 ArrayType [2]int64
+          Type: 117 ArrayType [2]int64
           Locations:
             - Range: 0xcd5d00..0xcd5d01
               Pieces: [{Size: 16, Op: {CfaOffset: 0}}]
@@ -6150,7 +6157,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 117 ArrayType [2]uint
+          Type: 118 ArrayType [2]uint
           Locations:
             - Range: 0xcd5d20..0xcd5d21
               Pieces: [{Size: 16, Op: {CfaOffset: 0}}]
@@ -6163,7 +6170,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 109 ArrayType [2]uint8
+          Type: 110 ArrayType [2]uint8
           Locations:
             - Range: 0xcd5d40..0xcd5d41
               Pieces: [{Size: 2, Op: {CfaOffset: 0}}]
@@ -6176,7 +6183,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 118 ArrayType [2]uint16
+          Type: 119 ArrayType [2]uint16
           Locations:
             - Range: 0xcd5d60..0xcd5d61
               Pieces: [{Size: 4, Op: {CfaOffset: 0}}]
@@ -6189,7 +6196,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 119 ArrayType [2]uint32
+          Type: 120 ArrayType [2]uint32
           Locations:
             - Range: 0xcd5d80..0xcd5d81
               Pieces: [{Size: 8, Op: {CfaOffset: 0}}]
@@ -6215,7 +6222,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 120 ArrayType [2][2]int
+          Type: 121 ArrayType [2][2]int
           Locations:
             - Range: 0xcd5dc0..0xcd5dc1
               Pieces: [{Size: 32, Op: {CfaOffset: 0}}]
@@ -6228,7 +6235,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 111 ArrayType [2]string
+          Type: 112 ArrayType [2]string
           Locations:
             - Range: 0xcd5de0..0xcd5de1
               Pieces: [{Size: 32, Op: {CfaOffset: 0}}]
@@ -6241,7 +6248,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: b
-          Type: 121 ArrayType [2][2][2]int
+          Type: 122 ArrayType [2][2][2]int
           Locations:
             - Range: 0xcd5e00..0xcd5e01
               Pieces: [{Size: 64, Op: {CfaOffset: 0}}]
@@ -6254,7 +6261,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 122 ArrayType [2]main.nestedStruct
+          Type: 123 ArrayType [2]main.nestedStruct
           Locations:
             - Range: 0xcd5e20..0xcd5e21
               Pieces: [{Size: 48, Op: {CfaOffset: 0}}]
@@ -6267,7 +6274,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 124 ArrayType [2]struct {}
+          Type: 125 ArrayType [2]struct {}
           Locations:
             - Range: 0xcd5e40..0xcd5e41
               Pieces: [{Size: 0, Op: {CfaOffset: 0}}]
@@ -6280,7 +6287,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 126 ArrayType [100]uint
+          Type: 127 ArrayType [100]uint
           Locations:
             - Range: 0xcd5e80..0xcd5e81
               Pieces: [{Size: 800, Op: {CfaOffset: 0}}]
@@ -6358,7 +6365,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 104 BaseType int16
+          Type: 105 BaseType int16
           Locations:
             - Range: 0xcd62a0..0xcd62a1
               Pieces: [{Size: 2, Op: {RegNo: 0, Shift: 0}}]
@@ -6488,7 +6495,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 127 BaseType main.typeAlias
+          Type: 128 BaseType main.typeAlias
           Locations:
             - Range: 0xcd63e0..0xcd63e1
               Pieces: [{Size: 2, Op: {RegNo: 0, Shift: 0}}]
@@ -6501,7 +6508,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: b
-          Type: 128 StructureType main.bigStruct
+          Type: 129 StructureType main.bigStruct
           Locations:
             - Range: 0xcd6540..0xcd655f
               Pieces:
@@ -6578,7 +6585,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 132 StructureType main.deepPtr1
+          Type: 133 StructureType main.deepPtr1
           Locations:
             - Range: 0xcd6720..0xcd6721
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -6591,7 +6598,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 135 PointerType *main.deepPtr7
+          Type: 136 PointerType *main.deepPtr7
           Locations:
             - Range: 0xcd6740..0xcd6741
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -6604,7 +6611,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 137 StructureType main.deepSlice1
+          Type: 138 StructureType main.deepSlice1
           Locations:
             - Range: 0xcd68c0..0xcd68c1
               Pieces:
@@ -6623,7 +6630,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 141 PointerType *main.deepSlice7
+          Type: 142 PointerType *main.deepSlice7
           Locations:
             - Range: 0xcd68e0..0xcd68e1
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -6636,7 +6643,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 143 StructureType main.deepMap1
+          Type: 144 StructureType main.deepMap1
           Locations:
             - Range: 0xcd6a40..0xcd6a41
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -6649,7 +6656,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 149 PointerType *main.deepMap7
+          Type: 150 PointerType *main.deepMap7
           Locations:
             - Range: 0xcd6a60..0xcd6a61
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -6662,7 +6669,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 151 PointerType *main.stringType1
+          Type: 152 PointerType *main.stringType1
           Locations:
             - Range: 0xcd6a80..0xcd6a81
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -6675,7 +6682,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 153 PointerType **main.stringType2
+          Type: 154 PointerType **main.stringType2
           Locations:
             - Range: 0xcd6aa0..0xcd6aa1
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -6739,7 +6746,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: ctx
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
           Locations:
             - Range: 0xcd7140..0xcd7141
               Pieces:
@@ -6756,7 +6763,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: m
-          Type: 156 StructureType main.manyPointers
+          Type: 157 StructureType main.manyPointers
           Locations:
             - Range: 0xcd72c0..0xcd72c1
               Pieces: [{Size: 560, Op: {CfaOffset: 0}}]
@@ -6769,7 +6776,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: ss
-          Type: 159 GoSliceHeaderType []string
+          Type: 160 GoSliceHeaderType []string
           Locations:
             - Range: 0xcd8ca0..0xcd8ca1
               Pieces:
@@ -6788,7 +6795,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: e
-          Type: 160 StructureType main.esotericStack
+          Type: 161 StructureType main.esotericStack
           Locations:
             - Range: 0xcd8f60..0xcd8fb3
               Pieces:
@@ -7018,7 +7025,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
           Locations:
             - Range: 0xcdad80..0xcdada9
               Pieces:
@@ -7611,7 +7618,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: x
-          Type: 107 PointerType *uint
+          Type: 108 PointerType *uint
           Locations:
             - Range: 0xcdd820..0xcdd821
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -7624,7 +7631,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: z
-          Type: 95 PointerType *string
+          Type: 96 PointerType *string
           Locations:
             - Range: 0xcdd900..0xcdd901
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -7712,7 +7719,7 @@ Subprograms:
           Role: Parameter
           DictIndex: -1
         - Name: ~r0
-          Type: 100 PointerType *int
+          Type: 101 PointerType *int
           Locations:
             - Range: 0xcdde60..0xcdded4
               Pieces: []
@@ -7723,7 +7730,7 @@ Subprograms:
           Role: Return
           DictIndex: -1
         - Name: '&result'
-          Type: 100 PointerType *int
+          Type: 101 PointerType *int
           Locations:
             - Range: 0xcdde7f..0xcdde99
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -7821,7 +7828,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: v
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
           Locations:
             - Range: 0xcde040..0xcde08b
               Pieces:
@@ -7863,7 +7870,7 @@ Subprograms:
           Role: Parameter
           DictIndex: -1
         - Name: ~r0
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
           Locations:
             - Range: 0xcde040..0xcde0a4
               Pieces: []
@@ -7954,7 +7961,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: v
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
           Locations:
             - Range: 0xcde1a0..0xcde1eb
               Pieces:
@@ -7977,7 +7984,7 @@ Subprograms:
           Role: Parameter
           DictIndex: -1
         - Name: ~r0
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
           Locations:
             - Range: 0xcde1a0..0xcde264
               Pieces: []
@@ -8023,7 +8030,7 @@ Subprograms:
           Role: Local
           DictIndex: -1
         - Name: '&result'
-          Type: 100 PointerType *int
+          Type: 101 PointerType *int
           Locations:
             - Range: 0xcde245..0xcde264
               Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
@@ -8036,7 +8043,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: v
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
           Locations:
             - Range: 0xcde3a0..0xcde3e0
               Pieces:
@@ -8321,7 +8328,7 @@ Subprograms:
           Role: Return
           DictIndex: -1
         - Name: ~r1
-          Type: 104 BaseType int16
+          Type: 105 BaseType int16
           Locations:
             - Range: 0xcdeb60..0xcdebd1
               Pieces: []
@@ -8507,12 +8514,12 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: ~r0
-          Type: 96 BaseType complex64
+          Type: 97 BaseType complex64
           Locations: [{Range: 0xcdece0..0xcded53, Pieces: []}]
           Role: Return
           DictIndex: -1
         - Name: ~r1
-          Type: 97 BaseType complex128
+          Type: 98 BaseType complex128
           Locations: [{Range: 0xcdece0..0xcded53, Pieces: []}]
           Role: Return
           DictIndex: -1
@@ -9009,7 +9016,7 @@ Subprograms:
           Role: Parameter
           DictIndex: -1
         - Name: ~r0
-          Type: 113 ArrayType [2]int
+          Type: 114 ArrayType [2]int
           Locations:
             - Range: 0xcdf840..0xcdfa62
               Pieces: []
@@ -9172,7 +9179,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: a
-          Type: 113 ArrayType [2]int
+          Type: 114 ArrayType [2]int
           Locations:
             - Range: 0xcdfe60..0xcdff4e
               Pieces: [{Size: 16, Op: {CfaOffset: 0}}]
@@ -9197,7 +9204,7 @@ Subprograms:
           Role: Return
           DictIndex: -1
         - Name: ~r1
-          Type: 113 ArrayType [2]int
+          Type: 114 ArrayType [2]int
           Locations:
             - Range: 0xcdfe60..0xcdff3e
               Pieces: []
@@ -9437,7 +9444,7 @@ Subprograms:
       InlinePCRanges: []
       Variables:
         - Name: s
-          Type: 159 GoSliceHeaderType []string
+          Type: 160 GoSliceHeaderType []string
           Locations:
             - Range: 0xce06c0..0xce06c1
               Pieces:
@@ -10925,6 +10932,86 @@ Subprograms:
           DictIndex: 4
       DictRegister: 0
     - ID: 189
+      Name: runtime.recovery
+      OutOfLinePCRanges: [0x43f5e0..0x43f845]
+      InlinePCRanges: []
+      Variables:
+        - Name: gp
+          Type: 58 PointerType *runtime.g
+          Locations:
+            - Range: 0x43f5e0..0x43f6c4
+              Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
+            - Range: 0x43f6c4..0x43f734
+              Pieces: [{Size: 8, Op: {CfaOffset: 0}}]
+          Role: Parameter
+          DictIndex: -1
+        - Name: p
+          Type: 26 PointerType *runtime._panic
+          Locations:
+            - Range: 0x43f5f6..0x43f6c9
+              Pieces: [{Size: 8, Op: {RegNo: 2, Shift: 0}}]
+          Role: Local
+          DictIndex: -1
+        - Name: pc
+          Type: 3 BaseType uintptr
+          Locations:
+            - Range: 0x43f618..0x43f6c9
+              Pieces: [{Size: 8, Op: {RegNo: 8, Shift: 0}}]
+            - Range: 0x43f6c9..0x43f734
+              Pieces: [{Size: 8, Op: {CfaOffset: -56}}]
+            - Range: 0x43f734..0x43f786
+              Pieces: [{Size: 8, Op: {RegNo: 8, Shift: 0}}]
+          Role: Local
+          DictIndex: -1
+        - Name: sp
+          Type: 3 BaseType uintptr
+          Locations:
+            - Range: 0x43f61b..0x43f675
+              Pieces: [{Size: 8, Op: {RegNo: 5, Shift: 0}}]
+            - Range: 0x43f675..0x43f6c9
+              Pieces: [{Size: 8, Op: {RegNo: 9, Shift: 0}}]
+            - Range: 0x43f6c9..0x43f81b
+              Pieces: [{Size: 8, Op: {CfaOffset: -64}}]
+            - Range: 0x43f81b..0x43f82c
+              Pieces: [{Size: 8, Op: {RegNo: 9, Shift: 0}}]
+          Role: Local
+          DictIndex: -1
+        - Name: fp
+          Type: 3 BaseType uintptr
+          Locations:
+            - Range: 0x43f603..0x43f6c9
+              Pieces: [{Size: 8, Op: {RegNo: 1, Shift: 0}}]
+            - Range: 0x43f6c9..0x43f734
+              Pieces: [{Size: 8, Op: {CfaOffset: -48}}]
+            - Range: 0x43f734..0x43f786
+              Pieces: [{Size: 8, Op: {RegNo: 1, Shift: 0}}]
+          Role: Local
+          DictIndex: -1
+        - Name: p0
+          Type: 26 PointerType *runtime._panic
+          Locations:
+            - Range: 0x43f5f6..0x43f61d
+              Pieces: [{Size: 8, Op: {RegNo: 2, Shift: 0}}]
+          Role: Local
+          DictIndex: -1
+        - Name: saveOpenDeferState
+          Type: 6 BaseType bool
+          Locations:
+            - Range: 0x43f610..0x43f651
+              Pieces: [{Size: 1, Op: {RegNo: 4, Shift: 0}}]
+            - Range: 0x43f65b..0x43f6c9
+              Pieces: [{Size: 1, Op: {RegNo: 4, Shift: 0}}]
+          Role: Local
+          DictIndex: -1
+        - Name: '@gp'
+          Type: 26 PointerType *runtime._panic
+          Locations:
+            - Range: 0x43f5e0..0x43f845
+              Pieces: [{Size: 8, Op: {RegNo: 0, Shift: 0}}]
+          Role: Parameter
+          DictIndex: -1
+      DictRegister: null
+    - ID: 190
       Name: main.testInlinedPrint
       OutOfLinePCRanges: [0xcda5a0..0xcda602]
       InlinePCRanges:
@@ -10955,7 +11042,7 @@ Subprograms:
           Role: Parameter
           DictIndex: -1
       DictRegister: null
-    - ID: 190
+    - ID: 191
       Name: main.testInlinedBBB
       OutOfLinePCRanges: []
       InlinePCRanges:
@@ -10963,7 +11050,7 @@ Subprograms:
           RootRanges: [0xcda7e0..0xcda8a5]
       Variables: []
       DictRegister: null
-    - ID: 191
+    - ID: 192
       Name: main.testInlinedBCA
       OutOfLinePCRanges: []
       InlinePCRanges:
@@ -10971,7 +11058,7 @@ Subprograms:
           RootRanges: [0xcda940..0xcdaa4e]
       Variables: []
       DictRegister: null
-    - ID: 192
+    - ID: 193
       Name: main.testInlinedBCB
       OutOfLinePCRanges: []
       InlinePCRanges:
@@ -10979,7 +11066,7 @@ Subprograms:
           RootRanges: [0xcda940..0xcdaa4e]
       Variables: []
       DictRegister: null
-    - ID: 193
+    - ID: 194
       Name: main.testInlinedSq
       OutOfLinePCRanges: []
       InlinePCRanges:
@@ -10994,7 +11081,7 @@ Subprograms:
           Role: Parameter
           DictIndex: -1
       DictRegister: null
-    - ID: 194
+    - ID: 195
       Name: main.testInlinedSumArray
       OutOfLinePCRanges: []
       InlinePCRanges:
@@ -11013,7 +11100,7 @@ Subprograms:
           Role: Parameter
           DictIndex: -1
       DictRegister: null
-    - ID: 195
+    - ID: 196
       Name: main.firstBehavior.DoSomething
       OutOfLinePCRanges: [0xcdac80..0xcdacf1]
       InlinePCRanges:
@@ -11053,7 +11140,7 @@ Subprograms:
           Role: Return
           DictIndex: -1
       DictRegister: null
-    - ID: 196
+    - ID: 197
       Name: github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/lib.InlinedFunc
       OutOfLinePCRanges: []
       InlinePCRanges:
@@ -11071,10 +11158,10 @@ Types:
       GoKind: 22
       Pointee: 387 PointerType *github.com/DataDog/dd-trace-go/v2/ddtrace/tracer.Span
     - __kind: PointerType
-      ID: 139
+      ID: 140
       Name: '**main.deepSlice2'
       ByteSize: 8
-      Pointee: 140 PointerType *main.deepSlice2
+      Pointee: 141 PointerType *main.deepSlice2
     - __kind: PointerType
       ID: 1387
       Name: '**main.deepSlice3'
@@ -11091,23 +11178,23 @@ Types:
       ByteSize: 8
       Pointee: 1429 PointerType *main.deepSlice9
     - __kind: PointerType
-      ID: 153
+      ID: 154
       Name: '**main.stringType2'
       ByteSize: 8
       GoKind: 22
-      Pointee: 154 PointerType *main.stringType2
+      Pointee: 155 PointerType *main.stringType2
     - __kind: PointerType
       ID: 1367
       Name: '**main.t'
       ByteSize: 8
       Pointee: 253 PointerType *main.t
     - __kind: PointerType
-      ID: 130
+      ID: 131
       Name: '**string'
       ByteSize: 8
       GoRuntimeType: 529376
       GoKind: 22
-      Pointee: 95 PointerType *string
+      Pointee: 96 PointerType *string
     - __kind: PointerType
       ID: 231
       Name: '**table<[4]int,[4]int>'
@@ -11134,10 +11221,10 @@ Types:
       ByteSize: 8
       Pointee: 379 PointerType *table<context.canceler,struct {}>
     - __kind: PointerType
-      ID: 147
+      ID: 148
       Name: '**table<int,*main.deepMap2>'
       ByteSize: 8
-      Pointee: 148 PointerType *table<int,*main.deepMap2>
+      Pointee: 149 PointerType *table<int,*main.deepMap2>
     - __kind: PointerType
       ID: 1395
       Name: '**table<int,*main.deepMap3>'
@@ -12001,7 +12088,7 @@ Types:
       GoKind: 22
       Pointee: 1308 UnresolvedPointeeType encoding/xml.printer
     - __kind: PointerType
-      ID: 106
+      ID: 107
       Name: '*error'
       ByteSize: 8
       GoRuntimeType: 392320
@@ -12022,14 +12109,14 @@ Types:
       GoKind: 22
       Pointee: 972 UnresolvedPointeeType errors.joinError
     - __kind: PointerType
-      ID: 108
+      ID: 109
       Name: '*float32'
       ByteSize: 8
       GoRuntimeType: 393280
       GoKind: 22
       Pointee: 19 BaseType float32
     - __kind: PointerType
-      ID: 98
+      ID: 99
       Name: '*float64'
       ByteSize: 8
       GoRuntimeType: 393344
@@ -12944,19 +13031,19 @@ Types:
       GoKind: 22
       Pointee: 961 UnresolvedPointeeType html/template.Error
     - __kind: PointerType
-      ID: 100
+      ID: 101
       Name: '*int'
       ByteSize: 8
       GoRuntimeType: 392960
       GoKind: 22
       Pointee: 9 BaseType int
     - __kind: PointerType
-      ID: 103
+      ID: 104
       Name: '*int16'
       ByteSize: 8
       GoRuntimeType: 392576
       GoKind: 22
-      Pointee: 104 BaseType int16
+      Pointee: 105 BaseType int16
     - __kind: PointerType
       ID: 22
       Name: '*int32'
@@ -12965,14 +13052,14 @@ Types:
       GoKind: 22
       Pointee: 12 BaseType int32
     - __kind: PointerType
-      ID: 99
+      ID: 100
       Name: '*int64'
       ByteSize: 8
       GoRuntimeType: 392832
       GoKind: 22
       Pointee: 14 BaseType int64
     - __kind: PointerType
-      ID: 105
+      ID: 106
       Name: '*int8'
       ByteSize: 8
       GoRuntimeType: 392448
@@ -12984,7 +13071,7 @@ Types:
       ByteSize: 8
       GoRuntimeType: 393536
       GoKind: 22
-      Pointee: 162 GoEmptyInterfaceType interface {}
+      Pointee: 57 GoEmptyInterfaceType interface {}
     - __kind: PointerType
       ID: 919
       Name: '*internal/bisect.parseError'
@@ -13102,12 +13189,12 @@ Types:
       GoKind: 22
       Pointee: 1404 UnresolvedPointeeType main.deepMap3
     - __kind: PointerType
-      ID: 149
+      ID: 150
       Name: '*main.deepMap7'
       ByteSize: 8
       GoRuntimeType: 385024
       GoKind: 22
-      Pointee: 150 StructureType main.deepMap7
+      Pointee: 151 StructureType main.deepMap7
     - __kind: PointerType
       ID: 1447
       Name: '*main.deepMap8'
@@ -13123,12 +13210,12 @@ Types:
       GoKind: 22
       Pointee: 1463 StructureType main.deepMap9
     - __kind: PointerType
-      ID: 133
+      ID: 134
       Name: '*main.deepPtr2'
       ByteSize: 8
       GoRuntimeType: 385920
       GoKind: 22
-      Pointee: 134 StructureType main.deepPtr2
+      Pointee: 135 StructureType main.deepPtr2
     - __kind: PointerType
       ID: 1351
       Name: '*main.deepPtr3'
@@ -13137,12 +13224,12 @@ Types:
       GoKind: 22
       Pointee: 1352 UnresolvedPointeeType main.deepPtr3
     - __kind: PointerType
-      ID: 135
+      ID: 136
       Name: '*main.deepPtr7'
       ByteSize: 8
       GoRuntimeType: 385600
       GoKind: 22
-      Pointee: 136 StructureType main.deepPtr7
+      Pointee: 137 StructureType main.deepPtr7
     - __kind: PointerType
       ID: 1417
       Name: '*main.deepPtr8'
@@ -13158,7 +13245,7 @@ Types:
       GoKind: 22
       Pointee: 1420 StructureType main.deepPtr9
     - __kind: PointerType
-      ID: 140
+      ID: 141
       Name: '*main.deepSlice2'
       ByteSize: 8
       GoRuntimeType: 386496
@@ -13172,12 +13259,12 @@ Types:
       GoKind: 22
       Pointee: 1389 UnresolvedPointeeType main.deepSlice3
     - __kind: PointerType
-      ID: 141
+      ID: 142
       Name: '*main.deepSlice7'
       ByteSize: 8
       GoRuntimeType: 386176
       GoKind: 22
-      Pointee: 142 StructureType main.deepSlice7
+      Pointee: 143 StructureType main.deepSlice7
     - __kind: PointerType
       ID: 1423
       Name: '*main.deepSlice8'
@@ -13218,7 +13305,7 @@ Types:
       ByteSize: 8
       GoRuntimeType: 386880
       GoKind: 22
-      Pointee: 123 StructureType main.nestedStruct
+      Pointee: 124 StructureType main.nestedStruct
     - __kind: PointerType
       ID: 252
       Name: '*main.node'
@@ -13233,11 +13320,11 @@ Types:
       GoKind: 22
       Pointee: 275 StructureType main.oneStringStruct
     - __kind: PointerType
-      ID: 157
+      ID: 158
       Name: '*main.paddedData'
       ByteSize: 8
       GoKind: 22
-      Pointee: 158 StructureType main.paddedData
+      Pointee: 159 StructureType main.paddedData
     - __kind: PointerType
       ID: 1365
       Name: '*main.secondBehavior'
@@ -13253,18 +13340,18 @@ Types:
       GoKind: 22
       Pointee: 1358 UnresolvedPointeeType main.somethingImpl
     - __kind: PointerType
-      ID: 151
+      ID: 152
       Name: '*main.stringType1'
       ByteSize: 8
       GoKind: 22
-      Pointee: 152 GoStringHeaderType main.stringType1
+      Pointee: 153 GoStringHeaderType main.stringType1
     - __kind: PointerType
       ID: 1354
       Name: '*main.stringType1.str'
       ByteSize: 8
       Pointee: 1353 GoStringDataType main.stringType1.str
     - __kind: PointerType
-      ID: 154
+      ID: 155
       Name: '*main.stringType2'
       ByteSize: 8
       GoKind: 22
@@ -13340,10 +13427,10 @@ Types:
       ByteSize: 8
       Pointee: 377 GoSwissMapHeaderType map<context.canceler,struct {}>
     - __kind: PointerType
-      ID: 145
+      ID: 146
       Name: '*map<int,*main.deepMap2>'
       ByteSize: 8
-      Pointee: 146 GoSwissMapHeaderType map<int,*main.deepMap2>
+      Pointee: 147 GoSwissMapHeaderType map<int,*main.deepMap2>
     - __kind: PointerType
       ID: 1393
       Name: '*map<int,*main.deepMap3>'
@@ -14216,7 +14303,7 @@ Types:
       ByteSize: 8
       GoRuntimeType: 1419136
       GoKind: 22
-      Pointee: 27 UnresolvedPointeeType runtime._panic
+      Pointee: 27 StructureType runtime._panic
     - __kind: PointerType
       ID: 985
       Name: '*runtime.boundsError'
@@ -14225,12 +14312,12 @@ Types:
       GoKind: 22
       Pointee: 986 StructureType runtime.boundsError
     - __kind: PointerType
-      ID: 64
+      ID: 65
       Name: '*runtime.cgoCallers'
       ByteSize: 8
       GoRuntimeType: 394240
       GoKind: 22
-      Pointee: 65 UnresolvedPointeeType runtime.cgoCallers
+      Pointee: 66 UnresolvedPointeeType runtime.cgoCallers
     - __kind: PointerType
       ID: 49
       Name: '*runtime.coro'
@@ -14258,7 +14345,7 @@ Types:
       ByteSize: 8
       Pointee: 963 GoStringDataType runtime.errorString.str
     - __kind: PointerType
-      ID: 57
+      ID: 58
       Name: '*runtime.g'
       ByteSize: 8
       GoRuntimeType: 900000
@@ -14305,12 +14392,12 @@ Types:
       GoKind: 22
       Pointee: 47 UnresolvedPointeeType runtime.timer
     - __kind: PointerType
-      ID: 78
+      ID: 79
       Name: '*runtime.traceBuf'
       ByteSize: 8
       GoRuntimeType: 1624960
       GoKind: 22
-      Pointee: 79 UnresolvedPointeeType runtime.traceBuf
+      Pointee: 80 UnresolvedPointeeType runtime.traceBuf
     - __kind: PointerType
       ID: 977
       Name: '*strconv.NumError'
@@ -14319,7 +14406,7 @@ Types:
       GoKind: 22
       Pointee: 978 UnresolvedPointeeType strconv.NumError
     - __kind: PointerType
-      ID: 95
+      ID: 96
       Name: '*string'
       ByteSize: 8
       GoRuntimeType: 392384
@@ -14355,7 +14442,7 @@ Types:
       ID: 271
       Name: '*struct {}'
       ByteSize: 8
-      Pointee: 125 StructureType struct {}
+      Pointee: 126 StructureType struct {}
     - __kind: PointerType
       ID: 1107
       Name: '*syscall.Errno'
@@ -14389,7 +14476,7 @@ Types:
       ByteSize: 8
       Pointee: 645 StructureType table<context.canceler,struct {}>
     - __kind: PointerType
-      ID: 148
+      ID: 149
       Name: '*table<int,*main.deepMap2>'
       ByteSize: 8
       Pointee: 429 StructureType table<int,*main.deepMap2>
@@ -14585,14 +14672,14 @@ Types:
       GoKind: 22
       Pointee: 1376 StructureType time.zoneTrans
     - __kind: PointerType
-      ID: 107
+      ID: 108
       Name: '*uint'
       ByteSize: 8
       GoRuntimeType: 393024
       GoKind: 22
       Pointee: 18 BaseType uint
     - __kind: PointerType
-      ID: 102
+      ID: 103
       Name: '*uint16'
       ByteSize: 8
       GoRuntimeType: 392640
@@ -14606,7 +14693,7 @@ Types:
       GoKind: 22
       Pointee: 4 BaseType uint32
     - __kind: PointerType
-      ID: 101
+      ID: 102
       Name: '*uint64'
       ByteSize: 8
       GoRuntimeType: 392896
@@ -15055,7 +15142,7 @@ Types:
             Type: 358 StructureType main.firstBehavior
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 195, index: 0, name: b}
+                  Variable: {subprogram: 196, index: 0, name: b}
                   Offset: 0
                   ByteSize: 16
             LeafBodies: []
@@ -15074,7 +15161,7 @@ Types:
             Type: 11 GoStringHeaderType string
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 195, index: 1, name: ~r0}
+                  Variable: {subprogram: 196, index: 1, name: ~r0}
                   Offset: 0
                   ByteSize: 16
             LeafBodies: []
@@ -16127,7 +16214,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 60, index: 0, name: a}
@@ -16140,7 +16227,7 @@ Types:
           Offset: 17
           Kind: argument
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 60, index: 0, name: a}
@@ -16229,7 +16316,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 124 ArrayType [2]struct {}
+            Type: 125 ArrayType [2]struct {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 19, index: 0, name: a}
@@ -16242,7 +16329,7 @@ Types:
           Offset: 1
           Kind: argument
           Expression:
-            Type: 124 ArrayType [2]struct {}
+            Type: 125 ArrayType [2]struct {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 19, index: 0, name: a}
@@ -16261,7 +16348,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 121 ArrayType [2][2][2]int
+            Type: 122 ArrayType [2][2][2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 17, index: 0, name: b}
@@ -16274,7 +16361,7 @@ Types:
           Offset: 65
           Kind: argument
           Expression:
-            Type: 121 ArrayType [2][2][2]int
+            Type: 122 ArrayType [2][2][2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 17, index: 0, name: b}
@@ -16293,7 +16380,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 120 ArrayType [2][2]int
+            Type: 121 ArrayType [2][2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 15, index: 0, name: a}
@@ -16306,7 +16393,7 @@ Types:
           Offset: 33
           Kind: argument
           Expression:
-            Type: 120 ArrayType [2][2]int
+            Type: 121 ArrayType [2][2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 15, index: 0, name: a}
@@ -16357,7 +16444,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 111 ArrayType [2]string
+            Type: 112 ArrayType [2]string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 16, index: 0, name: a}
@@ -16370,7 +16457,7 @@ Types:
           Offset: 33
           Kind: argument
           Expression:
-            Type: 111 ArrayType [2]string
+            Type: 112 ArrayType [2]string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 16, index: 0, name: a}
@@ -16389,7 +16476,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 122 ArrayType [2]main.nestedStruct
+            Type: 123 ArrayType [2]main.nestedStruct
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 18, index: 0, name: a}
@@ -16402,7 +16489,7 @@ Types:
           Offset: 49
           Kind: argument
           Expression:
-            Type: 122 ArrayType [2]main.nestedStruct
+            Type: 123 ArrayType [2]main.nestedStruct
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 18, index: 0, name: a}
@@ -16472,7 +16559,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 128 StructureType main.bigStruct
+            Type: 129 StructureType main.bigStruct
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 37, index: 0, name: b}
@@ -16485,7 +16572,7 @@ Types:
           Offset: 49
           Kind: argument
           Expression:
-            Type: 128 StructureType main.bigStruct
+            Type: 129 StructureType main.bigStruct
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 37, index: 0, name: b}
@@ -16507,7 +16594,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 112 ArrayType [2]bool
+            Type: 113 ArrayType [2]bool
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 4, index: 0, name: x}
@@ -16520,7 +16607,7 @@ Types:
           Offset: 3
           Kind: argument
           Expression:
-            Type: 112 ArrayType [2]bool
+            Type: 113 ArrayType [2]bool
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 4, index: 0, name: x}
@@ -16539,7 +16626,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 109 ArrayType [2]uint8
+            Type: 110 ArrayType [2]uint8
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 1, index: 0, name: x}
@@ -16552,7 +16639,7 @@ Types:
           Offset: 3
           Kind: argument
           Expression:
-            Type: 109 ArrayType [2]uint8
+            Type: 110 ArrayType [2]uint8
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 1, index: 0, name: x}
@@ -16834,7 +16921,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 143 StructureType main.deepMap1
+            Type: 144 StructureType main.deepMap1
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 43, index: 0, name: a}
@@ -16847,7 +16934,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 143 StructureType main.deepMap1
+            Type: 144 StructureType main.deepMap1
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 43, index: 0, name: a}
@@ -16866,7 +16953,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 149 PointerType *main.deepMap7
+            Type: 150 PointerType *main.deepMap7
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 44, index: 0, name: a}
@@ -16879,7 +16966,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 149 PointerType *main.deepMap7
+            Type: 150 PointerType *main.deepMap7
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 44, index: 0, name: a}
@@ -16898,7 +16985,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 132 StructureType main.deepPtr1
+            Type: 133 StructureType main.deepPtr1
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 39, index: 0, name: a}
@@ -16911,7 +16998,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 132 StructureType main.deepPtr1
+            Type: 133 StructureType main.deepPtr1
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 39, index: 0, name: a}
@@ -16930,7 +17017,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 135 PointerType *main.deepPtr7
+            Type: 136 PointerType *main.deepPtr7
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 40, index: 0, name: a}
@@ -16943,7 +17030,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 135 PointerType *main.deepPtr7
+            Type: 136 PointerType *main.deepPtr7
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 40, index: 0, name: a}
@@ -16962,7 +17049,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 137 StructureType main.deepSlice1
+            Type: 138 StructureType main.deepSlice1
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 41, index: 0, name: a}
@@ -16975,7 +17062,7 @@ Types:
           Offset: 25
           Kind: argument
           Expression:
-            Type: 137 StructureType main.deepSlice1
+            Type: 138 StructureType main.deepSlice1
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 41, index: 0, name: a}
@@ -16994,7 +17081,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 141 PointerType *main.deepSlice7
+            Type: 142 PointerType *main.deepSlice7
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 42, index: 0, name: a}
@@ -17007,7 +17094,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 141 PointerType *main.deepSlice7
+            Type: 142 PointerType *main.deepSlice7
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 42, index: 0, name: a}
@@ -17337,7 +17424,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 160 StructureType main.esotericStack
+            Type: 161 StructureType main.esotericStack
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 51, index: 0, name: e}
@@ -17350,7 +17437,7 @@ Types:
           Offset: 65
           Kind: argument
           Expression:
-            Type: 160 StructureType main.esotericStack
+            Type: 161 StructureType main.esotericStack
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 51, index: 0, name: e}
@@ -17661,7 +17748,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 189, index: 0, name: x}
+                  Variable: {subprogram: 190, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17674,7 +17761,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 189, index: 0, name: x}
+                  Variable: {subprogram: 190, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17693,7 +17780,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 189, index: 0, name: x}
+                  Variable: {subprogram: 190, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17712,7 +17799,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 189, index: 0, name: x}
+                  Variable: {subprogram: 190, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17731,7 +17818,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 189, index: 0, name: x}
+                  Variable: {subprogram: 190, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17744,7 +17831,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 189, index: 0, name: x}
+                  Variable: {subprogram: 190, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17763,7 +17850,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 189, index: 0, name: x}
+                  Variable: {subprogram: 190, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17776,7 +17863,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 189, index: 0, name: x}
+                  Variable: {subprogram: 190, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17798,7 +17885,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 193, index: 0, name: x}
+                  Variable: {subprogram: 194, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17811,7 +17898,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 193, index: 0, name: x}
+                  Variable: {subprogram: 194, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17830,7 +17917,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 193, index: 0, name: x}
+                  Variable: {subprogram: 194, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17843,7 +17930,7 @@ Types:
             Type: 9 BaseType int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 193, index: 0, name: x}
+                  Variable: {subprogram: 194, index: 0, name: x}
                   Offset: 0
                   ByteSize: 8
             LeafBodies: []
@@ -17862,7 +17949,7 @@ Types:
             Type: 166 ArrayType [5]int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 194, index: 0, name: a}
+                  Variable: {subprogram: 195, index: 0, name: a}
                   Offset: 0
                   ByteSize: 40
             LeafBodies: []
@@ -17875,7 +17962,7 @@ Types:
             Type: 166 ArrayType [5]int
             Operations:
                 - __kind: LocationOp
-                  Variable: {subprogram: 194, index: 0, name: a}
+                  Variable: {subprogram: 195, index: 0, name: a}
                   Offset: 0
                   ByteSize: 40
             LeafBodies: []
@@ -17891,7 +17978,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 115 ArrayType [2]int16
+            Type: 116 ArrayType [2]int16
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 7, index: 0, name: x}
@@ -17904,7 +17991,7 @@ Types:
           Offset: 5
           Kind: argument
           Expression:
-            Type: 115 ArrayType [2]int16
+            Type: 116 ArrayType [2]int16
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 7, index: 0, name: x}
@@ -17923,7 +18010,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 110 ArrayType [2]int32
+            Type: 111 ArrayType [2]int32
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 8, index: 0, name: x}
@@ -17936,7 +18023,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 110 ArrayType [2]int32
+            Type: 111 ArrayType [2]int32
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 8, index: 0, name: x}
@@ -17955,7 +18042,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 116 ArrayType [2]int64
+            Type: 117 ArrayType [2]int64
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 9, index: 0, name: x}
@@ -17968,7 +18055,7 @@ Types:
           Offset: 17
           Kind: argument
           Expression:
-            Type: 116 ArrayType [2]int64
+            Type: 117 ArrayType [2]int64
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 9, index: 0, name: x}
@@ -17987,7 +18074,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 114 ArrayType [2]int8
+            Type: 115 ArrayType [2]int8
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 6, index: 0, name: x}
@@ -18000,7 +18087,7 @@ Types:
           Offset: 3
           Kind: argument
           Expression:
-            Type: 114 ArrayType [2]int8
+            Type: 115 ArrayType [2]int8
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 6, index: 0, name: x}
@@ -18019,7 +18106,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 113 ArrayType [2]int
+            Type: 114 ArrayType [2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 5, index: 0, name: x}
@@ -18032,7 +18119,7 @@ Types:
           Offset: 17
           Kind: argument
           Expression:
-            Type: 113 ArrayType [2]int
+            Type: 114 ArrayType [2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 5, index: 0, name: x}
@@ -18473,7 +18560,7 @@ Types:
           Offset: 1
           Kind: return
           Expression:
-            Type: 113 ArrayType [2]int
+            Type: 114 ArrayType [2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 130, index: 9, name: ~r0}
@@ -18492,7 +18579,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 156 StructureType main.manyPointers
+            Type: 157 StructureType main.manyPointers
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 49, index: 0, name: m}
@@ -18505,7 +18592,7 @@ Types:
           Offset: 561
           Kind: argument
           Expression:
-            Type: 156 StructureType main.manyPointers
+            Type: 157 StructureType main.manyPointers
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 49, index: 0, name: m}
@@ -18524,7 +18611,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 159 GoSliceHeaderType []string
+            Type: 160 GoSliceHeaderType []string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 50, index: 0, name: ss}
@@ -18537,7 +18624,7 @@ Types:
           Offset: 25
           Kind: argument
           Expression:
-            Type: 159 GoSliceHeaderType []string
+            Type: 160 GoSliceHeaderType []string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 50, index: 0, name: ss}
@@ -19519,7 +19606,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 113 ArrayType [2]int
+            Type: 114 ArrayType [2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 133, index: 0, name: a}
@@ -19545,7 +19632,7 @@ Types:
           Offset: 41
           Kind: argument
           Expression:
-            Type: 113 ArrayType [2]int
+            Type: 114 ArrayType [2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 133, index: 0, name: a}
@@ -19590,7 +19677,7 @@ Types:
           Offset: 9
           Kind: return
           Expression:
-            Type: 113 ArrayType [2]int
+            Type: 114 ArrayType [2]int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 133, index: 3, name: ~r1}
@@ -20505,7 +20592,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 123 StructureType main.nestedStruct
+            Type: 124 StructureType main.nestedStruct
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 161, index: 0, name: x}
@@ -20892,7 +20979,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 104, index: 0, name: v}
@@ -20918,7 +21005,7 @@ Types:
           Offset: 18
           Kind: argument
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 104, index: 0, name: v}
@@ -20950,7 +21037,7 @@ Types:
           Offset: 1
           Kind: return
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 104, index: 2, name: ~r0}
@@ -20982,7 +21069,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 105, index: 0, name: v}
@@ -20995,7 +21082,7 @@ Types:
           Offset: 17
           Kind: argument
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 105, index: 0, name: v}
@@ -21014,7 +21101,7 @@ Types:
           Offset: 1
           Kind: return
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 105, index: 1, name: ~r0}
@@ -21263,7 +21350,7 @@ Types:
           Offset: 1
           Kind: return
           Expression:
-            Type: 96 BaseType complex64
+            Type: 97 BaseType complex64
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 114, index: 0, name: ~r0}
@@ -21276,7 +21363,7 @@ Types:
           Offset: 9
           Kind: return
           Expression:
-            Type: 97 BaseType complex128
+            Type: 98 BaseType complex128
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 114, index: 1, name: ~r1}
@@ -21570,7 +21657,7 @@ Types:
           Offset: 1
           Kind: return
           Expression:
-            Type: 100 PointerType *int
+            Type: 101 PointerType *int
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 101, index: 1, name: ~r0}
@@ -21764,7 +21851,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 106, index: 0, name: v}
@@ -21777,7 +21864,7 @@ Types:
           Offset: 17
           Kind: argument
           Expression:
-            Type: 162 GoEmptyInterfaceType interface {}
+            Type: 57 GoEmptyInterfaceType interface {}
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 106, index: 0, name: v}
@@ -22294,7 +22381,7 @@ Types:
           Offset: 3
           Kind: return
           Expression:
-            Type: 104 BaseType int16
+            Type: 105 BaseType int16
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 112, index: 1, name: ~r1}
@@ -22435,7 +22522,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 110 ArrayType [2]int32
+            Type: 111 ArrayType [2]int32
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 2, index: 0, name: x}
@@ -22448,7 +22535,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 110 ArrayType [2]int32
+            Type: 111 ArrayType [2]int32
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 2, index: 0, name: x}
@@ -22537,7 +22624,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 104 BaseType int16
+            Type: 105 BaseType int16
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 26, index: 0, name: x}
@@ -22550,7 +22637,7 @@ Types:
           Offset: 3
           Kind: argument
           Expression:
-            Type: 104 BaseType int16
+            Type: 105 BaseType int16
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 26, index: 0, name: x}
@@ -23373,7 +23460,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 111 ArrayType [2]string
+            Type: 112 ArrayType [2]string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 3, index: 0, name: x}
@@ -23386,7 +23473,7 @@ Types:
           Offset: 33
           Kind: argument
           Expression:
-            Type: 111 ArrayType [2]string
+            Type: 112 ArrayType [2]string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 3, index: 0, name: x}
@@ -23405,7 +23492,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 95 PointerType *string
+            Type: 96 PointerType *string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 97, index: 0, name: z}
@@ -23418,7 +23505,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 95 PointerType *string
+            Type: 96 PointerType *string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 97, index: 0, name: z}
@@ -23437,7 +23524,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 159 GoSliceHeaderType []string
+            Type: 160 GoSliceHeaderType []string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 142, index: 0, name: s}
@@ -23450,7 +23537,7 @@ Types:
           Offset: 25
           Kind: argument
           Expression:
-            Type: 159 GoSliceHeaderType []string
+            Type: 160 GoSliceHeaderType []string
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 142, index: 0, name: s}
@@ -23469,7 +23556,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 151 PointerType *main.stringType1
+            Type: 152 PointerType *main.stringType1
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 45, index: 0, name: a}
@@ -23482,7 +23569,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 151 PointerType *main.stringType1
+            Type: 152 PointerType *main.stringType1
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 45, index: 0, name: a}
@@ -23501,7 +23588,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 153 PointerType **main.stringType2
+            Type: 154 PointerType **main.stringType2
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 46, index: 0, name: a}
@@ -23514,7 +23601,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 153 PointerType **main.stringType2
+            Type: 154 PointerType **main.stringType2
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 46, index: 0, name: a}
@@ -24011,7 +24098,7 @@ Types:
           Offset: 1
           Kind: argument
           Expression:
-            Type: 155 GoInterfaceType context.Context
+            Type: 156 GoInterfaceType context.Context
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 48, index: 0, name: ctx}
@@ -24305,7 +24392,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 127 BaseType main.typeAlias
+            Type: 128 BaseType main.typeAlias
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 36, index: 0, name: x}
@@ -24318,7 +24405,7 @@ Types:
           Offset: 3
           Kind: argument
           Expression:
-            Type: 127 BaseType main.typeAlias
+            Type: 128 BaseType main.typeAlias
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 36, index: 0, name: x}
@@ -24337,7 +24424,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 118 ArrayType [2]uint16
+            Type: 119 ArrayType [2]uint16
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 12, index: 0, name: x}
@@ -24350,7 +24437,7 @@ Types:
           Offset: 5
           Kind: argument
           Expression:
-            Type: 118 ArrayType [2]uint16
+            Type: 119 ArrayType [2]uint16
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 12, index: 0, name: x}
@@ -24369,7 +24456,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 119 ArrayType [2]uint32
+            Type: 120 ArrayType [2]uint32
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 13, index: 0, name: x}
@@ -24382,7 +24469,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 119 ArrayType [2]uint32
+            Type: 120 ArrayType [2]uint32
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 13, index: 0, name: x}
@@ -24433,7 +24520,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 109 ArrayType [2]uint8
+            Type: 110 ArrayType [2]uint8
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 11, index: 0, name: x}
@@ -24446,7 +24533,7 @@ Types:
           Offset: 3
           Kind: argument
           Expression:
-            Type: 109 ArrayType [2]uint8
+            Type: 110 ArrayType [2]uint8
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 11, index: 0, name: x}
@@ -24465,7 +24552,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 117 ArrayType [2]uint
+            Type: 118 ArrayType [2]uint
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 10, index: 0, name: x}
@@ -24478,7 +24565,7 @@ Types:
           Offset: 17
           Kind: argument
           Expression:
-            Type: 117 ArrayType [2]uint
+            Type: 118 ArrayType [2]uint
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 10, index: 0, name: x}
@@ -24497,7 +24584,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 107 PointerType *uint
+            Type: 108 PointerType *uint
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 96, index: 0, name: x}
@@ -24510,7 +24597,7 @@ Types:
           Offset: 9
           Kind: argument
           Expression:
-            Type: 107 PointerType *uint
+            Type: 108 PointerType *uint
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 96, index: 0, name: x}
@@ -24625,7 +24712,7 @@ Types:
           Offset: 1
           Kind: template_segment
           Expression:
-            Type: 126 ArrayType [100]uint
+            Type: 127 ArrayType [100]uint
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 20, index: 0, name: a}
@@ -24638,7 +24725,7 @@ Types:
           Offset: 801
           Kind: argument
           Expression:
-            Type: 126 ArrayType [100]uint
+            Type: 127 ArrayType [100]uint
             Operations:
                 - __kind: LocationOp
                   Variable: {subprogram: 20, index: 0, name: a}
@@ -25049,6 +25136,36 @@ Types:
             LeafBodies: []
             IsSplit: false
           DictIndex: 1
+    - __kind: EventRootType
+      ID: 1811
+      Name: Probe[runtime.recovery]
+      ByteSize: 17
+      EventKind: Entry
+      ExprStatusArraySize: 1
+      Expressions:
+        - Name: '@exception'
+          Offset: 1
+          Kind: capture_expression
+          Expression:
+            Type: 57 GoEmptyInterfaceType interface {}
+            Operations:
+                - __kind: PanicUnwindPrepareOp
+                - __kind: LocationOp
+                  Variable: {subprogram: 189, index: 7, name: '@gp'}
+                  Offset: 0
+                  ByteSize: 8
+                - __kind: DereferenceOp
+                  Bias: 32
+                  ByteSize: 8
+                  NullAsZero: false
+                - __kind: DereferenceOp
+                  Bias: 8
+                  ByteSize: 16
+                  NullAsZero: false
+                - __kind: PanicUnwindEvictSlotsOp
+            LeafBodies: []
+            IsSplit: false
+          DictIndex: -1
     - __kind: ArrayType
       ID: 258
       Name: '[0]int'
@@ -25056,14 +25173,14 @@ Types:
       HasCount: true
       Element: 9 BaseType int
     - __kind: ArrayType
-      ID: 94
+      ID: 95
       Name: '[0]uint8'
       GoRuntimeType: 686720
       GoKind: 17
       HasCount: true
       Element: 5 BaseType uint8
     - __kind: ArrayType
-      ID: 126
+      ID: 127
       Name: '[100]uint'
       ByteSize: 800
       GoKind: 17
@@ -25071,14 +25188,14 @@ Types:
       HasCount: true
       Element: 18 BaseType uint
     - __kind: ArrayType
-      ID: 91
+      ID: 92
       Name: '[10]runtime.heldLockInfo'
       ByteSize: 160
       GoRuntimeType: 703488
       GoKind: 17
       Count: 10
       HasCount: true
-      Element: 92 StructureType runtime.heldLockInfo
+      Element: 93 StructureType runtime.heldLockInfo
     - __kind: ArrayType
       ID: 339
       Name: '[16]uint8'
@@ -25098,50 +25215,50 @@ Types:
       HasCount: true
       Element: 9 BaseType int
     - __kind: ArrayType
-      ID: 77
+      ID: 78
       Name: '[2]*runtime.traceBuf'
       ByteSize: 16
       GoRuntimeType: 703104
       GoKind: 17
       Count: 2
       HasCount: true
-      Element: 78 PointerType *runtime.traceBuf
+      Element: 79 PointerType *runtime.traceBuf
     - __kind: ArrayType
-      ID: 76
+      ID: 77
       Name: '[2][2]*runtime.traceBuf'
       ByteSize: 32
       GoRuntimeType: 703200
       GoKind: 17
       Count: 2
       HasCount: true
-      Element: 77 ArrayType [2]*runtime.traceBuf
+      Element: 78 ArrayType [2]*runtime.traceBuf
     - __kind: ArrayType
-      ID: 121
+      ID: 122
       Name: '[2][2][2]int'
       ByteSize: 64
       GoKind: 17
       Count: 2
       HasCount: true
-      Element: 120 ArrayType [2][2]int
+      Element: 121 ArrayType [2][2]int
     - __kind: ArrayType
-      ID: 120
+      ID: 121
       Name: '[2][2]int'
       ByteSize: 32
       GoKind: 17
       Count: 2
       HasCount: true
-      Element: 113 ArrayType [2]int
+      Element: 114 ArrayType [2]int
     - __kind: ArrayType
-      ID: 83
+      ID: 84
       Name: '[2][8]runtime.pcvalueCacheEnt'
       ByteSize: 384
       GoRuntimeType: 703392
       GoKind: 17
       Count: 2
       HasCount: true
-      Element: 84 ArrayType [8]runtime.pcvalueCacheEnt
+      Element: 85 ArrayType [8]runtime.pcvalueCacheEnt
     - __kind: ArrayType
-      ID: 112
+      ID: 113
       Name: '[2]bool'
       ByteSize: 2
       GoKind: 17
@@ -25149,7 +25266,7 @@ Types:
       HasCount: true
       Element: 6 BaseType bool
     - __kind: ArrayType
-      ID: 113
+      ID: 114
       Name: '[2]int'
       ByteSize: 16
       GoRuntimeType: 683456
@@ -25158,15 +25275,15 @@ Types:
       HasCount: true
       Element: 9 BaseType int
     - __kind: ArrayType
-      ID: 115
+      ID: 116
       Name: '[2]int16'
       ByteSize: 4
       GoKind: 17
       Count: 2
       HasCount: true
-      Element: 104 BaseType int16
+      Element: 105 BaseType int16
     - __kind: ArrayType
-      ID: 110
+      ID: 111
       Name: '[2]int32'
       ByteSize: 8
       GoRuntimeType: 685088
@@ -25175,7 +25292,7 @@ Types:
       HasCount: true
       Element: 12 BaseType int32
     - __kind: ArrayType
-      ID: 116
+      ID: 117
       Name: '[2]int64'
       ByteSize: 16
       GoKind: 17
@@ -25183,7 +25300,7 @@ Types:
       HasCount: true
       Element: 14 BaseType int64
     - __kind: ArrayType
-      ID: 114
+      ID: 115
       Name: '[2]int8'
       ByteSize: 2
       GoKind: 17
@@ -25191,13 +25308,13 @@ Types:
       HasCount: true
       Element: 17 BaseType int8
     - __kind: ArrayType
-      ID: 122
+      ID: 123
       Name: '[2]main.nestedStruct'
       ByteSize: 48
       GoKind: 17
       Count: 2
       HasCount: true
-      Element: 123 StructureType main.nestedStruct
+      Element: 124 StructureType main.nestedStruct
     - __kind: ArrayType
       ID: 196
       Name: '[2]map[string]int'
@@ -25207,7 +25324,7 @@ Types:
       HasCount: true
       Element: 181 GoMapType map[string]int
     - __kind: ArrayType
-      ID: 111
+      ID: 112
       Name: '[2]string'
       ByteSize: 32
       GoRuntimeType: 685184
@@ -25216,14 +25333,14 @@ Types:
       HasCount: true
       Element: 11 GoStringHeaderType string
     - __kind: ArrayType
-      ID: 124
+      ID: 125
       Name: '[2]struct {}'
       GoKind: 17
       Count: 2
       HasCount: true
-      Element: 125 StructureType struct {}
+      Element: 126 StructureType struct {}
     - __kind: ArrayType
-      ID: 117
+      ID: 118
       Name: '[2]uint'
       ByteSize: 16
       GoKind: 17
@@ -25231,7 +25348,7 @@ Types:
       HasCount: true
       Element: 18 BaseType uint
     - __kind: ArrayType
-      ID: 118
+      ID: 119
       Name: '[2]uint16'
       ByteSize: 4
       GoKind: 17
@@ -25239,7 +25356,7 @@ Types:
       HasCount: true
       Element: 8 BaseType uint16
     - __kind: ArrayType
-      ID: 119
+      ID: 120
       Name: '[2]uint32'
       ByteSize: 8
       GoKind: 17
@@ -25256,7 +25373,7 @@ Types:
       HasCount: true
       Element: 10 BaseType uint64
     - __kind: ArrayType
-      ID: 109
+      ID: 110
       Name: '[2]uint8'
       ByteSize: 2
       GoRuntimeType: 684992
@@ -25265,7 +25382,7 @@ Types:
       HasCount: true
       Element: 5 BaseType uint8
     - __kind: ArrayType
-      ID: 89
+      ID: 90
       Name: '[32]uint64'
       ByteSize: 256
       GoRuntimeType: 735328
@@ -25274,7 +25391,7 @@ Types:
       HasCount: true
       Element: 10 BaseType uint64
     - __kind: ArrayType
-      ID: 67
+      ID: 68
       Name: '[32]uintptr'
       ByteSize: 256
       GoRuntimeType: 702912
@@ -25319,7 +25436,7 @@ Types:
       HasCount: true
       Element: 11 GoStringHeaderType string
     - __kind: ArrayType
-      ID: 90
+      ID: 91
       Name: '[4]uint64'
       ByteSize: 32
       GoRuntimeType: 698208
@@ -25353,7 +25470,7 @@ Types:
       HasCount: true
       Element: 10 BaseType uint64
     - __kind: ArrayType
-      ID: 60
+      ID: 61
       Name: '[6]uintptr'
       ByteSize: 48
       GoRuntimeType: 686240
@@ -25362,14 +25479,14 @@ Types:
       HasCount: true
       Element: 3 BaseType uintptr
     - __kind: ArrayType
-      ID: 84
+      ID: 85
       Name: '[8]runtime.pcvalueCacheEnt'
       ByteSize: 192
       GoRuntimeType: 703296
       GoKind: 17
       Count: 8
       HasCount: true
-      Element: 85 StructureType runtime.pcvalueCacheEnt
+      Element: 86 StructureType runtime.pcvalueCacheEnt
     - __kind: GoSliceHeaderType
       ID: 1381
       Name: '[]*github.com/DataDog/dd-trace-go/v2/ddtrace/tracer.Span'
@@ -25394,7 +25511,7 @@ Types:
       ByteSize: 8
       Element: 387 PointerType *github.com/DataDog/dd-trace-go/v2/ddtrace/tracer.Span
     - __kind: GoSliceHeaderType
-      ID: 138
+      ID: 139
       Name: '[]*main.deepSlice2'
       ByteSize: 24
       GoRuntimeType: 477376
@@ -25402,7 +25519,7 @@ Types:
       RawFields:
         - Name: array
           Offset: 0
-          Type: 139 PointerType **main.deepSlice2
+          Type: 140 PointerType **main.deepSlice2
         - Name: len
           Offset: 8
           Type: 9 BaseType int
@@ -25415,7 +25532,7 @@ Types:
       Name: '[]*main.deepSlice2.array'
       DynamicSizeClass: slice
       ByteSize: 8
-      Element: 140 PointerType *main.deepSlice2
+      Element: 141 PointerType *main.deepSlice2
     - __kind: GoSliceHeaderType
       ID: 1386
       Name: '[]*main.deepSlice3'
@@ -25486,7 +25603,7 @@ Types:
       ByteSize: 8
       Element: 1429 PointerType *main.deepSlice9
     - __kind: GoSliceHeaderType
-      ID: 129
+      ID: 130
       Name: '[]*string'
       ByteSize: 24
       GoRuntimeType: 475712
@@ -25494,7 +25611,7 @@ Types:
       RawFields:
         - Name: array
           Offset: 0
-          Type: 130 PointerType **string
+          Type: 131 PointerType **string
         - Name: len
           Offset: 8
           Type: 9 BaseType int
@@ -25507,7 +25624,7 @@ Types:
       Name: '[]*string.array'
       DynamicSizeClass: slice
       ByteSize: 8
-      Element: 95 PointerType *string
+      Element: 96 PointerType *string
     - __kind: GoSliceDataType
       ID: 539
       Name: '[]*table<[4]int,[4]int>.array'
@@ -25543,7 +25660,7 @@ Types:
       Name: '[]*table<int,*main.deepMap2>.array'
       DynamicSizeClass: hashmap
       ByteSize: 8
-      Element: 148 PointerType *table<int,*main.deepMap2>
+      Element: 149 PointerType *table<int,*main.deepMap2>
     - __kind: GoSliceDataType
       ID: 1405
       Name: '[]*table<int,*main.deepMap3>.array'
@@ -25864,7 +25981,7 @@ Types:
       RawFields:
         - Name: array
           Offset: 0
-          Type: 98 PointerType *float64
+          Type: 99 PointerType *float64
         - Name: len
           Offset: 8
           Type: 9 BaseType int
@@ -26013,7 +26130,7 @@ Types:
       Name: '[]interface {}.array'
       DynamicSizeClass: slice
       ByteSize: 16
-      Element: 162 GoEmptyInterfaceType interface {}
+      Element: 57 GoEmptyInterfaceType interface {}
     - __kind: GoSliceHeaderType
       ID: 277
       Name: '[]main.structWithCyclicSlices'
@@ -26278,7 +26395,7 @@ Types:
       Name: '[]runtime.ancestorInfo'
       ByteSize: 8
     - __kind: GoSliceHeaderType
-      ID: 159
+      ID: 160
       Name: '[]string'
       ByteSize: 24
       GoRuntimeType: 487552
@@ -26286,7 +26403,7 @@ Types:
       RawFields:
         - Name: array
           Offset: 0
-          Type: 95 PointerType *string
+          Type: 96 PointerType *string
         - Name: len
           Offset: 8
           Type: 9 BaseType int
@@ -26320,7 +26437,7 @@ Types:
       ID: 575
       Name: '[]struct {}.array'
       DynamicSizeClass: slice
-      Element: 125 StructureType struct {}
+      Element: 126 StructureType struct {}
     - __kind: GoSliceHeaderType
       ID: 1371
       Name: '[]time.zone'
@@ -26376,7 +26493,7 @@ Types:
       RawFields:
         - Name: array
           Offset: 0
-          Type: 107 PointerType *uint
+          Type: 108 PointerType *uint
         - Name: len
           Offset: 8
           Type: 9 BaseType int
@@ -26399,7 +26516,7 @@ Types:
       RawFields:
         - Name: array
           Offset: 0
-          Type: 102 PointerType *uint16
+          Type: 103 PointerType *uint16
         - Name: len
           Offset: 8
           Type: 9 BaseType int
@@ -26472,7 +26589,7 @@ Types:
       RawFields:
         - Name: array
           Offset: 0
-          Type: 95 PointerType *string
+          Type: 96 PointerType *string
         - Name: len
           Offset: 8
           Type: 9 BaseType int
@@ -26513,7 +26630,7 @@ Types:
       RawFields:
         - Name: Writer
           Offset: 0
-          Type: 131 GoInterfaceType io.Writer
+          Type: 132 GoInterfaceType io.Writer
     - __kind: UnresolvedPointeeType
       ID: 1199
       Name: archive/zip.pooledFlateWriter
@@ -26542,18 +26659,18 @@ Types:
       GoRuntimeType: 596192
       GoKind: 18
     - __kind: GoChannelType
-      ID: 161
+      ID: 162
       Name: chan struct {}
       GoRuntimeType: 595232
       GoKind: 18
     - __kind: BaseType
-      ID: 97
+      ID: 98
       Name: complex128
       ByteSize: 16
       GoRuntimeType: 584352
       GoKind: 16
     - __kind: BaseType
-      ID: 96
+      ID: 97
       Name: complex64
       ByteSize: 8
       GoRuntimeType: 584288
@@ -26596,7 +26713,7 @@ Types:
       Name: compress/gzip.Writer
       ByteSize: 8
     - __kind: GoInterfaceType
-      ID: 155
+      ID: 156
       Name: context.Context
       ByteSize: 16
       GoRuntimeType: 1284992
@@ -26629,7 +26746,7 @@ Types:
       RawFields:
         - Name: Context
           Offset: 0
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
         - Name: mu
           Offset: 16
           Type: 371 StructureType sync.Mutex
@@ -26684,7 +26801,7 @@ Types:
       RawFields:
         - Name: Context
           Offset: 0
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
         - Name: stop
           Offset: 16
           Type: 380 GoSubroutineType func() bool
@@ -26729,13 +26846,13 @@ Types:
       RawFields:
         - Name: Context
           Offset: 0
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
         - Name: key
           Offset: 16
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
         - Name: val
           Offset: 32
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
       KeyOffset: 16
       ValueOffset: 32
     - __kind: GoContextImplementationType
@@ -26747,7 +26864,7 @@ Types:
       RawFields:
         - Name: c
           Offset: 0
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
       KeyOffset: -1
       ValueOffset: -1
     - __kind: BaseType
@@ -27104,7 +27221,7 @@ Types:
       Name: fmt.wrapErrors
       ByteSize: 8
     - __kind: GoSubroutineType
-      ID: 61
+      ID: 62
       Name: func()
       ByteSize: 8
       GoRuntimeType: 475456
@@ -27116,7 +27233,7 @@ Types:
       GoRuntimeType: 595424
       GoKind: 19
     - __kind: GoSubroutineType
-      ID: 72
+      ID: 73
       Name: func(*runtime.g, unsafe.Pointer) bool
       ByteSize: 8
       GoRuntimeType: 849920
@@ -27226,7 +27343,7 @@ Types:
           Type: 11 GoStringHeaderType string
         - Name: globalTags
           Offset: 24
-          Type: 159 GoSliceHeaderType []string
+          Type: 160 GoSliceHeaderType []string
         - Name: name
           Offset: 48
           Type: 11 GoStringHeaderType string
@@ -27250,7 +27367,7 @@ Types:
           Type: 1134 PointerType *github.com/DataDog/datadog-go/v5/statsd.ServiceCheck
         - Name: tags
           Offset: 136
-          Type: 159 GoSliceHeaderType []string
+          Type: 160 GoSliceHeaderType []string
         - Name: stags
           Offset: 160
           Type: 11 GoStringHeaderType string
@@ -27391,13 +27508,13 @@ Types:
           Type: 6 BaseType bool
         - Name: pprofCtxActive
           Offset: 248
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
         - Name: pprofCtxRestore
           Offset: 264
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
         - Name: taskEnd
           Offset: 280
-          Type: 61 GoSubroutineType func()
+          Type: 62 GoSubroutineType func()
       SpanKind: 2
       TraceIDOffset: 136
       SpanIDOffset: 128
@@ -27572,7 +27689,7 @@ Types:
           Type: 6 BaseType bool
         - Name: priority
           Offset: 80
-          Type: 98 PointerType *float64
+          Type: 99 PointerType *float64
         - Name: locked
           Offset: 88
           Type: 6 BaseType bool
@@ -27608,7 +27725,7 @@ Types:
       RawFields:
         - Name: Context
           Offset: 0
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
     - __kind: UnresolvedPointeeType
       ID: 853
       Name: github.com/DataDog/dd-trace-go/v2/internal/telemetry/internal.WriterStatusCodeError
@@ -28263,13 +28380,13 @@ Types:
       RawFields:
         - Name: x
           Offset: 0
-          Type: 129 GoSliceHeaderType []*string
+          Type: 130 GoSliceHeaderType []*string
         - Name: z
           Offset: 24
           Type: 9 BaseType int
         - Name: writer
           Offset: 32
-          Type: 131 GoInterfaceType io.Writer
+          Type: 132 GoInterfaceType io.Writer
     - __kind: UnresolvedPointeeType
       ID: 1124
       Name: go.uber.org/multierr.multiError
@@ -28320,7 +28437,7 @@ Types:
       RawFields:
         - Name: Writer
           Offset: 0
-          Type: 131 GoInterfaceType io.Writer
+          Type: 132 GoInterfaceType io.Writer
     - __kind: BaseType
       ID: 758
       Name: golang.org/x/net/http2.ConnectionError
@@ -29037,7 +29154,7 @@ Types:
       GoRuntimeType: 584096
       GoKind: 2
     - __kind: BaseType
-      ID: 104
+      ID: 105
       Name: int16
       ByteSize: 2
       GoRuntimeType: 583712
@@ -29061,7 +29178,7 @@ Types:
       GoRuntimeType: 583584
       GoKind: 3
     - __kind: GoEmptyInterfaceType
-      ID: 162
+      ID: 57
       Name: interface {}
       ByteSize: 16
       GoRuntimeType: 849632
@@ -29078,7 +29195,7 @@ Types:
       Name: internal/bisect.parseError
       ByteSize: 8
     - __kind: StructureType
-      ID: 88
+      ID: 89
       Name: internal/chacha8rand.State
       ByteSize: 304
       GoRuntimeType: 1852800
@@ -29086,10 +29203,10 @@ Types:
       RawFields:
         - Name: buf
           Offset: 0
-          Type: 89 ArrayType [32]uint64
+          Type: 90 ArrayType [32]uint64
         - Name: seed
           Offset: 256
-          Type: 90 ArrayType [4]uint64
+          Type: 91 ArrayType [4]uint64
         - Name: i
           Offset: 288
           Type: 4 BaseType uint32
@@ -29136,7 +29253,7 @@ Types:
           Offset: 0
           Type: 38 StructureType internal/runtime/atomic.Uint8
     - __kind: StructureType
-      ID: 70
+      ID: 71
       Name: internal/runtime/atomic.Int64
       ByteSize: 8
       GoRuntimeType: 1644928
@@ -29147,7 +29264,7 @@ Types:
           Type: 35 StructureType internal/runtime/atomic.noCopy
         - Name: _
           Offset: 0
-          Type: 71 StructureType internal/runtime/atomic.align64
+          Type: 72 StructureType internal/runtime/atomic.align64
         - Name: value
           Offset: 0
           Type: 14 BaseType int64
@@ -29178,7 +29295,7 @@ Types:
           Offset: 0
           Type: 5 BaseType uint8
     - __kind: StructureType
-      ID: 75
+      ID: 76
       Name: internal/runtime/atomic.Uintptr
       ByteSize: 8
       GoRuntimeType: 1494336
@@ -29191,7 +29308,7 @@ Types:
           Offset: 0
           Type: 3 BaseType uintptr
     - __kind: StructureType
-      ID: 71
+      ID: 72
       Name: internal/runtime/atomic.align64
       GoRuntimeType: 994016
       GoKind: 25
@@ -29259,7 +29376,7 @@ Types:
           Offset: 8
           Type: 16 VoidPointerType unsafe.Pointer
     - __kind: GoInterfaceType
-      ID: 131
+      ID: 132
       Name: io.Writer
       ByteSize: 16
       GoRuntimeType: 1024800
@@ -29330,7 +29447,7 @@ Types:
           Type: 9 BaseType int
         - Name: nested
           Offset: 32
-          Type: 123 StructureType main.nestedStruct
+          Type: 124 StructureType main.nestedStruct
     - __kind: StructureType
       ID: 322
       Name: main.anotherStruct
@@ -29354,7 +29471,7 @@ Types:
           Offset: 8
           Type: 16 VoidPointerType unsafe.Pointer
     - __kind: StructureType
-      ID: 128
+      ID: 129
       Name: main.bigStruct
       ByteSize: 48
       GoRuntimeType: 1617472
@@ -29362,15 +29479,15 @@ Types:
       RawFields:
         - Name: x
           Offset: 0
-          Type: 129 GoSliceHeaderType []*string
+          Type: 130 GoSliceHeaderType []*string
         - Name: z
           Offset: 24
           Type: 9 BaseType int
         - Name: writer
           Offset: 32
-          Type: 131 GoInterfaceType io.Writer
+          Type: 132 GoInterfaceType io.Writer
     - __kind: StructureType
-      ID: 143
+      ID: 144
       Name: main.deepMap1
       ByteSize: 8
       GoRuntimeType: 1189184
@@ -29378,7 +29495,7 @@ Types:
       RawFields:
         - Name: a
           Offset: 0
-          Type: 144 GoMapType map[int]*main.deepMap2
+          Type: 145 GoMapType map[int]*main.deepMap2
     - __kind: StructureType
       ID: 436
       Name: main.deepMap2
@@ -29394,7 +29511,7 @@ Types:
       Name: main.deepMap3
       ByteSize: 8
     - __kind: StructureType
-      ID: 150
+      ID: 151
       Name: main.deepMap7
       ByteSize: 8
       GoRuntimeType: 1188416
@@ -29424,7 +29541,7 @@ Types:
           Offset: 0
           Type: 1466 GoMapType map[int]interface {}
     - __kind: StructureType
-      ID: 132
+      ID: 133
       Name: main.deepPtr1
       ByteSize: 8
       GoRuntimeType: 1190336
@@ -29432,9 +29549,9 @@ Types:
       RawFields:
         - Name: a
           Offset: 0
-          Type: 133 PointerType *main.deepPtr2
+          Type: 134 PointerType *main.deepPtr2
     - __kind: StructureType
-      ID: 134
+      ID: 135
       Name: main.deepPtr2
       ByteSize: 8
       GoRuntimeType: 1190208
@@ -29448,7 +29565,7 @@ Types:
       Name: main.deepPtr3
       ByteSize: 8
     - __kind: StructureType
-      ID: 136
+      ID: 137
       Name: main.deepPtr7
       ByteSize: 8
       GoRuntimeType: 1189568
@@ -29476,9 +29593,9 @@ Types:
       RawFields:
         - Name: a
           Offset: 0
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
     - __kind: StructureType
-      ID: 137
+      ID: 138
       Name: main.deepSlice1
       ByteSize: 24
       GoRuntimeType: 1191488
@@ -29486,7 +29603,7 @@ Types:
       RawFields:
         - Name: a
           Offset: 0
-          Type: 138 GoSliceHeaderType []*main.deepSlice2
+          Type: 139 GoSliceHeaderType []*main.deepSlice2
     - __kind: StructureType
       ID: 426
       Name: main.deepSlice2
@@ -29502,7 +29619,7 @@ Types:
       Name: main.deepSlice3
       ByteSize: 8
     - __kind: StructureType
-      ID: 142
+      ID: 143
       Name: main.deepSlice7
       ByteSize: 24
       GoRuntimeType: 1190720
@@ -29545,7 +29662,7 @@ Types:
       RawFields:
         - Name: esotericStack
           Offset: 0
-          Type: 160 StructureType main.esotericStack
+          Type: 161 StructureType main.esotericStack
         - Name: mu
           Offset: 64
           Type: 371 StructureType sync.Mutex
@@ -29559,7 +29676,7 @@ Types:
           Offset: 104
           Type: 390 StructureType sync/atomic.Int32
     - __kind: StructureType
-      ID: 160
+      ID: 161
       Name: main.esotericStack
       ByteSize: 64
       GoRuntimeType: 1970048
@@ -29573,10 +29690,10 @@ Types:
           Type: 12 BaseType int32
         - Name: c
           Offset: 8
-          Type: 161 GoChannelType chan struct {}
+          Type: 162 GoChannelType chan struct {}
         - Name: val
           Offset: 16
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
         - Name: _
           Offset: 32
           Type: 10 BaseType uint64
@@ -29585,7 +29702,7 @@ Types:
           Type: 163 GoInterfaceType main.something
         - Name: foo
           Offset: 56
-          Type: 61 GoSubroutineType func()
+          Type: 62 GoSubroutineType func()
     - __kind: StructureType
       ID: 358
       Name: main.firstBehavior
@@ -29699,221 +29816,221 @@ Types:
           Offset: 72
           Type: 9 BaseType int
     - __kind: StructureType
-      ID: 156
+      ID: 157
       Name: main.manyPointers
       ByteSize: 560
       GoKind: 25
       RawFields:
         - Name: p00
           Offset: 0
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p01
           Offset: 8
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p02
           Offset: 16
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p03
           Offset: 24
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p04
           Offset: 32
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p05
           Offset: 40
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p06
           Offset: 48
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p07
           Offset: 56
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p08
           Offset: 64
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p09
           Offset: 72
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p10
           Offset: 80
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p11
           Offset: 88
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p12
           Offset: 96
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p13
           Offset: 104
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p14
           Offset: 112
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p15
           Offset: 120
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p16
           Offset: 128
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p17
           Offset: 136
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p18
           Offset: 144
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p19
           Offset: 152
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p20
           Offset: 160
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p21
           Offset: 168
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p22
           Offset: 176
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p23
           Offset: 184
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p24
           Offset: 192
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p25
           Offset: 200
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p26
           Offset: 208
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p27
           Offset: 216
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p28
           Offset: 224
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p29
           Offset: 232
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p30
           Offset: 240
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p31
           Offset: 248
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p32
           Offset: 256
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p33
           Offset: 264
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p34
           Offset: 272
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p35
           Offset: 280
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p36
           Offset: 288
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p37
           Offset: 296
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p38
           Offset: 304
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p39
           Offset: 312
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p40
           Offset: 320
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p41
           Offset: 328
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p42
           Offset: 336
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p43
           Offset: 344
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p44
           Offset: 352
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p45
           Offset: 360
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p46
           Offset: 368
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p47
           Offset: 376
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p48
           Offset: 384
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p49
           Offset: 392
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p50
           Offset: 400
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p51
           Offset: 408
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p52
           Offset: 416
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p53
           Offset: 424
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p54
           Offset: 432
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p55
           Offset: 440
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p56
           Offset: 448
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p57
           Offset: 456
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p58
           Offset: 464
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p59
           Offset: 472
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p60
           Offset: 480
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p61
           Offset: 488
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p62
           Offset: 496
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p63
           Offset: 504
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p64
           Offset: 512
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p65
           Offset: 520
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p66
           Offset: 528
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p67
           Offset: 536
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p68
           Offset: 544
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
         - Name: p69
           Offset: 552
-          Type: 157 PointerType *main.paddedData
+          Type: 158 PointerType *main.paddedData
     - __kind: StructureType
       ID: 259
       Name: main.mixedStruct
@@ -29930,7 +30047,7 @@ Types:
           Offset: 16
           Type: 9 BaseType int
     - __kind: StructureType
-      ID: 123
+      ID: 124
       Name: main.nestedStruct
       ByteSize: 24
       GoRuntimeType: 1466816
@@ -29965,7 +30082,7 @@ Types:
           Offset: 0
           Type: 11 GoStringHeaderType string
     - __kind: StructureType
-      ID: 158
+      ID: 159
       Name: main.paddedData
       ByteSize: 512
       GoKind: 25
@@ -30001,7 +30118,7 @@ Types:
       Name: main.somethingImpl
       ByteSize: 8
     - __kind: GoStringHeaderType
-      ID: 152
+      ID: 153
       Name: main.stringType1
       ByteSize: 16
       GoKind: 24
@@ -30045,7 +30162,7 @@ Types:
       RawFields:
         - Name: a
           Offset: 0
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
     - __kind: StructureType
       ID: 261
       Name: main.structWithArray
@@ -30054,7 +30171,7 @@ Types:
       RawFields:
         - Name: arr
           Offset: 0
-          Type: 113 ArrayType [2]int
+          Type: 114 ArrayType [2]int
         - Name: x
           Offset: 16
           Type: 9 BaseType int
@@ -30214,7 +30331,7 @@ Types:
           Offset: 32
           Type: 11 GoStringHeaderType string
     - __kind: BaseType
-      ID: 127
+      ID: 128
       Name: main.typeAlias
       ByteSize: 2
       GoKind: 9
@@ -30436,7 +30553,7 @@ Types:
       TablePtrSliceType: 652 GoSliceDataType []*table<context.canceler,struct {}>.array
       GroupType: 648 StructureType noalg.map.group[context.canceler]struct {}
     - __kind: GoSwissMapHeaderType
-      ID: 146
+      ID: 147
       Name: map<int,*main.deepMap2>
       ByteSize: 48
       GoKind: 25
@@ -30449,7 +30566,7 @@ Types:
           Type: 3 BaseType uintptr
         - Name: dirPtr
           Offset: 16
-          Type: 147 PointerType **table<int,*main.deepMap2>
+          Type: 148 PointerType **table<int,*main.deepMap2>
         - Name: dirLen
           Offset: 24
           Type: 9 BaseType int
@@ -31335,12 +31452,12 @@ Types:
       GoKind: 21
       HeaderType: 377 GoSwissMapHeaderType map<context.canceler,struct {}>
     - __kind: GoMapType
-      ID: 144
+      ID: 145
       Name: map[int]*main.deepMap2
       ByteSize: 8
       GoRuntimeType: 1131200
       GoKind: 21
-      HeaderType: 146 GoSwissMapHeaderType map<int,*main.deepMap2>
+      HeaderType: 147 GoSwissMapHeaderType map<int,*main.deepMap2>
     - __kind: GoMapType
       ID: 1392
       Name: map[int]*main.deepMap3
@@ -31529,7 +31646,7 @@ Types:
       RawFields:
         - Name: Writer
           Offset: 0
-          Type: 131 GoInterfaceType io.Writer
+          Type: 132 GoInterfaceType io.Writer
     - __kind: UnresolvedPointeeType
       ID: 1071
       Name: net.AddrError
@@ -31652,10 +31769,10 @@ Types:
       RawFields:
         - Name: Context
           Offset: 0
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
         - Name: lookupValues
           Offset: 16
-          Type: 155 GoInterfaceType context.Context
+          Type: 156 GoInterfaceType context.Context
     - __kind: StructureType
       ID: 809
       Name: net.result·2
@@ -31719,7 +31836,7 @@ Types:
       RawFields:
         - Name: w
           Offset: 0
-          Type: 131 GoInterfaceType io.Writer
+          Type: 132 GoInterfaceType io.Writer
     - __kind: BaseType
       ID: 703
       Name: net/http.http2ConnectionError
@@ -31889,7 +32006,7 @@ Types:
           Type: 1257 BaseType time.Duration
         - Name: err
           Offset: 40
-          Type: 106 PointerType *error
+          Type: 107 PointerType *error
     - __kind: GoInterfaceType
       ID: 1256
       Name: net/http.http2synctestGroupInterface
@@ -31909,7 +32026,7 @@ Types:
       GoRuntimeType: 902496
       GoKind: 17
       HasCount: true
-      Element: 61 GoSubroutineType func()
+      Element: 62 GoSubroutineType func()
     - __kind: StructureType
       ID: 999
       Name: net/http.nothingWrittenError
@@ -32855,7 +32972,7 @@ Types:
           Type: 479 ArrayType [4]string
         - Name: elem
           Offset: 64
-          Type: 113 ArrayType [2]int
+          Type: 114 ArrayType [2]int
     - __kind: StructureType
       ID: 497
       Name: noalg.struct { key bool; elem main.node }
@@ -32881,7 +32998,7 @@ Types:
           Type: 651 GoInterfaceType context.canceler
         - Name: elem
           Offset: 16
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
     - __kind: StructureType
       ID: 434
       Name: noalg.struct { key int; elem *main.deepMap2 }
@@ -32959,7 +33076,7 @@ Types:
           Type: 9 BaseType int
         - Name: elem
           Offset: 8
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
     - __kind: StructureType
       ID: 554
       Name: noalg.struct { key int; elem struct {} }
@@ -32972,7 +33089,7 @@ Types:
           Type: 9 BaseType int
         - Name: elem
           Offset: 8
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
     - __kind: StructureType
       ID: 505
       Name: noalg.struct { key int; elem uint8 }
@@ -33024,7 +33141,7 @@ Types:
           Type: 11 GoStringHeaderType string
         - Name: elem
           Offset: 16
-          Type: 159 GoSliceHeaderType []string
+          Type: 160 GoSliceHeaderType []string
     - __kind: StructureType
       ID: 675
       Name: noalg.struct { key string; elem float64 }
@@ -33076,7 +33193,7 @@ Types:
           Type: 11 GoStringHeaderType string
         - Name: elem
           Offset: 16
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
     - __kind: StructureType
       ID: 454
       Name: noalg.struct { key string; elem main.nestedStruct }
@@ -33089,7 +33206,7 @@ Types:
           Type: 11 GoStringHeaderType string
         - Name: elem
           Offset: 16
-          Type: 123 StructureType main.nestedStruct
+          Type: 124 StructureType main.nestedStruct
     - __kind: StructureType
       ID: 659
       Name: noalg.struct { key string; elem string }
@@ -33112,7 +33229,7 @@ Types:
       RawFields:
         - Name: key
           Offset: 0
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
         - Name: elem
           Offset: 0
           Type: 9 BaseType int
@@ -33124,7 +33241,7 @@ Types:
       RawFields:
         - Name: key
           Offset: 0
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
         - Name: elem
           Offset: 0
           Type: 289 StructureType main.structWithCyclicMaps
@@ -33136,7 +33253,7 @@ Types:
       RawFields:
         - Name: key
           Offset: 0
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
         - Name: elem
           Offset: 0
           Type: 290 GoMapType map[struct {}]main.structWithCyclicMaps
@@ -33148,7 +33265,7 @@ Types:
       RawFields:
         - Name: key
           Offset: 0
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
         - Name: elem
           Offset: 0
           Type: 295 GoMapType map[struct {}]map[struct {}]main.structWithCyclicMaps
@@ -33160,7 +33277,7 @@ Types:
       RawFields:
         - Name: key
           Offset: 0
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
         - Name: elem
           Offset: 0
           Type: 300 GoMapType map[struct {}]map[struct {}]map[struct {}]main.structWithCyclicMaps
@@ -33172,7 +33289,7 @@ Types:
       RawFields:
         - Name: key
           Offset: 0
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
         - Name: elem
           Offset: 0
           Type: 305 GoMapType map[struct {}]map[struct {}]map[struct {}]map[struct {}]main.structWithCyclicMaps
@@ -33184,7 +33301,7 @@ Types:
       RawFields:
         - Name: key
           Offset: 0
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
         - Name: elem
           Offset: 0
           Type: 310 GoMapType map[struct {}]map[struct {}]map[struct {}]map[struct {}]map[struct {}]main.structWithCyclicMaps
@@ -33196,10 +33313,10 @@ Types:
       RawFields:
         - Name: key
           Offset: 0
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
         - Name: elem
           Offset: 0
-          Type: 125 StructureType struct {}
+          Type: 126 StructureType struct {}
     - __kind: StructureType
       ID: 521
       Name: noalg.struct { key uint8; elem [4]int }
@@ -33346,10 +33463,55 @@ Types:
       ID: 29
       Name: runtime._defer
       ByteSize: 8
-    - __kind: UnresolvedPointeeType
+    - __kind: StructureType
       ID: 27
       Name: runtime._panic
-      ByteSize: 8
+      ByteSize: 104
+      GoRuntimeType: 2220000
+      GoKind: 25
+      RawFields:
+        - Name: argp
+          Offset: 0
+          Type: 16 VoidPointerType unsafe.Pointer
+        - Name: arg
+          Offset: 8
+          Type: 57 GoEmptyInterfaceType interface {}
+        - Name: link
+          Offset: 24
+          Type: 26 PointerType *runtime._panic
+        - Name: startPC
+          Offset: 32
+          Type: 3 BaseType uintptr
+        - Name: startSP
+          Offset: 40
+          Type: 16 VoidPointerType unsafe.Pointer
+        - Name: sp
+          Offset: 48
+          Type: 16 VoidPointerType unsafe.Pointer
+        - Name: lr
+          Offset: 56
+          Type: 3 BaseType uintptr
+        - Name: fp
+          Offset: 64
+          Type: 16 VoidPointerType unsafe.Pointer
+        - Name: retpc
+          Offset: 72
+          Type: 3 BaseType uintptr
+        - Name: deferBitsPtr
+          Offset: 80
+          Type: 7 PointerType *uint8
+        - Name: slotsPtr
+          Offset: 88
+          Type: 16 VoidPointerType unsafe.Pointer
+        - Name: recovered
+          Offset: 96
+          Type: 6 BaseType bool
+        - Name: goexit
+          Offset: 97
+          Type: 6 BaseType bool
+        - Name: deferreturn
+          Offset: 98
+          Type: 6 BaseType bool
     - __kind: StructureType
       ID: 986
       Name: runtime.boundsError
@@ -33376,7 +33538,7 @@ Types:
       GoRuntimeType: 584672
       GoKind: 8
     - __kind: UnresolvedPointeeType
-      ID: 65
+      ID: 66
       Name: runtime.cgoCallers
       ByteSize: 8
     - __kind: UnresolvedPointeeType
@@ -33384,7 +33546,7 @@ Types:
       Name: runtime.coro
       ByteSize: 8
     - __kind: StructureType
-      ID: 86
+      ID: 87
       Name: runtime.dlogPerM
       GoRuntimeType: 990848
       GoKind: 25
@@ -33654,7 +33816,7 @@ Types:
           Offset: 0
           Type: 4 BaseType uint32
     - __kind: StructureType
-      ID: 58
+      ID: 59
       Name: runtime.gsignalStack
       ByteSize: 40
       GoRuntimeType: 1754464
@@ -33679,7 +33841,7 @@ Types:
       GoRuntimeType: 832160
       GoKind: 12
     - __kind: StructureType
-      ID: 92
+      ID: 93
       Name: runtime.heldLockInfo
       ByteSize: 16
       GoRuntimeType: 1475616
@@ -33690,9 +33852,9 @@ Types:
           Type: 3 BaseType uintptr
         - Name: rank
           Offset: 8
-          Type: 93 BaseType runtime.lockRank
+          Type: 94 BaseType runtime.lockRank
     - __kind: StructureType
-      ID: 80
+      ID: 81
       Name: runtime.libcall
       ByteSize: 48
       GoRuntimeType: 1916512
@@ -33717,7 +33879,7 @@ Types:
           Offset: 40
           Type: 3 BaseType uintptr
     - __kind: BaseType
-      ID: 93
+      ID: 94
       Name: runtime.lockRank
       ByteSize: 8
       GoRuntimeType: 832064
@@ -33731,7 +33893,7 @@ Types:
       RawFields:
         - Name: g0
           Offset: 0
-          Type: 57 PointerType *runtime.g
+          Type: 58 PointerType *runtime.g
         - Name: morebuf
           Offset: 8
           Type: 32 StructureType runtime.gobuf
@@ -33746,34 +33908,34 @@ Types:
           Type: 10 BaseType uint64
         - Name: gsignal
           Offset: 80
-          Type: 57 PointerType *runtime.g
+          Type: 58 PointerType *runtime.g
         - Name: goSigStack
           Offset: 88
-          Type: 58 StructureType runtime.gsignalStack
+          Type: 59 StructureType runtime.gsignalStack
         - Name: sigmask
           Offset: 128
-          Type: 59 ArrayType runtime.sigset
+          Type: 60 ArrayType runtime.sigset
         - Name: tls
           Offset: 136
-          Type: 60 ArrayType [6]uintptr
+          Type: 61 ArrayType [6]uintptr
         - Name: mstartfn
           Offset: 184
-          Type: 61 GoSubroutineType func()
+          Type: 62 GoSubroutineType func()
         - Name: curg
           Offset: 192
-          Type: 57 PointerType *runtime.g
+          Type: 58 PointerType *runtime.g
         - Name: caughtsig
           Offset: 200
           Type: 33 BaseType runtime.guintptr
         - Name: p
           Offset: 208
-          Type: 62 BaseType runtime.puintptr
+          Type: 63 BaseType runtime.puintptr
         - Name: nextp
           Offset: 216
-          Type: 62 BaseType runtime.puintptr
+          Type: 63 BaseType runtime.puintptr
         - Name: oldp
           Offset: 224
-          Type: 62 BaseType runtime.puintptr
+          Type: 63 BaseType runtime.puintptr
         - Name: id
           Offset: 232
           Type: 14 BaseType int64
@@ -33782,7 +33944,7 @@ Types:
           Type: 12 BaseType int32
         - Name: throwing
           Offset: 244
-          Type: 63 BaseType runtime.throwType
+          Type: 64 BaseType runtime.throwType
         - Name: preemptoff
           Offset: 248
           Type: 11 GoStringHeaderType string
@@ -33842,10 +34004,10 @@ Types:
           Type: 34 StructureType internal/runtime/atomic.Uint32
         - Name: cgoCallers
           Offset: 312
-          Type: 64 PointerType *runtime.cgoCallers
+          Type: 65 PointerType *runtime.cgoCallers
         - Name: park
           Offset: 320
-          Type: 66 StructureType runtime.note
+          Type: 67 StructureType runtime.note
         - Name: alllink
           Offset: 328
           Type: 30 PointerType *runtime.m
@@ -33857,7 +34019,7 @@ Types:
           Type: 33 BaseType runtime.guintptr
         - Name: createstack
           Offset: 352
-          Type: 67 ArrayType [32]uintptr
+          Type: 68 ArrayType [32]uintptr
         - Name: lockedExt
           Offset: 608
           Type: 4 BaseType uint32
@@ -33866,16 +34028,16 @@ Types:
           Type: 4 BaseType uint32
         - Name: mWaitList
           Offset: 616
-          Type: 68 StructureType runtime.mWaitList
+          Type: 69 StructureType runtime.mWaitList
         - Name: mLockProfile
           Offset: 624
-          Type: 69 StructureType runtime.mLockProfile
+          Type: 70 StructureType runtime.mLockProfile
         - Name: profStack
           Offset: 688
           Type: 45 GoSliceHeaderType []uintptr
         - Name: waitunlockf
           Offset: 712
-          Type: 72 GoSubroutineType func(*runtime.g, unsafe.Pointer) bool
+          Type: 73 GoSubroutineType func(*runtime.g, unsafe.Pointer) bool
         - Name: waitlock
           Offset: 720
           Type: 16 VoidPointerType unsafe.Pointer
@@ -33884,7 +34046,7 @@ Types:
           Type: 9 BaseType int
         - Name: waitTraceBlockReason
           Offset: 736
-          Type: 73 BaseType runtime.traceBlockReason
+          Type: 74 BaseType runtime.traceBlockReason
         - Name: syscalltick
           Offset: 740
           Type: 4 BaseType uint32
@@ -33893,10 +34055,10 @@ Types:
           Type: 30 PointerType *runtime.m
         - Name: trace
           Offset: 752
-          Type: 74 StructureType runtime.mTraceState
+          Type: 75 StructureType runtime.mTraceState
         - Name: libcall
           Offset: 808
-          Type: 80 StructureType runtime.libcall
+          Type: 81 StructureType runtime.libcall
         - Name: libcallpc
           Offset: 856
           Type: 3 BaseType uintptr
@@ -33908,7 +34070,7 @@ Types:
           Type: 33 BaseType runtime.guintptr
         - Name: winsyscall
           Offset: 880
-          Type: 81 StructureType runtime.winlibcall
+          Type: 82 StructureType runtime.winlibcall
         - Name: vdsoSP
           Offset: 880
           Type: 3 BaseType uintptr
@@ -33923,16 +34085,16 @@ Types:
           Type: 34 StructureType internal/runtime/atomic.Uint32
         - Name: pcvalueCache
           Offset: 904
-          Type: 82 StructureType runtime.pcvalueCache
+          Type: 83 StructureType runtime.pcvalueCache
         - Name: dlogPerM
           Offset: 1296
-          Type: 86 StructureType runtime.dlogPerM
+          Type: 87 StructureType runtime.dlogPerM
         - Name: mOS
           Offset: 1296
-          Type: 87 StructureType runtime.mOS
+          Type: 88 StructureType runtime.mOS
         - Name: chacha8
           Offset: 1320
-          Type: 88 StructureType internal/chacha8rand.State
+          Type: 89 StructureType internal/chacha8rand.State
         - Name: cheaprand
           Offset: 1624
           Type: 10 BaseType uint64
@@ -33941,12 +34103,12 @@ Types:
           Type: 9 BaseType int
         - Name: locksHeld
           Offset: 1640
-          Type: 91 ArrayType [10]runtime.heldLockInfo
+          Type: 92 ArrayType [10]runtime.heldLockInfo
         - Name: _
           Offset: 1800
-          Type: 94 ArrayType [0]uint8
+          Type: 95 ArrayType [0]uint8
     - __kind: StructureType
-      ID: 69
+      ID: 70
       Name: runtime.mLockProfile
       ByteSize: 64
       GoRuntimeType: 1972928
@@ -33954,7 +34116,7 @@ Types:
       RawFields:
         - Name: waitTime
           Offset: 0
-          Type: 70 StructureType internal/runtime/atomic.Int64
+          Type: 71 StructureType internal/runtime/atomic.Int64
         - Name: stack
           Offset: 8
           Type: 45 GoSliceHeaderType []uintptr
@@ -33974,7 +34136,7 @@ Types:
           Offset: 57
           Type: 6 BaseType bool
     - __kind: StructureType
-      ID: 87
+      ID: 88
       Name: runtime.mOS
       ByteSize: 24
       GoRuntimeType: 1842048
@@ -33996,7 +34158,7 @@ Types:
           Offset: 16
           Type: 4 BaseType uint32
     - __kind: StructureType
-      ID: 74
+      ID: 75
       Name: runtime.mTraceState
       ByteSize: 56
       GoRuntimeType: 1841824
@@ -34004,10 +34166,10 @@ Types:
       RawFields:
         - Name: seqlock
           Offset: 0
-          Type: 75 StructureType internal/runtime/atomic.Uintptr
+          Type: 76 StructureType internal/runtime/atomic.Uintptr
         - Name: buf
           Offset: 8
-          Type: 76 ArrayType [2][2]*runtime.traceBuf
+          Type: 77 ArrayType [2][2]*runtime.traceBuf
         - Name: link
           Offset: 40
           Type: 30 PointerType *runtime.m
@@ -34018,7 +34180,7 @@ Types:
           Offset: 52
           Type: 6 BaseType bool
     - __kind: StructureType
-      ID: 68
+      ID: 69
       Name: runtime.mWaitList
       ByteSize: 8
       GoRuntimeType: 1199552
@@ -34034,14 +34196,14 @@ Types:
       GoRuntimeType: 831776
       GoKind: 12
     - __kind: StructureType
-      ID: 66
+      ID: 67
       Name: runtime.note
       ByteSize: 8
       GoRuntimeType: 1199424
       GoKind: 25
       RawFields: [{Name: key, Offset: 0, Type: 3 BaseType uintptr}]
     - __kind: StructureType
-      ID: 82
+      ID: 83
       Name: runtime.pcvalueCache
       ByteSize: 392
       GoRuntimeType: 1475456
@@ -34049,12 +34211,12 @@ Types:
       RawFields:
         - Name: entries
           Offset: 0
-          Type: 83 ArrayType [2][8]runtime.pcvalueCacheEnt
+          Type: 84 ArrayType [2][8]runtime.pcvalueCacheEnt
         - Name: inUse
           Offset: 384
           Type: 9 BaseType int
     - __kind: StructureType
-      ID: 85
+      ID: 86
       Name: runtime.pcvalueCacheEnt
       ByteSize: 24
       GoRuntimeType: 1755232
@@ -34092,13 +34254,13 @@ Types:
       DynamicSizeClass: string
       ByteSize: 1
     - __kind: BaseType
-      ID: 62
+      ID: 63
       Name: runtime.puintptr
       ByteSize: 8
       GoRuntimeType: 831968
       GoKind: 12
     - __kind: ArrayType
-      ID: 59
+      ID: 60
       Name: runtime.sigset
       ByteSize: 8
       GoRuntimeType: 899616
@@ -34128,7 +34290,7 @@ Types:
       Name: runtime.synctestGroup
       ByteSize: 8
     - __kind: BaseType
-      ID: 63
+      ID: 64
       Name: runtime.throwType
       ByteSize: 4
       GoRuntimeType: 584800
@@ -34138,13 +34300,13 @@ Types:
       Name: runtime.timer
       ByteSize: 8
     - __kind: BaseType
-      ID: 73
+      ID: 74
       Name: runtime.traceBlockReason
       ByteSize: 1
       GoRuntimeType: 584864
       GoKind: 8
     - __kind: UnresolvedPointeeType
-      ID: 79
+      ID: 80
       Name: runtime.traceBuf
       ByteSize: 8
     - __kind: StructureType
@@ -34167,7 +34329,7 @@ Types:
       GoRuntimeType: 1285248
       GoKind: 8
     - __kind: StructureType
-      ID: 81
+      ID: 82
       Name: runtime.winlibcall
       GoRuntimeType: 990752
       GoKind: 25
@@ -34212,9 +34374,9 @@ Types:
       RawFields:
         - Name: Writer
           Offset: 0
-          Type: 131 GoInterfaceType io.Writer
+          Type: 132 GoInterfaceType io.Writer
     - __kind: StructureType
-      ID: 125
+      ID: 126
       Name: struct {}
       GoRuntimeType: 842816
       GoKind: 25
@@ -34343,7 +34505,7 @@ Types:
       RawFields:
         - Name: v
           Offset: 0
-          Type: 162 GoEmptyInterfaceType interface {}
+          Type: 57 GoEmptyInterfaceType interface {}
     - __kind: StructureType
       ID: 1363
       Name: sync/atomic.align64
@@ -35424,7 +35586,7 @@ Types:
       ByteSize: 4
       GoRuntimeType: 994784
       GoKind: 5
-MaxTypeID: 1810
+MaxTypeID: 1811
 Issues:
     - probe_definition:
         id: testReturnCondBadField
@@ -35463,4 +35625,5 @@ GoMapHashInfo:
 CommonTypes:
     G: 24 StructureType runtime.g
     M: 31 StructureType runtime.m
+    Panic: 27 StructureType runtime._panic
 IsARM64: false

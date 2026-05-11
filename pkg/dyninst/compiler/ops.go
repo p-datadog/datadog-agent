@@ -399,4 +399,19 @@ type ConditionLeafCompleteOp struct {
 	baseOp
 }
 
+// PanicUnwindPrepareOp validates the recovered panic and computes
+// (panic_lo_depth, panic_hi_depth) into the event header. Sets
+// condition_failed on validation failure so probe_run aborts the
+// event. Carries no operands.
+type PanicUnwindPrepareOp struct {
+	baseOp
+}
+
+// PanicUnwindEvictSlotsOp walks in_progress_calls[goid] and zeroes
+// every call_depths_entry_t whose depth lies in
+// (panic_lo_depth, panic_hi_depth]. Carries no operands.
+type PanicUnwindEvictSlotsOp struct {
+	baseOp
+}
+
 //revive:enable:exported

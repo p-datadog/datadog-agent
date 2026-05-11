@@ -129,6 +129,10 @@ func opcodeByte(opcode compiler.Opcode) uint8 {
 		return C.SM_OP_GO_CONTEXT_CHAIN_INIT
 	case compiler.OpcodeGoContextChainHop:
 		return C.SM_OP_GO_CONTEXT_CHAIN_HOP
+	case compiler.OpcodePanicUnwindPrepare:
+		return C.SM_OP_PANIC_UNWIND_PREPARE
+	case compiler.OpcodePanicUnwindEvictSlots:
+		return C.SM_OP_PANIC_UNWIND_EVICT_SLOTS
 	default:
 		panic(fmt.Sprintf("unknown opcode: %s", opcode))
 	}

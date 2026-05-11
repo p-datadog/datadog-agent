@@ -73,6 +73,10 @@ const (
 	// the next sm_loop iteration re-enters HOP. See pkg/dyninst/irgen/trace_context.md.
 	OpcodeGoContextChainInit
 	OpcodeGoContextChainHop
+	// Recovery probe opcodes — see ir.PanicUnwindPrepareOp /
+	// PanicUnwindEvictSlotsOp.
+	OpcodePanicUnwindPrepare
+	OpcodePanicUnwindEvictSlots
 )
 
 //revive:enable:exported

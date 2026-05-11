@@ -93,6 +93,17 @@ type state struct {
 		detached                    uint64
 		unloaded                    uint64
 		typeRecompilationsTriggered uint64
+
+		// runtime.recovery counters, accumulated by evaluateCircuitBreakers
+		// from per-program BPF stats. These are cumulative across all
+		// processes' lifetimes (we sample BPF counters periodically and
+		// add deltas).
+		recoveryFires          uint64
+		recoveryEvictedFrames  uint64
+		recoverySubmitFailures uint64
+		recoveryNoOpenCalls    uint64
+		recoveryFilteredGoexit uint64
+		recoveryInvalidState   uint64
 	}
 }
 
@@ -142,6 +153,13 @@ func (s *state) Metrics() Metrics {
 
 		NumProcesses: uint64(len(s.processes)),
 		NumPrograms:  uint64(len(s.programs)),
+
+		RecoveryFires:          s.counters.recoveryFires,
+		RecoveryEvictedFrames:  s.counters.recoveryEvictedFrames,
+		RecoverySubmitFailures: s.counters.recoverySubmitFailures,
+		RecoveryNoOpenCalls:    s.counters.recoveryNoOpenCalls,
+		RecoveryFilteredGoexit: s.counters.recoveryFilteredGoexit,
+		RecoveryInvalidState:   s.counters.recoveryInvalidState,
 	}
 }
 
@@ -187,6 +205,16 @@ type Metrics struct {
 	NumProcesses uint64
 	// NumPrograms is the number of programs in the state machine.
 	NumPrograms uint64
+
+	// runtime.recovery probe activity, aggregated across all loaded
+	// programs and all CPU cores. See loader.RuntimeStats for the
+	// underlying per-CPU counter definitions.
+	RecoveryFires          uint64
+	RecoveryEvictedFrames  uint64
+	RecoverySubmitFailures uint64
+	RecoveryNoOpenCalls    uint64
+	RecoveryFilteredGoexit uint64
+	RecoveryInvalidState   uint64
 }
 
 // AsStats converts the Metrics to a map[string]any for use by the system-probe.
@@ -208,6 +236,13 @@ func (m Metrics) AsStats() map[string]any {
 
 		"numProcesses": m.NumProcesses,
 		"numPrograms":  m.NumPrograms,
+
+		"recoveryFires":          m.RecoveryFires,
+		"recoveryEvictedFrames":  m.RecoveryEvictedFrames,
+		"recoverySubmitFailures": m.RecoverySubmitFailures,
+		"recoveryNoOpenCalls":    m.RecoveryNoOpenCalls,
+		"recoveryFilteredGoexit": m.RecoveryFilteredGoexit,
+		"recoveryInvalidState":   m.RecoveryInvalidState,
 	}
 }
 
@@ -1178,6 +1213,15 @@ func checkCosts(sm *state, interval time.Duration, effects effectHandler) {
 			hits := stats.HitCnt - lastStats.HitCnt
 			execCost := stats.CPU - lastStats.CPU
 			interruptCost := sm.breakerCfg.InterruptOverhead * time.Duration(hits)
+			// Accumulate recovery-probe deltas. These are reset when the
+			// program is unloaded, so deltas across BPF reads are non-
+			// decreasing.
+			sm.counters.recoveryFires += stats.RecoveryFires - lastStats.RecoveryFires
+			sm.counters.recoveryEvictedFrames += stats.RecoveryEvictedFrames - lastStats.RecoveryEvictedFrames
+			sm.counters.recoverySubmitFailures += stats.RecoverySubmitFailures - lastStats.RecoverySubmitFailures
+			sm.counters.recoveryNoOpenCalls += stats.RecoveryNoOpenCalls - lastStats.RecoveryNoOpenCalls
+			sm.counters.recoveryFilteredGoexit += stats.RecoveryFilteredGoexit - lastStats.RecoveryFilteredGoexit
+			sm.counters.recoveryInvalidState += stats.RecoveryInvalidState - lastStats.RecoveryInvalidState
 			prog.lastRuntimeStats[core] = stats
 
 			costSPS := (execCost + interruptCost).Seconds() / interval.Seconds()

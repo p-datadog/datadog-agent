@@ -57,11 +57,11 @@ func enforcesBudget(t *testing.T, busyloopPath string) {
 
 	// Adjust throttling parameters.
 	// Practically infinite period, with specific event count.
-	require.Equal(t, 1, len(irp.Probes))
+	userProbe := findUserProbe(t, irp)
 	expectedEvents := 7
 
-	irp.Probes[0].ProbeDefinition = &overriddenThrottle{
-		ProbeDefinition: irp.Probes[0].ProbeDefinition,
+	userProbe.ProbeDefinition = &overriddenThrottle{
+		ProbeDefinition: userProbe.ProbeDefinition,
 		periodMs:        1000 * 1000,
 		budget:          int64(expectedEvents),
 	}
@@ -141,9 +141,9 @@ func refreshesBudget(t *testing.T, busyloopPath string) {
 
 	// Adjust throttling parameters.
 	// Small period, and budget.
-	require.Equal(t, 1, len(irp.Probes))
-	irp.Probes[0].ProbeDefinition = &overriddenThrottle{
-		ProbeDefinition: irp.Probes[0].ProbeDefinition,
+	userProbe := findUserProbe(t, irp)
+	userProbe.ProbeDefinition = &overriddenThrottle{
+		ProbeDefinition: userProbe.ProbeDefinition,
 		periodMs:        1,
 		budget:          2,
 	}
@@ -182,6 +182,23 @@ func refreshesBudget(t *testing.T, busyloopPath string) {
 		_, err := rd.Read()
 		require.NoError(t, err)
 	}
+}
+
+// findUserProbe returns the single user probe in irp. Skips the
+// synthetic runtime.recovery probe that irgen splices in for any
+// program with a function-targeted user probe. Fails if irp does
+// not contain exactly one user probe.
+func findUserProbe(t *testing.T, irp *ir.Program) *ir.Probe {
+	t.Helper()
+	var users []*ir.Probe
+	for _, p := range irp.Probes {
+		if p.GetKind() == ir.ProbeKindRuntimeRecovery {
+			continue
+		}
+		users = append(users, p)
+	}
+	require.Equal(t, 1, len(users))
+	return users[0]
 }
 
 type overriddenThrottle struct {
