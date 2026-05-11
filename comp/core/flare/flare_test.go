@@ -22,8 +22,10 @@ import (
 
 	"github.com/DataDog/datadog-agent/comp/aggregator/demultiplexer/demultiplexerimpl"
 	"github.com/DataDog/datadog-agent/comp/collector/collector"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/autodiscoveryimpl"
+	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/def"
+	adfxmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/fx-mock"
+	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
+	adcmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/mock"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/scheduler"
 	"github.com/DataDog/datadog-agent/comp/core/config"
 	flarebuilder "github.com/DataDog/datadog-agent/comp/core/flare/builder"
@@ -75,9 +77,9 @@ func getFlareWithParams(t *testing.T, params Params, overrides map[string]interf
 			fx.Provide(func() Params { return params }),
 			collector.NoneModule(),
 			workloadmetafxmock.MockModule(workloadmeta.NewParams()),
-			autodiscoveryimpl.MockModule(),
+			adfxmock.MockModule(),
 			fx.Supply(autodiscoveryimpl.MockParams{Scheduler: scheduler.NewController()}),
-			fx.Provide(func(ac autodiscovery.Mock) autodiscovery.Component { return ac.(autodiscovery.Component) }),
+			fx.Provide(func(ac adcmock.Mock) autodiscovery.Component { return ac.(autodiscovery.Component) }),
 			fx.Provide(func() taggermock.Mock { return fakeTagger }),
 			fx.Provide(func() tagger.Component { return fakeTagger }),
 			fillerModule,
@@ -103,9 +105,9 @@ func getFlareComponent(t *testing.T, params Params, overrides map[string]interfa
 			fx.Provide(func() Params { return params }),
 			collector.NoneModule(),
 			workloadmetafxmock.MockModule(workloadmeta.NewParams()),
-			autodiscoveryimpl.MockModule(),
+			adfxmock.MockModule(),
 			fx.Supply(autodiscoveryimpl.MockParams{Scheduler: scheduler.NewController()}),
-			fx.Provide(func(ac autodiscovery.Mock) autodiscovery.Component { return ac.(autodiscovery.Component) }),
+			fx.Provide(func(ac adcmock.Mock) autodiscovery.Component { return ac.(autodiscovery.Component) }),
 			fx.Provide(func() taggermock.Mock { return fakeTagger }),
 			fx.Provide(func() tagger.Component { return fakeTagger }),
 			fillerModule,

@@ -20,7 +20,7 @@ import (
 	"github.com/gorilla/mux"
 
 	v1 "github.com/DataDog/datadog-agent/cmd/agent/subcommands/run/internal/clcrunnerapi/v1"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery"
+	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/def"
 	ipc "github.com/DataDog/datadog-agent/comp/core/ipc/def"
 	"github.com/DataDog/datadog-agent/pkg/api/util"
 	pkgconfigsetup "github.com/DataDog/datadog-agent/pkg/config/setup"

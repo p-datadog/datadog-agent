@@ -34,8 +34,9 @@ import (
 	grpcNonefx "github.com/DataDog/datadog-agent/comp/api/grpcserver/fx-none"
 	"github.com/DataDog/datadog-agent/comp/collector/collector"
 	"github.com/DataDog/datadog-agent/comp/core"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/autodiscoveryimpl"
+	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/def"
+	adfx "github.com/DataDog/datadog-agent/comp/core/autodiscovery/fx"
+	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/integration"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/providers"
 	"github.com/DataDog/datadog-agent/comp/core/config"
@@ -181,7 +182,7 @@ func MakeCommand(globalParamsGetter func() GlobalParams, wmCatalog fx.Option) *c
 				fx.Supply(context.Background()),
 				dualTaggerfx.Module(common.DualTaggerParams()),
 				workloadfilterfx.Module(),
-				autodiscoveryimpl.Module(),
+				adfx.Module(),
 				healthplatform.Bundle(),
 				defaultforwarder.NoopModule(),
 				inventorychecksfx.Module(),

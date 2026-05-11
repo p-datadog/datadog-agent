@@ -18,8 +18,9 @@ import (
 
 	"github.com/DataDog/datadog-agent/cmd/agent/command"
 	"github.com/DataDog/datadog-agent/comp/core"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/autodiscoveryimpl"
+	adfxmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/fx-mock"
+	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
+	adcmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/mock"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/scheduler"
 	"github.com/DataDog/datadog-agent/comp/core/config"
 	secrets "github.com/DataDog/datadog-agent/comp/core/secrets/def"
@@ -78,7 +79,7 @@ func CreateTestFile(tempDir string, fileName string, fileContent string) *os.Fil
 
 type testDeps struct {
 	fx.In
-	AC          autodiscovery.Mock
+	AC          adcmock.Mock
 	WMeta       workloadmeta.Component
 	TaggerComp  taggermock.Mock
 	FilterStore workloadfilter.Component
@@ -129,7 +130,7 @@ Auto-discovery IDs:
 	deps := fxutil.Test[testDeps](t,
 		fx.Supply(autodiscoveryimpl.MockParams{Scheduler: adsched}),
 		fx.Provide(func() secrets.Component { return secretsmock.New(t) }),
-		autodiscoveryimpl.MockModule(),
+		adfxmock.MockModule(),
 		workloadmetafxmock.MockModule(workloadmeta.NewParams()),
 		core.MockBundle(),
 		taggerfxmock.MockModule(),
@@ -201,7 +202,7 @@ func TestRunAnalyzeLogsInvalidConfig(t *testing.T) {
 	deps := fxutil.Test[testDeps](t,
 		fx.Supply(autodiscoveryimpl.MockParams{Scheduler: adsched}),
 		fx.Provide(func() secrets.Component { return secretsmock.New(t) }),
-		autodiscoveryimpl.MockModule(),
+		adfxmock.MockModule(),
 		workloadmetafxmock.MockModule(workloadmeta.NewParams()),
 		core.MockBundle(),
 		taggerfxmock.MockModule(),
