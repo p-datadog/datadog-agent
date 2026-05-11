@@ -27,7 +27,8 @@ type MockParams struct {
 	Scheduler *scheduler.Controller
 }
 
-type mockdependencies struct {
+// MockRequires defines the dependencies of the mock autodiscovery component.
+type MockRequires struct {
 	compdef.In
 	WMeta      option.Option[workloadmeta.Component]
 	Params     MockParams
@@ -38,16 +39,17 @@ type mockdependencies struct {
 	Secrets    secrets.Component
 }
 
-type mockprovides struct {
+// MockProvides defines the outputs of the mock autodiscovery component.
+type MockProvides struct {
 	compdef.Out
 
 	Comp adcmock.Mock
 }
 
 // NewMockComponent creates a mock AutoConfig for use in tests.
-func NewMockComponent(deps mockdependencies) mockprovides {
+func NewMockComponent(deps MockRequires) MockProvides {
 	ac := createNewAutoConfig(deps.Params.Scheduler, deps.Secrets, deps.WMeta, deps.TaggerComp, deps.LogsComp, deps.Telemetry, deps.FilterComp, option.None[healthplatformdef.Component]())
-	return mockprovides{
+	return MockProvides{
 		Comp: ac,
 	}
 }

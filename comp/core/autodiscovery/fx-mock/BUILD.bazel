@@ -1,1 +1,13 @@
-# gazelle:ignore
+load("@rules_go//go:def.bzl", "go_library")
+
+go_library(
+    name = "fx-mock",
+    srcs = ["fx.go"],
+    importpath = "github.com/DataDog/datadog-agent/comp/core/autodiscovery/fx-mock",
+    tags = ["manual"],  # keep
+    visibility = ["//visibility:public"],
+    deps = [
+        "//comp/core/autodiscovery/impl",
+        "//pkg/util/fxutil",
+    ],
+)

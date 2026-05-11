@@ -112,7 +112,6 @@ components_classic_style = [
     'comp/checks/agentcrashdetect/agentcrashdetectimpl',
     "comp/checks/winregistry/impl",
     'comp/collector/collector/collectorimpl',
-    'comp/core/autodiscovery/autodiscoveryimpl',
     'comp/core/configsync/configsyncimpl',
     'comp/core/gui/guiimpl',
     'comp/core/hostname/hostnameimpl',
