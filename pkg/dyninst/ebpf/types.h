@@ -177,6 +177,19 @@ typedef enum sm_opcode {
   // See pkg/dyninst/irgen/trace_context.md for design.
   SM_OP_GO_CONTEXT_CHAIN_INIT = 47,
   SM_OP_GO_CONTEXT_CHAIN_HOP = 48,
+  // Collection-predicate (any/all) opcodes. See ir.ExprLoadAddressOp,
+  // ir.{Array,Slice,SwissMap}Loop{Begin,End}Op.
+  SM_OP_EXPR_LOAD_ADDRESS = 49,
+  SM_OP_ARRAY_LOOP_BEGIN = 50,
+  SM_OP_ARRAY_LOOP_END = 51,
+  SM_OP_SLICE_LOOP_BEGIN = 52,
+  SM_OP_SLICE_LOOP_END = 53,
+  SM_OP_SWISS_MAP_LOOP_BEGIN = 54,
+  SM_OP_SWISS_MAP_LOOP_END = 55,
+  // Shifts sm->offset by a compile-time immediate. Used by LocationOp
+  // lowering for @it to position sm->offset at a field within the loop's
+  // @it scratch slot before the body's PushOffset/CmpBase sequence.
+  SM_OP_EXPR_ADVANCE_OFFSET = 56,
 } sm_opcode_t;
 
 // cmp_op_t identifies which comparison SM_OP_EXPR_CMP_BASE /
