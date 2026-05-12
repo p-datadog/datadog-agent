@@ -31,6 +31,7 @@ type MockParams struct {
 // MockRequires defines the dependencies of the mock autodiscovery component.
 type MockRequires struct {
 	compdef.In
+	T          testing.TB
 	WMeta      option.Option[workloadmeta.Component]
 	Params     MockParams
 	TaggerComp mockTagger.Mock
@@ -48,7 +49,7 @@ type MockProvides struct {
 }
 
 // NewMockComponent creates a mock AutoConfig for use in tests.
-func NewMockComponent(_ testing.TB, deps MockRequires) MockProvides {
+func NewMockComponent(deps MockRequires) MockProvides {
 	ac := autodiscoveryimpl.NewAutoConfigFromDeps(
 		deps.Params.Scheduler, deps.Secrets, deps.WMeta, deps.TaggerComp,
 		deps.LogsComp, deps.Telemetry, deps.FilterComp,
