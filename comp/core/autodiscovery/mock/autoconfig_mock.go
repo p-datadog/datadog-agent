@@ -5,10 +5,10 @@
 
 //go:build test
 
-package autodiscoveryimpl
+package mock
 
 import (
-	adcmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/mock"
+	autodiscoveryimpl "github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/scheduler"
 	log "github.com/DataDog/datadog-agent/comp/core/log/def"
 	secrets "github.com/DataDog/datadog-agent/comp/core/secrets/def"
@@ -43,13 +43,15 @@ type MockRequires struct {
 type MockProvides struct {
 	compdef.Out
 
-	Comp adcmock.Mock
+	Comp Mock
 }
 
 // NewMockComponent creates a mock AutoConfig for use in tests.
 func NewMockComponent(deps MockRequires) MockProvides {
-	ac := createNewAutoConfig(deps.Params.Scheduler, deps.Secrets, deps.WMeta, deps.TaggerComp, deps.LogsComp, deps.Telemetry, deps.FilterComp, option.None[healthplatformdef.Component]())
-	return MockProvides{
-		Comp: ac,
-	}
+	ac := autodiscoveryimpl.NewAutoConfigForMock(
+		deps.Params.Scheduler, deps.Secrets, deps.WMeta, deps.TaggerComp,
+		deps.LogsComp, deps.Telemetry, deps.FilterComp,
+		option.None[healthplatformdef.Component](),
+	)
+	return MockProvides{Comp: ac}
 }

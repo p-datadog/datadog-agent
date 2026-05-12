@@ -4,7 +4,7 @@ go_library(
     name = "impl",
     srcs = [
         "autoconfig.go",
-        "autoconfig_mock.go",
+        "autoconfig_mock_helpers.go",
         "config_poller.go",
         "configmgr.go",
         "multimap.go",
@@ -18,7 +18,6 @@ go_library(
     deps = [
         "//comp/api/api/def",
         "//comp/core/autodiscovery/def",
-        "//comp/core/autodiscovery/mock",
         "//comp/core/autodiscovery/telemetry",
         "//comp/core/config",
         "//comp/core/flare/types",

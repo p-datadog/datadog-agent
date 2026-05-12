@@ -2,8 +2,24 @@ load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "mock",
-    srcs = ["mock.go"],
+    srcs = [
+        "autoconfig_mock.go",
+        "mock.go",
+    ],
     importpath = "github.com/DataDog/datadog-agent/comp/core/autodiscovery/mock",
     visibility = ["//visibility:public"],
-    deps = ["//comp/core/autodiscovery/def"],
+    deps = [
+        "//comp/core/autodiscovery/def",
+        "//comp/core/autodiscovery/impl",
+        "//comp/core/log/def",
+        "//comp/core/secrets/def",
+        "//comp/core/telemetry/def",
+        "//comp/core/workloadfilter/def",
+        "//comp/core/workloadmeta/def",
+        "//comp/def",
+        "//comp/healthplatform/core/def",
+        "//pkg/util/option",
+        "@//comp/core/autodiscovery/scheduler",
+        "@//comp/core/tagger/mock",
+    ],
 )

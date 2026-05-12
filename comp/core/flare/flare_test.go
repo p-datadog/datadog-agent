@@ -24,7 +24,6 @@ import (
 	"github.com/DataDog/datadog-agent/comp/collector/collector"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/def"
 	adfxmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/fx-mock"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
 	adcmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/mock"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/scheduler"
 	"github.com/DataDog/datadog-agent/comp/core/config"
@@ -78,7 +77,7 @@ func getFlareWithParams(t *testing.T, params Params, overrides map[string]interf
 			collector.NoneModule(),
 			workloadmetafxmock.MockModule(workloadmeta.NewParams()),
 			adfxmock.MockModule(),
-			fx.Supply(autodiscoveryimpl.MockParams{Scheduler: scheduler.NewController()}),
+			fx.Supply(adcmock.MockParams{Scheduler: scheduler.NewController()}),
 			fx.Provide(func(ac adcmock.Mock) autodiscovery.Component { return ac.(autodiscovery.Component) }),
 			fx.Provide(func() taggermock.Mock { return fakeTagger }),
 			fx.Provide(func() tagger.Component { return fakeTagger }),
@@ -106,7 +105,7 @@ func getFlareComponent(t *testing.T, params Params, overrides map[string]interfa
 			collector.NoneModule(),
 			workloadmetafxmock.MockModule(workloadmeta.NewParams()),
 			adfxmock.MockModule(),
-			fx.Supply(autodiscoveryimpl.MockParams{Scheduler: scheduler.NewController()}),
+			fx.Supply(adcmock.MockParams{Scheduler: scheduler.NewController()}),
 			fx.Provide(func(ac adcmock.Mock) autodiscovery.Component { return ac.(autodiscovery.Component) }),
 			fx.Provide(func() taggermock.Mock { return fakeTagger }),
 			fx.Provide(func() tagger.Component { return fakeTagger }),

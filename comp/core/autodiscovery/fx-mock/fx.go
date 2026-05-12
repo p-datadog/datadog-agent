@@ -9,13 +9,13 @@
 package fx
 
 import (
-	autodiscoveryimpl "github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
+	adcmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/mock"
 	"github.com/DataDog/datadog-agent/pkg/util/fxutil"
 )
 
 // MockModule provides the default autoconfig without other components configured, and not started.
 func MockModule() fxutil.Module {
 	return fxutil.Component(
-		fxutil.ProvideComponentConstructor(autodiscoveryimpl.NewMockComponent),
+		fxutil.ProvideComponentConstructor(adcmock.NewMockComponent),
 	)
 }

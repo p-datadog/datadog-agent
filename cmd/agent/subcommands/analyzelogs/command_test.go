@@ -19,7 +19,6 @@ import (
 	"github.com/DataDog/datadog-agent/cmd/agent/command"
 	"github.com/DataDog/datadog-agent/comp/core"
 	adfxmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/fx-mock"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
 	adcmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/mock"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/scheduler"
 	"github.com/DataDog/datadog-agent/comp/core/config"
@@ -128,7 +127,7 @@ Auto-discovery IDs:
 
 	adsched := scheduler.NewController()
 	deps := fxutil.Test[testDeps](t,
-		fx.Supply(autodiscoveryimpl.MockParams{Scheduler: adsched}),
+		fx.Supply(adcmock.MockParams{Scheduler: adsched}),
 		fx.Provide(func() secrets.Component { return secretsmock.New(t) }),
 		adfxmock.MockModule(),
 		workloadmetafxmock.MockModule(workloadmeta.NewParams()),
@@ -200,7 +199,7 @@ func TestRunAnalyzeLogsInvalidConfig(t *testing.T) {
 
 	adsched := scheduler.NewController()
 	deps := fxutil.Test[testDeps](t,
-		fx.Supply(autodiscoveryimpl.MockParams{Scheduler: adsched}),
+		fx.Supply(adcmock.MockParams{Scheduler: adsched}),
 		fx.Provide(func() secrets.Component { return secretsmock.New(t) }),
 		adfxmock.MockModule(),
 		workloadmetafxmock.MockModule(workloadmeta.NewParams()),

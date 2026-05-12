@@ -12,7 +12,6 @@ import (
 
 	"github.com/DataDog/datadog-agent/comp/core"
 	adfxmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/fx-mock"
-	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/integration"
 	adcmock "github.com/DataDog/datadog-agent/comp/core/autodiscovery/mock"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/scheduler"
@@ -29,7 +28,7 @@ import (
 func TestListenersGetScheduleCalls(t *testing.T) {
 	adsched := scheduler.NewControllerAndStart()
 	ac := fxutil.Test[adcmock.Mock](t,
-		fx.Supply(autodiscoveryimpl.MockParams{Scheduler: adsched}),
+		fx.Supply(adcmock.MockParams{Scheduler: adsched}),
 		fx.Provide(func() secrets.Component { return secretsmock.New(t) }),
 		adfxmock.MockModule(),
 		workloadmetafxmock.MockModule(workloadmeta.NewParams()),
