@@ -8,6 +8,8 @@
 package mock
 
 import (
+	"testing"
+
 	autodiscoveryimpl "github.com/DataDog/datadog-agent/comp/core/autodiscovery/impl"
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/scheduler"
 	log "github.com/DataDog/datadog-agent/comp/core/log/def"
@@ -46,7 +48,7 @@ type MockProvides struct {
 }
 
 // NewMockComponent creates a mock AutoConfig for use in tests.
-func NewMockComponent(deps MockRequires) MockProvides {
+func NewMockComponent(_ testing.TB, deps MockRequires) MockProvides {
 	ac := autodiscoveryimpl.NewAutoConfigFromDeps(
 		deps.Params.Scheduler, deps.Secrets, deps.WMeta, deps.TaggerComp,
 		deps.LogsComp, deps.Telemetry, deps.FilterComp,
