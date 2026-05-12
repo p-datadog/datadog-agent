@@ -6,11 +6,11 @@ go_library(
     importpath = "github.com/DataDog/datadog-agent/comp/core/autodiscovery/def",
     visibility = ["//visibility:public"],
     deps = [
+        "//comp/core/autodiscovery/integration",
+        "//comp/core/autodiscovery/providers/types",
+        "//comp/core/autodiscovery/scheduler",
         "//comp/core/autodiscovery/telemetry",
+        "//pkg/collector/check/id",
         "//pkg/config/setup",
-        "@//comp/core/autodiscovery/integration",
-        "@//comp/core/autodiscovery/providers/types",
-        "@//comp/core/autodiscovery/scheduler",
-        "@//pkg/collector/check/id",
     ],
 )

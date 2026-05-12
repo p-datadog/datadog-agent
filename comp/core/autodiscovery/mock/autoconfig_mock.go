@@ -17,8 +17,7 @@ import (
 	workloadfilter "github.com/DataDog/datadog-agent/comp/core/workloadfilter/def"
 	workloadmeta "github.com/DataDog/datadog-agent/comp/core/workloadmeta/def"
 	compdef "github.com/DataDog/datadog-agent/comp/def"
-	healthplatformdef "github.com/DataDog/datadog-agent/comp/healthplatform/core/def"
-	"github.com/DataDog/datadog-agent/pkg/util/fxutil"
+	healthplatformdef "github.com/DataDog/datadog-agent/comp/healthplatform/store/def"
 	"github.com/DataDog/datadog-agent/pkg/util/option"
 )
 
@@ -48,7 +47,7 @@ type MockProvides struct {
 
 // NewMockComponent creates a mock AutoConfig for use in tests.
 func NewMockComponent(deps MockRequires) MockProvides {
-	ac := autodiscoveryimpl.NewAutoConfigForMock(
+	ac := autodiscoveryimpl.NewAutoConfigFromDeps(
 		deps.Params.Scheduler, deps.Secrets, deps.WMeta, deps.TaggerComp,
 		deps.LogsComp, deps.Telemetry, deps.FilterComp,
 		option.None[healthplatformdef.Component](),
