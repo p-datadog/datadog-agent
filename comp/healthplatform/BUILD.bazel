@@ -9,7 +9,6 @@ go_library(
     importpath = "github.com/DataDog/datadog-agent/comp/healthplatform",
     visibility = ["//visibility:public"],
     deps = [
-        "//comp/core/diagnose/def",
         "//comp/healthplatform/forwarder/fx",
         "//comp/healthplatform/issues/admisconfig",
         "//comp/healthplatform/issues/checkfailure",
@@ -19,6 +18,7 @@ go_library(
         "//comp/healthplatform/store/def",
         "//comp/healthplatform/store/fx",
         "//pkg/util/fxutil",
+        "@//comp/core/diagnose/def",
         "@com_github_datadog_agent_payload_v5//healthplatform",
     ],
 )

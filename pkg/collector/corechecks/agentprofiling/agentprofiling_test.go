@@ -17,9 +17,8 @@ import (
 
 	"github.com/DataDog/datadog-agent/comp/core/autodiscovery/integration"
 	configmock "github.com/DataDog/datadog-agent/comp/core/config"
-	"github.com/DataDog/datadog-agent/comp/core/flare"
-	flaremock "github.com/DataDog/datadog-agent/comp/core/flare/flareimpl"
-	"github.com/DataDog/datadog-agent/comp/core/flare/helpers"
+	flaredef "github.com/DataDog/datadog-agent/comp/core/flare/def"
+	flaremock "github.com/DataDog/datadog-agent/comp/core/flare/mock"
 	"github.com/DataDog/datadog-agent/comp/core/flare/types"
 	"github.com/DataDog/datadog-agent/pkg/aggregator/mocksender"
 	core "github.com/DataDog/datadog-agent/pkg/collector/corechecks"
@@ -47,7 +46,7 @@ terminate_agent_on_threshold: %t`, memoryThreshold, cpuThreshold, ticketID, user
 
 // failingFlareMock is a mock flare component that can fail on creation or sending
 type failingFlareMock struct {
-	flare.Component
+	flaredef.Component
 	createError error
 	sendError   error
 	callCount   int
@@ -63,7 +62,7 @@ func (m *failingFlareMock) CreateWithArgs(args types.FlareArgs, duration time.Du
 	return mock.CreateWithArgs(args, duration, err, data)
 }
 
-func (m *failingFlareMock) Send(path string, caseID string, email string, source helpers.FlareSource) (string, error) {
+func (m *failingFlareMock) Send(path string, caseID string, email string, source types.FlareSource) (string, error) {
 	if m.sendError != nil || (m.failUntil > 0 && m.callCount < m.failUntil) {
 		return "", errors.New("mock flare send failure")
 	}

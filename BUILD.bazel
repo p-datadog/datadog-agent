@@ -92,6 +92,9 @@ exports_files(glob(
 # gazelle:exclude comp/connectivitychecker/checker
 # gazelle:exclude comp/connectivitychecker/fx
 # gazelle:exclude comp/connectivitychecker/impl
+# gazelle:exclude comp/core/agenttelemetry/fx
+# gazelle:exclude comp/core/agenttelemetry/impl
+# gazelle:exclude comp/core/autodiscovery
 # gazelle:exclude comp/core/autodiscovery/autodiscoveryimpl
 # gazelle:exclude comp/core/autodiscovery/common/utils
 # gazelle:exclude comp/core/autodiscovery/configresolver
@@ -104,9 +107,8 @@ exports_files(glob(
 # gazelle:exclude comp/core/bundle_mock.go
 # gazelle:exclude comp/core/bundle_params.go
 # gazelle:exclude comp/core/bundle_test.go
-# gazelle:exclude comp/core/diagnose/fx
-# gazelle:exclude comp/core/diagnose/impl
-# gazelle:exclude comp/core/diagnose/local
+# gazelle:exclude comp/core/configstream
+# gazelle:exclude comp/core/diagnose
 # gazelle:exclude comp/core/flare/flareimpl
 # gazelle:exclude comp/core/flare/helpers
 # gazelle:exclude comp/core/gui/guiimpl
@@ -231,6 +233,8 @@ exports_files(glob(
 # gazelle:exclude comp/netflow/server/impl
 # gazelle:exclude comp/netflow/testutil
 # gazelle:exclude comp/netflow/topn
+# gazelle:exclude comp/networkdeviceconfig/fx
+# gazelle:exclude comp/networkdeviceconfig/impl
 # gazelle:exclude comp/networkconfigmanagement
 # gazelle:exclude comp/networkpath/npcollector/fx
 # gazelle:exclude comp/networkpath/npcollector/mock
@@ -576,6 +580,8 @@ exports_files(glob(
 # gazelle:exclude pkg/network/protocols/tls/gotls/testutil/gotls_server
 # gazelle:exclude pkg/network/protocols/tls/nodejs
 # gazelle:exclude pkg/network/sender
+# gazelle:exclude pkg/network/slice
+# gazelle:exclude pkg/network/testdata
 # gazelle:exclude pkg/network/tracer/connection
 # gazelle:exclude pkg/network/tracer/networkfilter
 # gazelle:exclude pkg/network/tracer/testutil/proxy
@@ -726,7 +732,9 @@ exports_files(glob(
 # gazelle:exclude pkg/util/kubernetes/kubelet
 # gazelle:exclude pkg/util/port
 # gazelle:exclude pkg/util/tags
+# gazelle:exclude pkg/util/tmplvar
 # gazelle:exclude pkg/windowsdriver/ddinjector
+# gazelle:exclude tasks
 # gazelle:exclude tasks/unit_tests
 # gazelle:exclude test/benchmarks
 # gazelle:exclude test/e2e-framework/common/utils

@@ -6,8 +6,8 @@ go_library(
     importpath = "github.com/DataDog/datadog-agent/comp/logs/integrations/impl",
     visibility = ["//visibility:public"],
     deps = [
-        "//comp/core/autodiscovery/integration",
         "//comp/logs/integrations/def",
+        "@//comp/core/autodiscovery/integration",
     ],
 )
 
@@ -17,7 +17,7 @@ go_test(
     embed = [":impl"],
     gotags = ["test"],
     deps = [
-        "//comp/core/autodiscovery/integration",
+        "@//comp/core/autodiscovery/integration",
         "@com_github_stretchr_testify//assert",
     ],
 )

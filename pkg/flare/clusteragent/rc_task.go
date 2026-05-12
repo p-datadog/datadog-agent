@@ -12,6 +12,7 @@ import (
 
 	diagnose "github.com/DataDog/datadog-agent/comp/core/diagnose/def"
 	flarehelpers "github.com/DataDog/datadog-agent/comp/core/flare/helpers"
+	flaretypes "github.com/DataDog/datadog-agent/comp/core/flare/types"
 	ipc "github.com/DataDog/datadog-agent/comp/core/ipc/def"
 	"github.com/DataDog/datadog-agent/comp/core/status"
 	rcclienttypes "github.com/DataDog/datadog-agent/comp/remote-config/rcclient/types"
@@ -69,7 +70,7 @@ func HandleRCFlareTask(
 		userHandle,
 		cfg.GetString("api_key"),
 		configUtils.GetInfraEndpoint(cfg),
-		flarehelpers.NewRemoteConfigFlareSource(task.Config.UUID),
+		flaretypes.NewRemoteConfigFlareSource(task.Config.UUID),
 	)
 	if err != nil {
 		return err

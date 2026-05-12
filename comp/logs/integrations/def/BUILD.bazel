@@ -8,5 +8,5 @@ go_library(
     ],
     importpath = "github.com/DataDog/datadog-agent/comp/logs/integrations/def",
     visibility = ["//visibility:public"],
-    deps = ["//comp/core/autodiscovery/integration"],
+    deps = ["@//comp/core/autodiscovery/integration"],
 )
