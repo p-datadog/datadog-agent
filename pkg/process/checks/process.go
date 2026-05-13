@@ -375,7 +375,7 @@ func procsToStats(procs map[int32]*procutil.Process) map[int32]*procutil.Stats {
 }
 
 func isZombie(p *procutil.Process) bool {
-	return p != nil && p.Stats != nil && p.Stats.Status == "Z"
+	return p.GetStatus() == "Z"
 }
 
 type zombieAggregate struct {
