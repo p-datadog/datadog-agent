@@ -117,7 +117,6 @@ components_classic_style = [
     'comp/core/gui/guiimpl',
     'comp/core/hostname/hostnameimpl',
     'comp/core/pid/pidimpl',
-    'comp/core/settings/settingsimpl',
     'comp/core/status/statusimpl',
     'comp/core/sysprobeconfig/sysprobeconfigimpl',
     'comp/dogstatsd/pidmap/pidmapimpl',
