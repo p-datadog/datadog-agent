@@ -79,6 +79,11 @@ func (p *Process) GetStatus() string {
 	return p.Stats.Status
 }
 
+// IsZombie reports whether the process is in the zombie state.
+func (p *Process) IsZombie() bool {
+	return p.GetStatus() == "Z"
+}
+
 // ProcessIdentity generates a unique identity string for a process based on PID, creation time,
 // and command line hash. This allows detection of exec scenarios where the PID and creation time
 // remain the same but the command line changes.

@@ -374,10 +374,6 @@ func procsToStats(procs map[int32]*procutil.Process) map[int32]*procutil.Stats {
 	return stats
 }
 
-func isZombie(p *procutil.Process) bool {
-	return p.GetStatus() == "Z"
-}
-
 type zombieAggregate struct {
 	count   uint32
 	netRate float64
@@ -398,7 +394,7 @@ func aggregateZombiesByParent(procs, lastProcs map[int32]*procutil.Process, now,
 	}
 
 	for pid, proc := range procs {
-		if !isZombie(proc) {
+		if !proc.IsZombie() {
 			continue
 		}
 		if agg == nil {
@@ -406,7 +402,7 @@ func aggregateZombiesByParent(procs, lastProcs map[int32]*procutil.Process, now,
 		}
 		a := agg[proc.Ppid]
 		a.count++
-		if interval > 0 && !isZombie(lastProcs[pid]) {
+		if interval > 0 && !lastProcs[pid].IsZombie() {
 			a.netRate += 1.0 / interval
 		}
 		agg[proc.Ppid] = a
@@ -414,7 +410,7 @@ func aggregateZombiesByParent(procs, lastProcs map[int32]*procutil.Process, now,
 
 	if interval > 0 {
 		for pid, proc := range lastProcs {
-			if !isZombie(proc) || isZombie(procs[pid]) {
+			if !proc.IsZombie() || procs[pid].IsZombie() {
 				continue
 			}
 			if agg == nil {
@@ -720,7 +716,7 @@ func skipProcess(
 		// processes that live less than 20 seconds may not be captured.
 		return true
 	}
-	return isZombie(fp)
+	return fp.IsZombie()
 }
 
 // mergeProcWithSysprobeStats takes a process by PID map and fill the stats from system probe into the processes in the map
