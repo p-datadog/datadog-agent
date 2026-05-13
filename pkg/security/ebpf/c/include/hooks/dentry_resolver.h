@@ -6,6 +6,24 @@
 #include "helpers/discarders.h"
 #include "helpers/syscalls.h"
 
+// INTERNAL events are forwarded unconditionally (e.g. cgroup tracking) and ACCEPTED events are already approved,
+// so neither should be filtered by discarders.
+int __attribute__((always_inline)) get_resolver_flags(struct syscall_cache_t *syscall) {
+    return syscall->state != INTERNAL && syscall->state != ACCEPTED ? APPLY_DISCARDERS : 0;
+}
+
+void __attribute__((always_inline)) apply_dentry_resolution_outcome(struct syscall_cache_t *syscall, u64 event_type) {
+    // approver wins over the inode-level discarder so a parent-basename approval
+    // is not suppressed by a discarder set on one of the parent inodes.
+    if (syscall->resolver.flags & DENTRY_BASENAME_APPROVED) {
+        syscall->state = APPROVED;
+        monitor_event_approved(event_type, BASENAME_APPROVER_TYPE);
+    } else if (syscall->resolver.ret == DENTRY_DISCARDED) {
+        syscall->state = DISCARDED;
+        monitor_discarded(event_type);
+    }
+}
+
 int __attribute__((always_inline)) resolve_dentry_tail_call(void *ctx, struct dentry_resolver_input_t *input) {
     struct path_leaf_t map_value = {};
     struct path_key_t key = input->key;
@@ -14,6 +32,7 @@ int __attribute__((always_inline)) resolve_dentry_tail_call(void *ctx, struct de
     struct dentry *dentry = input->dentry;
     struct dentry *d_parent = NULL;
     unsigned long ino_parent = 0;
+    struct basename_t basename = {};
 
     u32 zero = 0;
     struct is_discarded_by_inode_t *params = bpf_map_lookup_elem(&is_discarded_by_inode_gen, &zero);
@@ -21,7 +40,7 @@ int __attribute__((always_inline)) resolve_dentry_tail_call(void *ctx, struct de
         return DENTRY_ERROR;
     }
     *params = (struct is_discarded_by_inode_t){
-        .event_type = input->discarder_event_type,
+        .event_type = input->event_type,
         .now = bpf_ktime_get_ns(),
     };
 
@@ -44,7 +63,7 @@ int __attribute__((always_inline)) resolve_dentry_tail_call(void *ctx, struct de
             next_key.mount_id = 0;
         }
 
-        if (input->discarder_event_type && input->iteration == 1 && i <= 3) {
+        if ((input->flags & APPLY_DISCARDERS) && input->iteration == 1 && i <= 3) {
             params->discarder.path_key.ino = key.ino;
             params->discarder.path_key.mount_id = key.mount_id;
             params->discarder.is_leaf = i == 0;
@@ -84,8 +103,17 @@ int __attribute__((always_inline)) resolve_dentry_tail_call(void *ctx, struct de
             }
         }
         if (update) {
-        bpf_map_update_elem(&pathnames, &key, &map_value, BPF_ANY);
-    }
+            bpf_map_update_elem(&pathnames, &key, &map_value, BPF_ANY);
+        }
+
+        // check parent basename approver: at i == 1 map_value.name holds the leaf's parent name,
+        // and iteration == 1 keeps the lookup to the first tail call so we only check it once.
+        if (input->iteration == 1 && i == 1) {
+            bpf_probe_read_str(basename.value, sizeof(basename.value), map_value.name);
+            if (is_basename_in_map(&basename, input->event_type)) {
+                input->flags |= DENTRY_BASENAME_APPROVED;
+            }
+        }
 
         dentry = d_parent;
         if (next_key.ino == 0) {

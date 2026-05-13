@@ -108,6 +108,8 @@ enum
 {
     ACTIVITY_DUMP_RUNNING = 1 << 0, // defines if an activity dump is running
     SAVED_BY_ACTIVITY_DUMP = 1 << 1, // defines if the dentry should have been discarded, but was saved because of an activity dump
+    APPLY_DISCARDERS = 1 << 2, // defines whether to apply the discarders or not
+    DENTRY_BASENAME_APPROVED = 1 << 3, // set by the resolver when a parent dentry basename matches an approver entry
 };
 
 enum policy_mode

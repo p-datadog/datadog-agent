@@ -88,7 +88,8 @@ int hook_vfs_unlink(ctx_t *ctx) {
     // the mount id of path_key is resolved by kprobe/mnt_want_write. It is already set by the time we reach this probe.
     syscall->resolver.dentry = dentry;
     syscall->resolver.key = syscall->unlink.file.path_key;
-    syscall->resolver.discarder_event_type = dentry_resolver_discarder_event_type(syscall);
+    syscall->resolver.event_type = syscall->type;
+    syscall->resolver.flags = get_resolver_flags(syscall);
     syscall->resolver.callback = DR_UNLINK_CALLBACK_KPROBE_KEY;
     syscall->resolver.iteration = 0;
     syscall->resolver.ret = 0;
@@ -107,11 +108,7 @@ TAIL_CALL_FNC(dr_unlink_callback, ctx_t *ctx) {
         return 0;
     }
 
-    if (syscall->resolver.ret == DENTRY_DISCARDED) {
-        monitor_discarded(EVENT_UNLINK);
-        // do not pop, we want to invalidate the inode even if the syscall is discarded
-        syscall->state = DISCARDED;
-    }
+    apply_dentry_resolution_outcome(syscall, EVENT_UNLINK);
 
     return 0;
 }

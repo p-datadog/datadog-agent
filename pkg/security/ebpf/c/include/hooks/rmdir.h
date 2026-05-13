@@ -71,7 +71,7 @@ int hook_security_inode_rmdir(ctx_t *ctx) {
         }
 
         // let the cgroup event being forwarded as it is used userspace side to track the cgroups
-        if (is_cgroup2fs(syscall->rmdir.dentry) && S_ISDIR(syscall->rmdir.file.metadata.mode)) {
+        if (is_cgroup2fs(syscall->rmdir.dentry) && S_ISDIR(syscall->rmdir.file.metadata.mode) && syscall->state != ACCEPTED && syscall->state != APPROVED) {
             syscall->state = INTERNAL;
         }
 
@@ -102,7 +102,7 @@ int hook_security_inode_rmdir(ctx_t *ctx) {
         approve_syscall(syscall, rmdir_approvers);
 
         // let the cgroup event being forwarded as it is used userspace side to track the cgroups
-        if (is_cgroup2fs(syscall->unlink.dentry) && S_ISDIR(syscall->unlink.file.metadata.mode)) {
+        if (is_cgroup2fs(syscall->unlink.dentry) && S_ISDIR(syscall->unlink.file.metadata.mode) && syscall->state != ACCEPTED && syscall->state != APPROVED) {
             syscall->state = INTERNAL;
         }
 
@@ -119,7 +119,8 @@ int hook_security_inode_rmdir(ctx_t *ctx) {
     if (dentry != NULL) {
         syscall->resolver.key = key;
         syscall->resolver.dentry = dentry;
-        syscall->resolver.discarder_event_type = dentry_resolver_discarder_event_type(syscall);
+        syscall->resolver.event_type = syscall->type;
+        syscall->resolver.flags = get_resolver_flags(syscall);
         syscall->resolver.callback = DR_SECURITY_INODE_RMDIR_CALLBACK_KPROBE_KEY;
         syscall->resolver.iteration = 0;
         syscall->resolver.ret = 0;
@@ -138,11 +139,8 @@ TAIL_CALL_FNC(dr_security_inode_rmdir_callback, ctx_t *ctx) {
         return 0;
     }
 
-    if (syscall->resolver.ret == DENTRY_DISCARDED && syscall->state != INTERNAL) {
-        monitor_discarded(syscall->type);
-        // do not pop, we want to invalidate the inode even if the syscall is discarded
-        syscall->state = DISCARDED;
-    }
+    apply_dentry_resolution_outcome(syscall, syscall->type);
+
     return 0;
 }
 

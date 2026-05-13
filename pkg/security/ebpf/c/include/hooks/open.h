@@ -101,14 +101,15 @@ int __attribute__((always_inline)) handle_open(ctx_t *ctx, struct path *path) {
     // do not pop, we want to keep track of the mount ref counter later in the stack
     approve_syscall(syscall, open_approvers);
 
-    if (is_cgroup2fs(syscall->open.dentry) && syscall->state != ACCEPTED) {
+    if (is_cgroup2fs(syscall->open.dentry) && syscall->state != ACCEPTED && syscall->state != APPROVED) {
         // do not discard INTERNAL events as we need to resolve the mode later in the call path
         syscall->state = INTERNAL;
     }
 
     syscall->resolver.key = syscall->open.file.path_key;
     syscall->resolver.dentry = syscall->open.dentry;
-    syscall->resolver.discarder_event_type = syscall->state != INTERNAL ? dentry_resolver_discarder_event_type(syscall) : 0;
+    syscall->resolver.event_type = syscall->type;
+    syscall->resolver.flags = get_resolver_flags(syscall);
     syscall->resolver.iteration = 0;
     syscall->resolver.ret = 0;
 
@@ -224,13 +225,8 @@ int __attribute__((always_inline)) _sys_open_ret(void *ctx, struct syscall_cache
         return 0;
     }
 
-    // check if the syscall was discarded
+    apply_dentry_resolution_outcome(syscall, EVENT_OPEN);
     if (syscall->state == DISCARDED) {
-        return 0;
-    }
-
-    if (syscall->resolver.ret == DENTRY_DISCARDED) {
-        monitor_discarded(EVENT_OPEN);
         return 0;
     }
 
