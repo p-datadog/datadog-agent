@@ -4,7 +4,7 @@
     "ddsource": "dd_debugger",
     "logger": {
       "name": "",
-      "method": "main.testZeroSizeArgAndReturn",
+      "method": "main.testTimeUTC",
       "version": 0,
       "thread_id": "[goid]",
       "thread_name": ""
@@ -16,19 +16,19 @@
         "language": "go",
         "stack": [
           {
-            "function": "main.testZeroSizeArgAndReturn",
-            "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/returns.go",
-            "lineNumber": 388
+            "function": "main.testTimeUTC",
+            "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/times.go",
+            "lineNumber": 27
           },
           {
-            "function": "main.executeReturns",
-            "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/returns.go",
-            "lineNumber": 448
+            "function": "main.executeTimeFuncs",
+            "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/times.go",
+            "lineNumber": 42
           },
           {
             "function": "main.runAll",
             "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/main.go",
-            "lineNumber": 78
+            "lineNumber": 71
           },
           {
             "function": "main.main",
@@ -47,39 +47,17 @@
           }
         ],
         "probe": {
-          "id": "testZeroSizeArgAndReturn",
+          "id": "testTimeUTC",
           "location": {
-            "method": "main.testZeroSizeArgAndReturn"
+            "method": "main.testTimeUTC"
           }
         },
         "captures": {
           "entry": {
             "arguments": {
-              "a": {
-                "type": "[0]int",
-                "size": "0",
-                "elements": []
-              },
-              "b": {
-                "type": "int",
-                "value": "82"
-              }
-            }
-          },
-          "return": {
-            "locals": {
-              "@return": {
-                "fields": {
-                  "r0": {
-                    "type": "int",
-                    "value": "982"
-                  },
-                  "r1": {
-                    "type": "[0]int",
-                    "size": "0",
-                    "elements": []
-                  }
-                }
+              "x": {
+                "type": "time.Time",
+                "value": "2023-11-14T22:13:20.123456789Z"
               }
             }
           }
@@ -88,8 +66,7 @@
       "type": "snapshot"
     },
     "timestamp": "[ts]",
-    "duration": "[duration]",
-    "message": "[], 82",
+    "message": "2023-11-14T22:13:20.123456789Z",
     "process_tags": "entrypoint.name:sample,svc.user:sample"
   }
 ]

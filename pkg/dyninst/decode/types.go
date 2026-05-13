@@ -209,9 +209,7 @@ type goStringHeaderType struct {
 type goStringDataType ir.GoStringDataType
 type goMapType ir.GoMapType
 type goTimeType struct {
-	*ir.StructureType
-	wallFieldOffset uint32
-	extFieldOffset  uint32
+	*ir.GoTimeType
 }
 type goHMapHeaderType struct {
 	*ir.GoHMapHeaderType
@@ -424,14 +422,9 @@ func newDecoderType(
 		return (*baseType)(s), nil
 	case *ir.DurationType:
 		return (*durationType)(s), nil
+	case *ir.GoTimeType:
+		return &goTimeType{GoTimeType: s}, nil
 	case *ir.StructureType:
-		// Check if this is time.Time and has the expected fields.
-		if s.Name == "time.Time" {
-			if timeType, err := newGoTimeType(s); err == nil {
-				return timeType, nil
-			}
-			// Fall through to treat as normal struct if malformed.
-		}
 		return (*structureType)(s), nil
 	case *ir.ArrayType:
 		return (*arrayType)(s), nil
@@ -1931,22 +1924,19 @@ func (s *goStringDataType) formatValueFields(
 	return errors.New("string data is not formatted")
 }
 
-func (t *goTimeType) irType() ir.Type { return t.StructureType }
+func (t *goTimeType) irType() ir.Type { return t.GoTimeType }
 func (t *goTimeType) encodeValueFields(
 	_ *encodingContext,
 	enc *jsontext.Encoder,
 	data []byte,
 ) error {
-	unixSec, nsec, isZero := decodeGoTime(
-		data, t.wallFieldOffset, t.extFieldOffset,
-	)
+	formatted, isZero := t.format(data)
 	if isZero {
 		return writeTokens(enc,
 			jsontext.String("value"),
 			jsontext.Null,
 		)
 	}
-	formatted := time.Unix(unixSec, int64(nsec)).UTC().Format(time.RFC3339Nano)
 	return writeTokens(enc,
 		jsontext.String("value"),
 		jsontext.String(formatted),
@@ -1959,34 +1949,33 @@ func (t *goTimeType) formatValueFields(
 	data []byte,
 	limits *formatLimits,
 ) error {
-	unixSec, nsec, isZero := decodeGoTime(
-		data, t.wallFieldOffset, t.extFieldOffset,
-	)
+	formatted, isZero := t.format(data)
 	if isZero {
 		writeBoundedString(buf, limits, formatNil)
 		return nil
 	}
-	formatted := time.Unix(unixSec, int64(nsec)).UTC().Format(time.RFC3339Nano)
 	writeBoundedString(buf, limits, formatted)
 	return nil
 }
 
-// newGoTimeType creates a goTimeType from a structure type, validating that
-// it has the expected wall and ext fields.
-func newGoTimeType(s *ir.StructureType) (*goTimeType, error) {
-	wallField, err := getFieldByName(s.RawFields, "wall")
-	if err != nil {
-		return nil, err
+// format renders the captured time.Time as an RFC3339Nano timestamp. The
+// 8 bytes at LocFieldOffset hold either ir.GoTimeUnresolvedOffset (UTC
+// fallback) or a UTC offset in seconds written by SM_OP_PROCESS_GO_TIME.
+func (t *goTimeType) format(data []byte) (formatted string, isZero bool) {
+	unixSec, nsec, isZero := decodeGoTime(data, t.WallFieldOffset, t.ExtFieldOffset)
+	if isZero {
+		return "", true
 	}
-	extField, err := getFieldByName(s.RawFields, "ext")
-	if err != nil {
-		return nil, err
+	loc := time.UTC
+	if int(t.LocFieldOffset+8) <= len(data) {
+		off := int64(binary.NativeEndian.Uint64(
+			data[t.LocFieldOffset : t.LocFieldOffset+8],
+		))
+		if off != ir.GoTimeUnresolvedOffset {
+			loc = time.FixedZone("", int(off))
+		}
 	}
-	return &goTimeType{
-		StructureType:   s,
-		wallFieldOffset: wallField.Offset,
-		extFieldOffset:  extField.Offset,
-	}, nil
+	return time.Unix(unixSec, int64(nsec)).In(loc).Format(time.RFC3339Nano), false
 }
 
 // decodeGoTime extracts Unix seconds and wall-clock nanoseconds from a Go

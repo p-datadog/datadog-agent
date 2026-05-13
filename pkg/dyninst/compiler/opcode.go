@@ -62,6 +62,8 @@ const (
 	OpcodeConditionLeafLoad
 	OpcodeConditionCheckPreserveError
 	OpcodeConditionLeafComplete
+	// Time decoding.
+	OpcodeProcessGoTime
 )
 
 //revive:enable:exported

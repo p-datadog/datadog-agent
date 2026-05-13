@@ -140,6 +140,10 @@ typedef enum sm_opcode {
   // path. Clears condition_eval_error so the driver's
   // CONDITION_LEAF_RECORD can distinguish success from abort.
   SM_OP_CONDITION_LEAF_COMPLETE = 46,
+  // Resolve the captured time.Time's loc pointer to a UTC offset in
+  // seconds, written in place of the loc pointer. See
+  // pkg/dyninst/compiler/ops.go: ProcessGoTimeOp.
+  SM_OP_PROCESS_GO_TIME = 47,
 } sm_opcode_t;
 
 // cmp_op_t identifies which comparison SM_OP_EXPR_CMP_BASE /

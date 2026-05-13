@@ -125,6 +125,8 @@ func opcodeByte(opcode compiler.Opcode) uint8 {
 		return C.SM_OP_CONDITION_CHECK_PRESERVE_ERROR
 	case compiler.OpcodeConditionLeafComplete:
 		return C.SM_OP_CONDITION_LEAF_COMPLETE
+	case compiler.OpcodeProcessGoTime:
+		return C.SM_OP_PROCESS_GO_TIME
 	default:
 		panic(fmt.Sprintf("unknown opcode: %s", opcode))
 	}

@@ -136,6 +136,8 @@ func opcodeByte(opcode compiler.Opcode) uint8 {
 		return 0x2d
 	case compiler.OpcodeConditionLeafComplete:
 		return 0x2e
+	case compiler.OpcodeProcessGoTime:
+		return 0x2f
 	default:
 		panic(fmt.Sprintf("unknown opcode: %s", opcode))
 	}

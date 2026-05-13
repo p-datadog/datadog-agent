@@ -4,7 +4,7 @@
     "ddsource": "dd_debugger",
     "logger": {
       "name": "",
-      "method": "main.testZeroSizeArgAndReturn",
+      "method": "main.testTimeMonotonic",
       "version": 0,
       "thread_id": "[goid]",
       "thread_name": ""
@@ -16,19 +16,19 @@
         "language": "go",
         "stack": [
           {
-            "function": "main.testZeroSizeArgAndReturn",
-            "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/returns.go",
-            "lineNumber": 388
+            "function": "main.testTimeMonotonic",
+            "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/times.go",
+            "lineNumber": 35
           },
           {
-            "function": "main.executeReturns",
-            "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/returns.go",
-            "lineNumber": 448
+            "function": "main.executeTimeFuncs",
+            "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/times.go",
+            "lineNumber": 56
           },
           {
             "function": "main.runAll",
             "fileName": "github.com/DataDog/datadog-agent/pkg/dyninst/testprogs/progs/sample/main.go",
-            "lineNumber": 78
+            "lineNumber": 71
           },
           {
             "function": "main.main",
@@ -47,37 +47,20 @@
           }
         ],
         "probe": {
-          "id": "testZeroSizeArgAndReturn",
+          "id": "testTimeMonotonic",
           "location": {
-            "method": "main.testZeroSizeArgAndReturn"
+            "method": "main.testTimeMonotonic"
           }
         },
         "captures": {
           "entry": {
             "arguments": {
-              "a": {
-                "type": "[0]int",
-                "size": "0",
-                "elements": []
-              },
-              "b": {
-                "type": "int",
-                "value": "82"
-              }
-            }
-          },
-          "return": {
-            "locals": {
-              "@return": {
+              "c": {
+                "type": "main.timeCapture",
                 "fields": {
-                  "r0": {
-                    "type": "int",
-                    "value": "982"
-                  },
-                  "r1": {
-                    "type": "[0]int",
-                    "size": "0",
-                    "elements": []
+                  "monotonicNow": {
+                    "type": "time.Time",
+                    "value": "[monotonic-time]"
                   }
                 }
               }
@@ -88,8 +71,7 @@
       "type": "snapshot"
     },
     "timestamp": "[ts]",
-    "duration": "[duration]",
-    "message": "[], 82",
+    "message": "{monotonicNow: [monotonic-time]}",
     "process_tags": "entrypoint.name:sample,svc.user:sample"
   }
 ]
