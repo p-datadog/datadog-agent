@@ -693,3 +693,268 @@ func TestProcessTaggerIntegration(t *testing.T) {
 	// Verify that process 9101 has no tags (no tags in tagger)
 	assert.Empty(t, proc9101.Tags, "Process 9101 should have no tags")
 }
+
+// zombieProc builds a minimal procutil.Process whose Status is "Z", suitable
+// for aggregateZombiesByParent tests. The Stats payload is otherwise empty
+// because the aggregator only reads Stats.Status and Ppid.
+func zombieProc(pid, ppid int32) *procutil.Process {
+	return &procutil.Process{
+		Pid:   pid,
+		Ppid:  ppid,
+		Stats: &procutil.Stats{Status: "Z"},
+	}
+}
+
+// liveProc builds a minimal non-zombie procutil.Process (Status "S"). Used to
+// exercise the "still alive in current poll" / "live in previous poll" paths.
+func liveProc(pid, ppid int32) *procutil.Process {
+	return &procutil.Process{
+		Pid:   pid,
+		Ppid:  ppid,
+		Stats: &procutil.Stats{Status: "S"},
+	}
+}
+
+// TestAggregateZombiesByParent covers the RFC scenarios A–D plus first-poll
+// and re-parenting edge cases for aggregateZombiesByParent. The interval is
+// fixed at 10s so net_rate values are easy to read: 1/interval = 0.1.
+func TestAggregateZombiesByParent(t *testing.T) {
+	const intervalSec = 10
+	now := time.Unix(1_700_000_010, 0)
+	lastRun := now.Add(-intervalSec * time.Second)
+
+	cases := []struct {
+		name      string
+		procs     map[int32]*procutil.Process
+		lastProcs map[int32]*procutil.Process
+		lastRun   time.Time
+		want      map[int32]zombieAggregate
+	}{
+		{
+			// RFC case A — Active leak: parent 100 had 1 zombie last poll and
+			// 5 now → count=5, net_rate=+4/interval (4 new, 0 reaped).
+			name: "case A: active leak (+4 zombies in interval)",
+			procs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				200: zombieProc(200, 100),
+				201: zombieProc(201, 100),
+				202: zombieProc(202, 100),
+				203: zombieProc(203, 100),
+				204: zombieProc(204, 100),
+			},
+			lastProcs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				200: zombieProc(200, 100),
+			},
+			lastRun: lastRun,
+			want: map[int32]zombieAggregate{
+				100: {count: 5, netRate: 4.0 / intervalSec},
+			},
+		},
+		{
+			// RFC case B — Draining: parent had 5 last poll, 1 now → count=1,
+			// net_rate=-4/interval (0 new, 4 reaped).
+			name: "case B: draining (-4 zombies in interval)",
+			procs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				200: zombieProc(200, 100),
+			},
+			lastProcs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				200: zombieProc(200, 100),
+				201: zombieProc(201, 100),
+				202: zombieProc(202, 100),
+				203: zombieProc(203, 100),
+				204: zombieProc(204, 100),
+			},
+			lastRun: lastRun,
+			want: map[int32]zombieAggregate{
+				100: {count: 1, netRate: -4.0 / intervalSec},
+			},
+		},
+		{
+			// RFC case C — Stable busy: full churn under the same parent
+			// (3 new, 3 reaped) → count=3, net_rate=0.
+			name: "case C: stable busy (full churn, 3 new and 3 reaped)",
+			procs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				300: zombieProc(300, 100),
+				301: zombieProc(301, 100),
+				302: zombieProc(302, 100),
+			},
+			lastProcs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				200: zombieProc(200, 100),
+				201: zombieProc(201, 100),
+				202: zombieProc(202, 100),
+			},
+			lastRun: lastRun,
+			want: map[int32]zombieAggregate{
+				100: {count: 3, netRate: 0},
+			},
+		},
+		{
+			// RFC case D — Stable dormant: no zombies in either poll → map
+			// never allocated, callers safely read the zero value.
+			name: "case D: stable dormant (no zombies, map is nil)",
+			procs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				101: liveProc(101, 1),
+			},
+			lastProcs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				101: liveProc(101, 1),
+			},
+			lastRun: lastRun,
+			want:    nil,
+		},
+		{
+			// First poll (lastRun is zero): emit count, but rate stays 0
+			// because there is no interval to divide by.
+			name: "first poll: count emitted, rate clamped to 0",
+			procs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				200: zombieProc(200, 100),
+				201: zombieProc(201, 100),
+				202: zombieProc(202, 100),
+			},
+			lastProcs: nil,
+			lastRun:   time.Time{},
+			want: map[int32]zombieAggregate{
+				100: {count: 3, netRate: 0},
+			},
+		},
+		{
+			// Re-parenting: zombie pid=200 had PPID=A last poll, has PPID=B
+			// now. Pass 1 reads B from current → B gets count+new (+0.1).
+			// Pass 2 reads A from lastProcs and pid=200 in current is still
+			// a zombie, so no reap is credited to A. (Reap only fires when
+			// the previous zombie is absent from current or no longer Z.)
+			// This matches the RFC's "set semantics" wording: a zombie that
+			// is still a zombie was not reaped, only re-parented.
+			name: "re-parenting: zombie still alive under new parent counts under B only",
+			procs: map[int32]*procutil.Process{
+				100: liveProc(100, 1), // old parent A
+				101: liveProc(101, 1), // new parent B
+				200: zombieProc(200, 101),
+			},
+			lastProcs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				101: liveProc(101, 1),
+				200: zombieProc(200, 100),
+			},
+			lastRun: lastRun,
+			want: map[int32]zombieAggregate{
+				101: {count: 1, netRate: 0},
+			},
+		},
+		{
+			// Re-parenting variant: zombie reaped under new parent. zombie
+			// pid=200 had PPID=A last poll, now is absent from current. Pass 2
+			// reads A from lastProcs → A gets -0.1. Pass 1 sees no zombies →
+			// no count for either parent. This confirms reap is attributed to
+			// the previous parent.
+			name: "re-parenting: zombie reaped is debited to previous parent",
+			procs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				101: liveProc(101, 1),
+			},
+			lastProcs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				101: liveProc(101, 1),
+				200: zombieProc(200, 100),
+			},
+			lastRun: lastRun,
+			want: map[int32]zombieAggregate{
+				100: {count: 0, netRate: -1.0 / intervalSec},
+			},
+		},
+		{
+			// Re-parenting where the zombie is observed under a new parent
+			// AND the inherited parent slot is read from current. Same pid is
+			// zombie in both polls but under different parents. Confirms that
+			// Pass 1 (current PPID) and Pass 2 (previous PPID) use the right
+			// PPID source. Here the zombie stays alive, so no reap on A and
+			// no "new" on B (it was already a zombie last poll, just under A).
+			// Net: count=1 on B, rate=0 everywhere.
+			name: "re-parenting: existing zombie under new parent — count only, no rate movement",
+			procs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				101: liveProc(101, 1),
+				200: zombieProc(200, 101), // new parent B
+			},
+			lastProcs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				101: liveProc(101, 1),
+				200: zombieProc(200, 100), // old parent A
+			},
+			lastRun: lastRun,
+			want: map[int32]zombieAggregate{
+				101: {count: 1, netRate: 0},
+			},
+		},
+		{
+			// Clock skew / negative interval: now < lastRun. Should behave
+			// like first-poll (count only, rate=0) instead of producing
+			// nonsensical negative-magnified rates.
+			name: "negative interval (clock skew): count only, rate 0",
+			procs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+				200: zombieProc(200, 100),
+				201: zombieProc(201, 100),
+			},
+			lastProcs: map[int32]*procutil.Process{
+				100: liveProc(100, 1),
+			},
+			lastRun: now.Add(5 * time.Second), // lastRun in the future
+			want: map[int32]zombieAggregate{
+				100: {count: 2, netRate: 0},
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			got := aggregateZombiesByParent(tc.procs, tc.lastProcs, now, tc.lastRun)
+			if tc.want == nil {
+				assert.Nil(t, got, "expected nil map for no-zombie case (allocation-free path)")
+				return
+			}
+			require.NotNil(t, got, "expected non-nil aggregate map")
+			require.Len(t, got, len(tc.want))
+			for ppid, wantAgg := range tc.want {
+				gotAgg, ok := got[ppid]
+				require.Truef(t, ok, "missing PPID %d in result", ppid)
+				assert.Equalf(t, wantAgg.count, gotAgg.count, "count mismatch for PPID %d", ppid)
+				assert.InDeltaf(t, wantAgg.netRate, gotAgg.netRate, 1e-9, "netRate mismatch for PPID %d", ppid)
+			}
+		})
+	}
+}
+
+// TestAggregateZombiesByParent_NilStats confirms that procs with nil Stats
+// (which can happen for transient probe edge cases) are skipped without
+// panicking, in both current and previous maps.
+func TestAggregateZombiesByParent_NilStats(t *testing.T) {
+	now := time.Unix(1_700_000_010, 0)
+	lastRun := now.Add(-10 * time.Second)
+
+	procs := map[int32]*procutil.Process{
+		100: liveProc(100, 1),
+		200: {Pid: 200, Ppid: 100, Stats: nil}, // current: nil stats
+		201: zombieProc(201, 100),
+	}
+	lastProcs := map[int32]*procutil.Process{
+		100: liveProc(100, 1),
+		201: {Pid: 201, Ppid: 100, Stats: nil}, // previous: nil stats — must not be counted as zombie
+	}
+
+	got := aggregateZombiesByParent(procs, lastProcs, now, lastRun)
+	require.NotNil(t, got)
+	require.Contains(t, got, int32(100))
+	// Only pid=201 is a real zombie in current; pid=200 has nil Stats so it's
+	// skipped. pid=201 was nil in lastProcs so it counts as "new" under PPID=100.
+	assert.Equal(t, uint32(1), got[100].count)
+	assert.InDelta(t, 1.0/10.0, got[100].netRate, 1e-9)
+}
