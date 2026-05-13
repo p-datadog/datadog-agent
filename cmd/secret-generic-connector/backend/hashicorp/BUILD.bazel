@@ -1,4 +1,5 @@
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel/rules/dd_go_test:defs.bzl", "dd_go_test")
 
 go_library(
     name = "hashicorp",
@@ -17,11 +18,10 @@ go_library(
     ],
 )
 
-go_test(
+dd_go_test(
     name = "hashicorp_test",
     srcs = ["vault_test.go"],
     embed = [":hashicorp"],
-    gotags = ["test"],
     deps = [
         "//cmd/secret-generic-connector/secret",
         "@com_github_hashicorp_vault//http",

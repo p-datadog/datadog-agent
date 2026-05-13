@@ -1,4 +1,5 @@
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel/rules/dd_go_test:defs.bzl", "dd_go_test")
 
 go_library(
     name = "hostinfo",
@@ -83,15 +84,14 @@ go_library(
     }),
 )
 
-go_test(
+dd_go_test(
     name = "hostinfo_test",
     srcs = [
         "hostinfo_nix_test.go",
         "hostinfo_windows_test.go",
     ],
     embed = [":hostinfo"],
-    env_inherit = ["PATH"],  # test invokes system utilities (e.g. ioreg on macOS) requiring the host PATH
-    gotags = ["test"],
+    env_inherit = ["PATH"],
     deps = select({
         "@rules_go//go/platform:aix": [
             "//pkg/util/cache",

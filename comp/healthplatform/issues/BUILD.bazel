@@ -1,4 +1,5 @@
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel/rules/dd_go_test:defs.bzl", "dd_go_test")
 
 go_library(
     name = "issues",
@@ -15,11 +16,10 @@ go_library(
     ],
 )
 
-go_test(
+dd_go_test(
     name = "issues_test",
     srcs = ["registry_test.go"],
     embed = [":issues"],
-    gotags = ["test"],
     deps = [
         "@com_github_datadog_agent_payload_v5//healthplatform",
         "@com_github_stretchr_testify//assert",

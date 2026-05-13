@@ -1,6 +1,7 @@
 # TODO(regis): remove this once protoc-go-inject-tag and msgp are plugged into //pkg/proto/datadog/trace:trace_go_proto
 # gazelle:write_pb_go off
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel/rules/dd_go_test:defs.bzl", "dd_go_test")
 
 go_library(
     name = "trace",
@@ -37,7 +38,7 @@ go_library(
     ],
 )
 
-go_test(
+dd_go_test(
     name = "trace_test",
     srcs = [
         "agent_payload_gen_test.go",
@@ -56,7 +57,6 @@ go_test(
         "utils_test.go",
     ],
     embed = [":trace"],
-    gotags = ["test"],
     deps = [
         "//pkg/proto/pbgo/trace/idx",
         "@com_github_google_gofuzz//:gofuzz",

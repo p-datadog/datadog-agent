@@ -1,8 +1,7 @@
-load("@rules_go//go:def.bzl", "go_test")
+load("//bazel/rules/dd_go_test:defs.bzl", "dd_go_test")
 
-go_test(
+dd_go_test(
     name = "gotls_test",
     srcs = ["dummy_test.go"],
     data = glob(["testdata/**"]),
-    gotags = ["test"],
 )

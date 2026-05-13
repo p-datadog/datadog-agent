@@ -1,4 +1,5 @@
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel/rules/dd_go_test:defs.bzl", "dd_go_test")
 
 go_library(
     name = "filesystem",
@@ -95,7 +96,7 @@ go_library(
     }),
 )
 
-go_test(
+dd_go_test(
     name = "filesystem_test",
     srcs = [
         "concurrent_write_test.go",
@@ -107,7 +108,6 @@ go_test(
     ],
     data = ["test/setAcl.ps1"],
     embed = [":filesystem"],
-    gotags = ["test"],
     deps = [
         "@com_github_gofrs_flock//:flock",
         "@com_github_stretchr_testify//assert",

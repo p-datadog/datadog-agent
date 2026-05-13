@@ -1,10 +1,9 @@
-load("@rules_go//go:def.bzl", "go_test")
+load("//bazel/rules/dd_go_test:defs.bzl", "dd_go_test")
 
-go_test(
+dd_go_test(
     name = "tests_test",
     srcs = ["collisions_test.go"],
     data = ["random_sorted_uniq_contexts.csv"],
-    gotags = ["test"],
     deps = [
         "//pkg/aggregator/ckey",
         "//pkg/tagset",

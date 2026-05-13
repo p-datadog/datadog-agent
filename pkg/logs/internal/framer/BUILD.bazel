@@ -1,4 +1,5 @@
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel/rules/dd_go_test:defs.bzl", "dd_go_test")
 
 go_library(
     name = "framer",
@@ -29,7 +30,7 @@ go_library(
     ],
 )
 
-go_test(
+dd_go_test(
     name = "framer_test",
     srcs = [
         "docker_stream_test.go",
@@ -38,7 +39,6 @@ go_test(
         "syslog_test.go",
     ],
     embed = [":framer"],
-    gotags = ["test"],
     deps = [
         "//pkg/logs/message",
         "@com_github_stretchr_testify//assert",

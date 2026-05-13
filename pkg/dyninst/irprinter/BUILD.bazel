@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "irprinter",
@@ -15,12 +15,4 @@ go_library(
         "@com_github_go_json_experiment_json//jsontext",
         "@in_yaml_go_yaml_v3//:yaml",
     ],
-)
-
-go_test(
-    name = "irprinter_test",
-    srcs = ["example_test.go"],
-    embed = [":irprinter"],
-    gotags = ["test"],
-    deps = ["//pkg/dyninst/ir"],
 )

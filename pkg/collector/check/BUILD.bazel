@@ -1,4 +1,5 @@
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
+load("//bazel/rules/dd_go_test:defs.bzl", "dd_go_test")
 
 go_library(
     name = "check",
@@ -27,7 +28,7 @@ go_library(
     ],
 )
 
-go_test(
+dd_go_test(
     name = "check_test",
     srcs = [
         "check_test.go",
@@ -37,7 +38,6 @@ go_test(
     ],
     data = glob(["testdata/**"]),
     embed = [":check"],
-    gotags = ["test"],
     deps = [
         "//comp/core/autodiscovery/integration",
         "//pkg/collector/check/id",

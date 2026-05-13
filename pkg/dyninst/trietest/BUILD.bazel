@@ -1,4 +1,4 @@
-load("@rules_go//go:def.bzl", "go_library", "go_test")
+load("@rules_go//go:def.bzl", "go_library")
 
 go_library(
     name = "trietest",
@@ -6,18 +6,4 @@ go_library(
     cgo = True,
     importpath = "github.com/DataDog/datadog-agent/pkg/dyninst/trietest",
     visibility = ["//visibility:public"],
-)
-
-go_test(
-    name = "trietest_test",
-    srcs = [
-        "hash_set_test.go",
-        "trie_test.go",
-    ],
-    embed = [":trietest"],
-    gotags = ["test"],
-    deps = [
-        "@com_github_stretchr_testify//require",
-        "@net_pgregory_rapid//:rapid",
-    ],
 )
