@@ -374,48 +374,31 @@ func procsToStats(procs map[int32]*procutil.Process) map[int32]*procutil.Stats {
 	return stats
 }
 
-// zombieAggregate carries the per-parent zombie statistics emitted on each
-// non-zombie process record: count of zombie children observed in the current
-// poll, and net rate ((new - reaped) / interval_seconds).
+func isZombie(p *procutil.Process) bool {
+	return p != nil && p.Stats != nil && p.Stats.Status == "Z"
+}
+
 type zombieAggregate struct {
 	count   uint32
 	netRate float64
 }
 
-// aggregateZombiesByParent walks the current and previous process maps in two
-// streaming passes and returns the per-parent zombie aggregates keyed by PPID.
+// aggregateZombiesByParent returns per-parent zombie aggregates keyed by PPID,
+// comparing the current poll's zombies against the previous poll. The result
+// is lazily allocated; a nil return is safe to index.
 //
-// Algorithm (per the CXP-3539 RFC):
-//   - Pass 1 counts every current zombie under its parent PPID, and credits a
-//     "+1/interval" to its parent's net rate when the zombie is newly observed
-//     (i.e. absent from lastProcs, or present but not zombie).
-//   - Pass 2 credits a "-1/interval" to the previous parent's net rate for
-//     each zombie that was a zombie last poll but isn't anymore (reaped or
-//     transitioned out).
-//
-// The returned map is lazily allocated: when no zombies exist in either poll,
-// the result is nil and callers can safely index it as nil maps return the
-// zero value. This keeps the no-zombie hot path allocation-free.
-//
-// First-poll semantics (lastRun.IsZero(), or interval <= 0): emit per-parent
-// counts but leave netRate at 0, since the rate is undefined without an
-// interval. Re-parenting (zombie inherited by a new parent across polls)
-// naturally credits the reap to the old PPID and the count+new to the new
-// PPID since Pass 1 reads PPID from current procs and Pass 2 reads PPID from
-// lastProcs.
+// Re-parenting works naturally because the create credit uses the current
+// PPID and the reap debit uses the previous PPID.
 func aggregateZombiesByParent(procs, lastProcs map[int32]*procutil.Process, now, lastRun time.Time) map[int32]zombieAggregate {
 	var agg map[int32]zombieAggregate
-	var interval int64
-	if !lastRun.IsZero() {
-		interval = now.Unix() - lastRun.Unix()
-		if interval < 0 {
-			interval = 0
-		}
+
+	var interval float64
+	if !lastRun.IsZero() && now.After(lastRun) {
+		interval = now.Sub(lastRun).Seconds()
 	}
 
-	// Pass 1 — current zombies: count under PPID; credit +1/interval if new.
 	for pid, proc := range procs {
-		if proc.Stats == nil || proc.Stats.Status != "Z" {
+		if !isZombie(proc) {
 			continue
 		}
 		if agg == nil {
@@ -423,28 +406,23 @@ func aggregateZombiesByParent(procs, lastProcs map[int32]*procutil.Process, now,
 		}
 		a := agg[proc.Ppid]
 		a.count++
-		if interval > 0 {
-			if prev, ok := lastProcs[pid]; !ok || prev.Stats == nil || prev.Stats.Status != "Z" {
-				a.netRate += 1.0 / float64(interval)
-			}
+		if interval > 0 && !isZombie(lastProcs[pid]) {
+			a.netRate += 1.0 / interval
 		}
 		agg[proc.Ppid] = a
 	}
 
-	// Pass 2 — previous zombies absent (or no longer zombie) in current: reaped.
 	if interval > 0 {
 		for pid, proc := range lastProcs {
-			if proc.Stats == nil || proc.Stats.Status != "Z" {
+			if !isZombie(proc) || isZombie(procs[pid]) {
 				continue
 			}
-			if cur, ok := procs[pid]; !ok || cur.Stats == nil || cur.Stats.Status != "Z" {
-				if agg == nil {
-					agg = make(map[int32]zombieAggregate)
-				}
-				a := agg[proc.Ppid]
-				a.netRate -= 1.0 / float64(interval)
-				agg[proc.Ppid] = a
+			if agg == nil {
+				agg = make(map[int32]zombieAggregate)
 			}
+			a := agg[proc.Ppid]
+			a.netRate -= 1.0 / interval
+			agg[proc.Ppid] = a
 		}
 	}
 
@@ -588,12 +566,10 @@ func fmtProcesses(
 			ContainerId:            ctrByProc[int(fp.Pid)],
 			ProcessContext:         serviceExtractor.GetServiceContext(fp.Pid),
 			// SERVICE DISCOVERY FIELDS
-			PortInfo:         formatPorts(fp.PortsCollected, fp.TCPPorts, fp.UDPPorts), // only populated if service discovery is enabled + linux
-			Language:         formatLanguage(fp.Language),                              // only populated if language detection is enabled + linux
-			ServiceDiscovery: formatServiceDiscovery(fp.Service),                       // only populated if service discovery is enabled + linux
-			InjectionState:   formatInjectionState(fp.InjectionState),                  // only populated if service discovery is enabled + linux
-			// Per-parent zombie aggregation (CXP-3539): zero by default for processes
-			// without zombie children; nil map indexes safely return the zero value.
+			PortInfo:            formatPorts(fp.PortsCollected, fp.TCPPorts, fp.UDPPorts), // only populated if service discovery is enabled + linux
+			Language:            formatLanguage(fp.Language),                              // only populated if language detection is enabled + linux
+			ServiceDiscovery:    formatServiceDiscovery(fp.Service),                       // only populated if service discovery is enabled + linux
+			InjectionState:      formatInjectionState(fp.InjectionState),                  // only populated if service discovery is enabled + linux
 			ZombieChildrenCount: zombiesByPPID[fp.Pid].count,
 			ZombieNetRate:       zombiesByPPID[fp.Pid].netRate,
 		}
@@ -723,11 +699,8 @@ func formatCPU(statsNow, statsBefore *procutil.Stats, syst2, syst1 cpu.TimesStat
 }
 
 // skipProcess will skip a given process if it's disallow-listed, hasn't
-// existed for multiple collections, or is a zombie.
-//
-// Zombies (Status == "Z") are never emitted as standalone records. Their
-// signal is surfaced via the per-parent ZombieChildrenCount / ZombieNetRate
-// fields populated by aggregateZombiesByParent — see CXP-3539.
+// existed for multiple collections, or is a zombie (zombies are surfaced via
+// per-parent aggregates rather than as standalone records).
 func skipProcess(
 	disallowList []*regexp.Regexp,
 	fp *procutil.Process,
@@ -747,10 +720,7 @@ func skipProcess(
 		// processes that live less than 20 seconds may not be captured.
 		return true
 	}
-	if fp.Stats != nil && fp.Stats.Status == "Z" {
-		return true
-	}
-	return false
+	return isZombie(fp)
 }
 
 // mergeProcWithSysprobeStats takes a process by PID map and fill the stats from system probe into the processes in the map

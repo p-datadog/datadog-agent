@@ -253,8 +253,8 @@ func (p *probe) ProcessesByPID(now time.Time, collectStats bool) (map[int32]*Pro
 				//       Moving this check down the stack saves us from a number of needless follow-up system calls.
 				continue
 			}
-			// Zombies (Status == "Z") must flow through the probe so the process
-			// check can aggregate them by parent — see CXP-3539.
+			// Zombies have empty cmdlines but must flow through so the process
+			// check can aggregate them by parent.
 			log.Debugf("process with empty cmdline not skipped pid:%d", pid)
 		}
 
