@@ -16,12 +16,14 @@ import (
 	reporterdef "github.com/DataDog/datadog-agent/comp/anomalydetection/reporter/def"
 	config "github.com/DataDog/datadog-agent/comp/core/config"
 	log "github.com/DataDog/datadog-agent/comp/core/log/def"
+	"github.com/DataDog/datadog-agent/comp/forwarder/eventplatform"
 )
 
 // Requires defines the dependencies for the live reporter component.
 type Requires struct {
-	Config config.Component
-	Log    log.Component
+	Config        config.Component
+	Log           log.Component
+	EventPlatform eventplatform.Component
 }
 
 // Provides defines the output of the live reporter component.
@@ -32,17 +34,23 @@ type Provides struct {
 }
 
 // NewComponent creates the live reporter component. It always provides a
-// stdoutReporter and, when anomaly_detection.reporting.enabled=true, also
-// provides an EventReporter that posts Datadog change events.
+// stdoutReporter and, when anomaly_detection.reporting.enabled=true and the
+// event-platform forwarder is available, also provides an EventReporter that
+// posts Datadog change events through the event-management intake pipeline.
 func NewComponent(req Requires) (Provides, error) {
 	reporters := []reporterdef.Reporter{&stdoutReporter{}}
 
 	if req.Config.GetBool("anomaly_detection.reporting.enabled") {
-		sender, err := newEventSender(req.Config, req.Log, nil)
-		if err != nil {
-			req.Log.Warnf("[reporter] event_reporter disabled: %v", err)
+		forwarder, ok := req.EventPlatform.Get()
+		if !ok {
+			req.Log.Warnf("[reporter] event_reporter disabled: event-platform forwarder is not running")
 		} else {
-			reporters = append(reporters, &EventReporter{sender: sender, logger: req.Log})
+			sender, err := newEventSender(forwarder, req.Log, nil)
+			if err != nil {
+				req.Log.Warnf("[reporter] event_reporter disabled: %v", err)
+			} else {
+				reporters = append(reporters, &EventReporter{sender: sender, logger: req.Log})
+			}
 		}
 	}
 

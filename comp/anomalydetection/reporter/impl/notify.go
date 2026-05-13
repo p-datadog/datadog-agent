@@ -6,22 +6,18 @@
 package reporterimpl
 
 import (
-	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"slices"
 	"sort"
 	"strings"
 	"time"
 
-	"github.com/DataDog/datadog-api-client-go/v2/api/datadog"
-	"github.com/DataDog/datadog-api-client-go/v2/api/datadogV2"
-
 	observerdef "github.com/DataDog/datadog-agent/comp/anomalydetection/observer/def"
-	reporterdef "github.com/DataDog/datadog-agent/comp/anomalydetection/reporter/def"
-	config "github.com/DataDog/datadog-agent/comp/core/config"
 	log "github.com/DataDog/datadog-agent/comp/core/log/def"
+	"github.com/DataDog/datadog-agent/comp/forwarder/eventplatform"
+	"github.com/DataDog/datadog-agent/pkg/logs/message"
 )
 
 const (
@@ -39,39 +35,45 @@ const (
 	// Canonical namespace names matching the extractor implementations in observer/impl.
 	logPatternExtractorNamespace = "log_pattern_extractor"
 	logMetricsExtractorNamespace = "log_metrics_extractor"
+
+	// changeEventMessageMaxLen caps the rendered change-event message. The v2
+	// Events API rejects messages larger than 4 KiB.
+	changeEventMessageMaxLen = 4000
+	// impactedResourcesMaxItems caps the number of service entries we attach
+	// to a change event. Matches the v2 API server-side limit.
+	impactedResourcesMaxItems = 100
+	// changedResourceNameMaxLen caps the changed_resource.name length.
+	changedResourceNameMaxLen = 128
 )
 
 // splitTagKeyOrder is the canonical ordered list of tag dimensions used to split
 // log series, matching log_tagged_pattern_clusterer in observer/impl.
 var splitTagKeyOrder = []string{"source", "service", "env", "host"}
 
-// eventSender formats and dispatches one Datadog event per correlation.
-// When api is nil, send prints to stdout (dry-run mode) instead of calling the API.
+// eventSender formats and dispatches one Datadog change event per correlation
+// through the event-platform forwarder (event-management intake). Events are
+// sent as raw JSON matching the v2 Events API shape so we don't have to depend
+// on the heavyweight datadog-api-client-go module.
+//
+// When forwarder is nil, send prints to stdout (dry-run mode) instead of
+// dispatching to the intake.
 type eventSender struct {
-	api     *datadogV2.EventsApi
-	ctx     context.Context
-	logger  log.Component
-	storage observerdef.StorageReader
+	forwarder eventplatform.Forwarder
+	logger    log.Component
+	storage   observerdef.StorageReader
 }
 
-// newEventSender creates an eventSender. If api_key is not set in cfg the sender
-// returns an error. storage is used to compute windowed log rates for display in
-// event messages; it may be nil and will be set later via EventReporter.SetStorage.
-func newEventSender(cfg config.Component, logger log.Component, storage observerdef.StorageReader) (*eventSender, error) {
-	apiKey := cfg.GetString("api_key")
-	if apiKey == "" {
-		return nil, errors.New("api_key is not set in configuration")
+// newEventSender creates an eventSender backed by the given forwarder.
+// storage is used to compute windowed log rates for display in event messages;
+// it may be nil and will be set later via EventReporter.SetStorage.
+func newEventSender(forwarder eventplatform.Forwarder, logger log.Component, storage observerdef.StorageReader) (*eventSender, error) {
+	if forwarder == nil {
+		return nil, errors.New("event-platform forwarder is not available")
 	}
-	ctx := context.WithValue(
-		datadog.NewDefaultContext(context.Background()),
-		datadog.ContextAPIKeys,
-		map[string]datadog.APIKey{"apiKeyAuth": {Key: apiKey}},
-	)
 	return &eventSender{
-		api:     datadogV2.NewEventsApi(datadog.NewAPIClient(datadog.NewConfiguration())),
-		ctx:     ctx,
-		logger:  logger,
-		storage: storage,
+		forwarder: forwarder,
+		logger:    logger,
+		storage:   storage,
 	}, nil
 }
 
@@ -125,11 +127,6 @@ func logRatePart(a observerdef.Anomaly, storage observerdef.StorageReader) strin
 	return fmt.Sprintf("\n\trate: %.1flog/s", curr)
 }
 
-// Send implements reporterdef.CorrelationSender.
-func (s *eventSender) Send(c observerdef.ActiveCorrelation) error {
-	return s.send(c)
-}
-
 func (s *eventSender) send(c observerdef.ActiveCorrelation) error {
 	msg := BuildChangeMessage(c, s.storage)
 	ts := time.Unix(c.FirstSeen, 0).UTC().Format(time.RFC3339)
@@ -137,36 +134,40 @@ func (s *eventSender) send(c observerdef.ActiveCorrelation) error {
 
 	s.logger.Infof("[observer] sending change event: pattern=%s title=%q aggKey=%s timestamp=%s\n%s\n", c.Pattern, c.Title, aggKey, ts, msg)
 
-	if s.api == nil {
+	payload := buildChangeEventPayload(c, msg, ts, aggKey)
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return fmt.Errorf("marshal change-event payload: %w", err)
+	}
+
+	if s.forwarder == nil {
 		fmt.Printf("[dry-run] change event: pattern=%s title=%q aggKey=%s timestamp=%s\n%s\n\n", c.Pattern, c.Title, aggKey, ts, msg)
 		return nil
 	}
 
-	changeAttrs := buildChangeAttributes(c)
-	attrs := datadogV2.ChangeEventCustomAttributesAsEventPayloadAttributes(&changeAttrs)
-	payload := datadogV2.EventCreateRequestPayload{
-		Data: datadogV2.EventCreateRequest{
-			Type: datadogV2.EVENTCREATEREQUESTTYPE_EVENT,
-			Attributes: datadogV2.EventPayload{
-				Title:          c.Title,
-				Message:        datadog.PtrString(msg),
-				Category:       datadogV2.EVENTCATEGORY_CHANGE,
-				Tags:           BuildEventTags(c),
-				Timestamp:      datadog.PtrString(ts),
-				AggregationKey: datadog.PtrString(aggKey),
-				Attributes:     attrs,
+	epMsg := message.NewMessage(body, nil, "", time.Now().UnixNano())
+	return s.forwarder.SendEventPlatformEventBlocking(epMsg, eventplatform.EventTypeEventManagement)
+}
+
+// buildChangeEventPayload returns the v2 Events API JSON envelope for a
+// correlation. Keys mirror the schema produced by datadog-api-client-go's
+// EventCreateRequestPayload (data.type=event, data.attributes.{title, message,
+// category, tags, timestamp, aggregation_key, attributes}).
+func buildChangeEventPayload(c observerdef.ActiveCorrelation, msg, ts, aggKey string) map[string]any {
+	return map[string]any{
+		"data": map[string]any{
+			"type": "event",
+			"attributes": map[string]any{
+				"title":           c.Title,
+				"message":         msg,
+				"category":        "change",
+				"tags":            BuildEventTags(c),
+				"timestamp":       ts,
+				"aggregation_key": aggKey,
+				"attributes":      buildChangeAttributes(c),
 			},
 		},
 	}
-	_, httpResp, err := s.api.CreateEvent(s.ctx, payload)
-	if err != nil && httpResp != nil {
-		body, readErr := io.ReadAll(httpResp.Body)
-		httpResp.Body.Close()
-		if readErr == nil {
-			return fmt.Errorf("API error (HTTP %d): %s", httpResp.StatusCode, string(body))
-		}
-	}
-	return err
 }
 
 // BuildEventTags returns the Datadog event tags for a correlation.
@@ -221,33 +222,36 @@ func BuildEventTags(c observerdef.ActiveCorrelation) []string {
 	return tags
 }
 
-// buildChangeAttributes constructs the change event attributes for a correlation.
-func buildChangeAttributes(c observerdef.ActiveCorrelation) datadogV2.ChangeEventCustomAttributes {
+// buildChangeAttributes constructs the nested change-event attributes block.
+// The shape mirrors the v2 Events API ChangeEventCustomAttributes schema:
+// changed_resource (required), author, impacted_resources, prev_value,
+// new_value, change_metadata.
+func buildChangeAttributes(c observerdef.ActiveCorrelation) map[string]any {
 	name := c.Pattern
-	if len(name) > 128 {
-		name = name[:128]
+	if len(name) > changedResourceNameMaxLen {
+		name = name[:changedResourceNameMaxLen]
 	}
-	changedResource := *datadogV2.NewChangeEventCustomAttributesChangedResource(
-		name,
-		datadogV2.CHANGEEVENTCUSTOMATTRIBUTESCHANGEDRESOURCETYPE_CONFIGURATION,
-	)
-	changeAttrs := *datadogV2.NewChangeEventCustomAttributes(changedResource)
-
-	author := *datadogV2.NewChangeEventCustomAttributesAuthor(
-		"datadog-agent-observer",
-		datadogV2.CHANGEEVENTCUSTOMATTRIBUTESAUTHORTYPE_AUTOMATION,
-	)
-	changeAttrs.SetAuthor(author)
-	changeAttrs.SetImpactedResources(extractImpactedServices(c))
-	changeAttrs.SetPrevValue(buildPrevValue(c))
-	changeAttrs.SetNewValue(buildNewValue(c))
-	changeAttrs.SetChangeMetadata(buildChangeMetadata(c))
-
-	return changeAttrs
+	attrs := map[string]any{
+		"changed_resource": map[string]any{
+			"name": name,
+			"type": "configuration",
+		},
+		"author": map[string]any{
+			"name": "datadog-agent-observer",
+			"type": "automation",
+		},
+		"prev_value":      buildPrevValue(c),
+		"new_value":       buildNewValue(c),
+		"change_metadata": buildChangeMetadata(c),
+	}
+	if impacted := extractImpactedServices(c); len(impacted) > 0 {
+		attrs["impacted_resources"] = impacted
+	}
+	return attrs
 }
 
 // extractImpactedServices collects unique service names from anomaly and member tags.
-func extractImpactedServices(c observerdef.ActiveCorrelation) []datadogV2.ChangeEventCustomAttributesImpactedResourcesItems {
+func extractImpactedServices(c observerdef.ActiveCorrelation) []map[string]any {
 	seen := make(map[string]bool)
 	for _, m := range c.Members {
 		for _, tag := range m.Tags {
@@ -263,29 +267,33 @@ func extractImpactedServices(c observerdef.ActiveCorrelation) []datadogV2.Change
 			}
 		}
 	}
-	var items []datadogV2.ChangeEventCustomAttributesImpactedResourcesItems
+	names := make([]string, 0, len(seen))
 	for svc := range seen {
-		items = append(items, *datadogV2.NewChangeEventCustomAttributesImpactedResourcesItems(
-			svc,
-			datadogV2.CHANGEEVENTCUSTOMATTRIBUTESIMPACTEDRESOURCESITEMSTYPE_SERVICE,
-		))
+		names = append(names, svc)
 	}
-	sort.Slice(items, func(i, j int) bool { return items[i].Name < items[j].Name })
-	if len(items) > 100 {
-		items = items[:100]
+	sort.Strings(names)
+	if len(names) > impactedResourcesMaxItems {
+		names = names[:impactedResourcesMaxItems]
+	}
+	items := make([]map[string]any, 0, len(names))
+	for _, svc := range names {
+		items = append(items, map[string]any{
+			"name": svc,
+			"type": "service",
+		})
 	}
 	return items
 }
 
 // buildPrevValue creates a per-series baseline snapshot for the change event.
-func buildPrevValue(c observerdef.ActiveCorrelation) map[string]interface{} {
-	prev := make(map[string]interface{})
+func buildPrevValue(c observerdef.ActiveCorrelation) map[string]any {
+	prev := make(map[string]any)
 	for _, a := range c.Anomalies {
 		if a.DebugInfo == nil {
 			continue
 		}
 		key := anomalyDisplayKey(a)
-		prev[key] = map[string]interface{}{
+		prev[key] = map[string]any{
 			"mean":   a.DebugInfo.BaselineMean,
 			"median": a.DebugInfo.BaselineMedian,
 			"stddev": a.DebugInfo.BaselineStddev,
@@ -295,14 +303,14 @@ func buildPrevValue(c observerdef.ActiveCorrelation) map[string]interface{} {
 }
 
 // buildNewValue creates a per-series current-state snapshot for the change event.
-func buildNewValue(c observerdef.ActiveCorrelation) map[string]interface{} {
-	newVal := make(map[string]interface{})
+func buildNewValue(c observerdef.ActiveCorrelation) map[string]any {
+	newVal := make(map[string]any)
 	for _, a := range c.Anomalies {
 		if a.DebugInfo == nil {
 			continue
 		}
 		key := anomalyDisplayKey(a)
-		entry := map[string]interface{}{
+		entry := map[string]any{
 			"value":           a.DebugInfo.CurrentValue,
 			"deviation_sigma": a.DebugInfo.DeviationSigma,
 		}
@@ -315,10 +323,10 @@ func buildNewValue(c observerdef.ActiveCorrelation) map[string]interface{} {
 }
 
 // buildChangeMetadata creates the full structured anomaly inventory.
-func buildChangeMetadata(c observerdef.ActiveCorrelation) map[string]interface{} {
-	var metricAnomalies, logAnomalies []interface{}
+func buildChangeMetadata(c observerdef.ActiveCorrelation) map[string]any {
+	var metricAnomalies, logAnomalies []any
 	for _, a := range c.Anomalies {
-		entry := map[string]interface{}{
+		entry := map[string]any{
 			"source":    a.Source.DisplayName(),
 			"detector":  a.DetectorName,
 			"title":     a.Title,
@@ -331,7 +339,7 @@ func buildChangeMetadata(c observerdef.ActiveCorrelation) map[string]interface{}
 			entry["score"] = *a.Score
 		}
 		if a.DebugInfo != nil {
-			entry["debug_info"] = map[string]interface{}{
+			entry["debug_info"] = map[string]any{
 				"baseline_mean":   a.DebugInfo.BaselineMean,
 				"baseline_stddev": a.DebugInfo.BaselineStddev,
 				"baseline_median": a.DebugInfo.BaselineMedian,
@@ -342,7 +350,7 @@ func buildChangeMetadata(c observerdef.ActiveCorrelation) map[string]interface{}
 			}
 		}
 		if a.Context != nil {
-			ctx := map[string]interface{}{}
+			ctx := map[string]any{}
 			if a.Context.Pattern != "" {
 				ctx["pattern"] = a.Context.Pattern
 			}
@@ -363,7 +371,7 @@ func buildChangeMetadata(c observerdef.ActiveCorrelation) map[string]interface{}
 		}
 	}
 
-	meta := map[string]interface{}{
+	meta := map[string]any{
 		"anomaly_count": len(c.Anomalies),
 		"first_seen":    time.Unix(c.FirstSeen, 0).UTC().Format(time.RFC3339),
 		"last_updated":  time.Unix(c.LastUpdated, 0).UTC().Format(time.RFC3339),
@@ -410,9 +418,8 @@ func BuildChangeMessage(c observerdef.ActiveCorrelation, storage observerdef.Sto
 	slices.Sort(anomalyLines)
 	lines = append(lines, slices.Compact(anomalyLines)...)
 	text := strings.Join(lines, "\n")
-	const maxLen = 4000
-	if len(text) > maxLen {
-		text = text[:maxLen-3] + "..."
+	if len(text) > changeEventMessageMaxLen {
+		text = text[:changeEventMessageMaxLen-3] + "..."
 	}
 	return text
 }
@@ -479,24 +486,4 @@ func logFrequencyDerivedDescription(a observerdef.Anomaly, storage observerdef.S
 		example = strings.TrimSpace(a.Context.Pattern)
 	}
 	return fmt.Sprintf("Log frequency change detected:\n\texample: %s%s", example, logRatePart(a, storage))
-}
-
-// NewLiveCorrelationSender creates a CorrelationSender backed by the Datadog Events API.
-// Returns an error if api_key is not configured.
-func NewLiveCorrelationSender(cfg config.Component, logger log.Component, storage observerdef.StorageReader) (reporterdef.CorrelationSender, error) {
-	apiKey := cfg.GetString("api_key")
-	if apiKey == "" {
-		return nil, errors.New("api_key is not set in configuration")
-	}
-	ctx := context.WithValue(
-		datadog.NewDefaultContext(context.Background()),
-		datadog.ContextAPIKeys,
-		map[string]datadog.APIKey{"apiKeyAuth": {Key: apiKey}},
-	)
-	return &eventSender{
-		api:     datadogV2.NewEventsApi(datadog.NewAPIClient(datadog.NewConfiguration())),
-		ctx:     ctx,
-		logger:  logger,
-		storage: storage,
-	}, nil
 }

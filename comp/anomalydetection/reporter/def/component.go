@@ -45,9 +45,3 @@ type ReportOutput struct {
 type StorageConsumer interface {
 	SetStorage(storage observerdef.StorageReader)
 }
-
-// CorrelationSender sends Datadog events for detected anomaly correlations.
-// Obtain one via reporterimpl.NewLiveCorrelationSender.
-type CorrelationSender interface {
-	Send(c observerdef.ActiveCorrelation) error
-}
