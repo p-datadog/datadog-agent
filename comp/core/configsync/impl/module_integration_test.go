@@ -17,7 +17,7 @@ import (
 	"go.uber.org/fx"
 
 	"github.com/DataDog/datadog-agent/comp/core/config"
-	"github.com/DataDog/datadog-agent/comp/core/configsync"
+	configsync "github.com/DataDog/datadog-agent/comp/core/configsync/def"
 	ipc "github.com/DataDog/datadog-agent/comp/core/ipc/def"
 	ipcmock "github.com/DataDog/datadog-agent/comp/core/ipc/mock"
 	log "github.com/DataDog/datadog-agent/comp/core/log/def"
@@ -25,6 +25,15 @@ import (
 	mocktelemetry "github.com/DataDog/datadog-agent/comp/core/telemetry/mock"
 	"github.com/DataDog/datadog-agent/pkg/util/fxutil"
 )
+
+// testModule is the fx module for use in tests (replaces the old Module() function).
+func testModule(params Params) fxutil.Module {
+	return fxutil.Component(
+		fxutil.ProvideComponentConstructor(NewComponent),
+		fx.Supply(params),
+		fx.Invoke(func(_ configsync.Component) {}),
+	)
+}
 
 func TestOptionalModule(t *testing.T) {
 	handler := func(w http.ResponseWriter, _ *http.Request) {
@@ -53,7 +62,7 @@ func TestOptionalModule(t *testing.T) {
 		mocktelemetry.Module(),
 		fx.Provide(func() ipc.Component { return ipcComp }),
 		fx.Provide(func(ipcComp ipc.Component) ipc.HTTPClient { return ipcComp.GetClient() }),
-		Module(Params{}),
+		testModule(Params{}),
 		fx.Populate(&cfg),
 	))
 	require.True(t, comp.(configSync).enabled)
