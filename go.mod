@@ -1279,6 +1279,12 @@ replace github.com/iceber/iouring-go => github.com/lebauce/iouring-go v0.0.0-202
 // Fork to remove some text/template usage, https://github.com/DataDog/opa/tree/lightweight-1.7.1
 replace github.com/open-policy-agent/opa => github.com/DataDog/opa v0.0.0-20251126100856-d2e1e78e0816
 
+// TEMPORARY: local checkout of agent-payload for CXP-3539 zombie aggregation work.
+// Depends on agent-payload PR #481 (adds ZombieChildrenCount, ZombieNetRate to model.Process).
+// This commit MUST be dropped before merging — replace with a pinned version bump
+// once PR #481 merges and a new agent-payload release is cut.
+replace github.com/DataDog/agent-payload/v5 => ../agent-payload
+
 // This section was automatically added by 'dda inv modules.add-all-replace' command, do not edit manually
 
 replace (
