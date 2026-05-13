@@ -44,6 +44,28 @@ const (
 	impactedResourcesMaxItems = 100
 	// changedResourceNameMaxLen caps the changed_resource.name length.
 	changedResourceNameMaxLen = 128
+
+	// changeEventIntegrationID identifies the publishing integration. The
+	// `edge-intelligence` integration is registered upstream in
+	// integrations-internal-core#3240 (source_type_id 78252213) and the
+	// event-management intake derives source_type from this value. We also
+	// emit changeEventSourceTypeID explicitly so the intake can validate the
+	// pairing without a registry lookup.
+	changeEventIntegrationID = "edge-intelligence"
+	changeEventSourceTypeID  = 78252213
+
+	// changedResourceType is the resource classification carried in
+	// data.attributes.attributes.changed_resource.type. `anomaly` was added
+	// to Event Management's validation explicitly for this publisher; the
+	// previous `configuration` value is invalid for anomaly-detection events.
+	changedResourceType = "anomaly"
+
+	// Change-event sub-categories carried in change_metadata.sub_category.
+	// The Event Management UI uses this to group events by the nature of the
+	// detected change. The set is intentionally small and extensible.
+	subCategorySpike      = "spike"
+	subCategoryDrop       = "drop"
+	subCategoryNewPattern = "new_pattern"
 )
 
 // splitTagKeyOrder is the canonical ordered list of tag dimensions used to split
@@ -152,7 +174,9 @@ func (s *eventSender) send(c observerdef.ActiveCorrelation) error {
 // buildChangeEventPayload returns the v2 Events API JSON envelope for a
 // correlation. Keys mirror the schema produced by datadog-api-client-go's
 // EventCreateRequestPayload (data.type=event, data.attributes.{title, message,
-// category, tags, timestamp, aggregation_key, attributes}).
+// category, integration_id, source_type_id, tags, timestamp, aggregation_key,
+// attributes}). integration_id pins the publisher to the `edge-intelligence`
+// integration so the event-management intake can route and authorize the event.
 func buildChangeEventPayload(c observerdef.ActiveCorrelation, msg, ts, aggKey string) map[string]any {
 	return map[string]any{
 		"data": map[string]any{
@@ -161,6 +185,8 @@ func buildChangeEventPayload(c observerdef.ActiveCorrelation, msg, ts, aggKey st
 				"title":           c.Title,
 				"message":         msg,
 				"category":        "change",
+				"integration_id":  changeEventIntegrationID,
+				"source_type_id":  changeEventSourceTypeID,
 				"tags":            BuildEventTags(c),
 				"timestamp":       ts,
 				"aggregation_key": aggKey,
@@ -234,7 +260,7 @@ func buildChangeAttributes(c observerdef.ActiveCorrelation) map[string]any {
 	attrs := map[string]any{
 		"changed_resource": map[string]any{
 			"name": name,
-			"type": "configuration",
+			"type": changedResourceType,
 		},
 		"author": map[string]any{
 			"name": "datadog-agent-observer",
@@ -375,6 +401,7 @@ func buildChangeMetadata(c observerdef.ActiveCorrelation) map[string]any {
 		"anomaly_count": len(c.Anomalies),
 		"first_seen":    time.Unix(c.FirstSeen, 0).UTC().Format(time.RFC3339),
 		"last_updated":  time.Unix(c.LastUpdated, 0).UTC().Format(time.RFC3339),
+		"sub_category":  classifyCorrelationSubCategory(c),
 	}
 	if len(metricAnomalies) > 0 {
 		meta["metric_anomalies"] = metricAnomalies
@@ -430,6 +457,48 @@ func anomalyDisplayKey(a observerdef.Anomaly) string {
 		return key
 	}
 	return a.Source.String()
+}
+
+// classifyCorrelationSubCategory chooses one of subCategorySpike,
+// subCategoryDrop, or subCategoryNewPattern for a correlation. Event Management
+// uses this to label the change event without parsing the message body.
+//
+// Rules, in priority order:
+//  1. If any anomaly is a log-pattern detection without a meaningful baseline
+//     (no DebugInfo, or DebugInfo.BaselineMean == 0), classify the whole
+//     correlation as "new_pattern" — these represent novel signals that didn't
+//     exist before.
+//  2. Otherwise, if every anomaly with DebugInfo has CurrentValue <=
+//     BaselineMean, the signal dropped — "drop".
+//  3. Otherwise "spike".
+func classifyCorrelationSubCategory(c observerdef.ActiveCorrelation) string {
+	if len(c.Anomalies) == 0 {
+		return subCategorySpike
+	}
+	for _, a := range c.Anomalies {
+		if !(a.Type == observerdef.AnomalyTypeLog || IsLogDerivedAnomaly(a)) {
+			continue
+		}
+		if a.DebugInfo == nil || a.DebugInfo.BaselineMean == 0 {
+			return subCategoryNewPattern
+		}
+	}
+	sawDebug := false
+	allDrops := true
+	for _, a := range c.Anomalies {
+		if a.DebugInfo == nil {
+			continue
+		}
+		sawDebug = true
+		if a.DebugInfo.CurrentValue > a.DebugInfo.BaselineMean {
+			allDrops = false
+			break
+		}
+	}
+	if sawDebug && allDrops {
+		return subCategoryDrop
+	}
+	return subCategorySpike
 }
 
 // IsLogDerivedAnomaly returns true for metric anomalies that originate from

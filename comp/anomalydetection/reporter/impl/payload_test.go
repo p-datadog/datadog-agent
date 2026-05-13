@@ -16,9 +16,11 @@ import (
 
 // TestBuildChangeEventPayload_WireShape asserts the JSON envelope produced for
 // the event-management intake matches the v2 Events API ChangeEvent schema we
-// used to obtain via datadog-api-client-go. The contract here is the wire
-// format, not the helper functions: if the intake changes field names we want
-// this test to fail loudly.
+// used to obtain via datadog-api-client-go, including the edge-intelligence
+// routing metadata (integration_id, source_type_id) and the anomaly resource
+// type. The contract here is the wire format, not the helper functions: if the
+// intake changes field names or the SME-agreed values shift, we want this test
+// to fail loudly.
 func TestBuildChangeEventPayload_WireShape(t *testing.T) {
 	c := observerdef.ActiveCorrelation{
 		Pattern: "kernel_bottleneck",
@@ -27,6 +29,10 @@ func TestBuildChangeEventPayload_WireShape(t *testing.T) {
 			{
 				Type:   observerdef.AnomalyTypeMetric,
 				Source: observerdef.SeriesDescriptor{Namespace: "dogstatsd", Tags: []string{"service:web", "env:prod"}},
+				DebugInfo: &observerdef.AnomalyDebugInfo{
+					CurrentValue: 10,
+					BaselineMean: 1,
+				},
 			},
 		},
 	}
@@ -52,6 +58,11 @@ func TestBuildChangeEventPayload_WireShape(t *testing.T) {
 	assert.Equal(t, "2024-01-01T00:00:00Z", attrs["timestamp"])
 	assert.Equal(t, "observer:kernel_bottleneck", attrs["aggregation_key"])
 
+	// edge-intelligence routing: must be present and locked to the registered
+	// values from integrations-internal-core#3240.
+	assert.Equal(t, "edge-intelligence", attrs["integration_id"])
+	assert.EqualValues(t, 78252213, attrs["source_type_id"])
+
 	tags, ok := attrs["tags"].([]any)
 	assert.True(t, ok, "tags must be a JSON array")
 	assert.NotEmpty(t, tags)
@@ -62,7 +73,9 @@ func TestBuildChangeEventPayload_WireShape(t *testing.T) {
 	changed, ok := inner["changed_resource"].(map[string]any)
 	assert.True(t, ok, "missing changed_resource")
 	assert.Equal(t, "kernel_bottleneck", changed["name"])
-	assert.Equal(t, "configuration", changed["type"])
+	// Resource type is `anomaly` (Event Management validation was updated to
+	// accept this value); the previous `configuration` value would be rejected.
+	assert.Equal(t, "anomaly", changed["type"])
 
 	author, ok := inner["author"].(map[string]any)
 	assert.True(t, ok, "missing author")
@@ -78,7 +91,10 @@ func TestBuildChangeEventPayload_WireShape(t *testing.T) {
 
 	assert.Contains(t, inner, "prev_value")
 	assert.Contains(t, inner, "new_value")
-	assert.Contains(t, inner, "change_metadata")
+
+	meta, ok := inner["change_metadata"].(map[string]any)
+	assert.True(t, ok, "missing change_metadata")
+	assert.Equal(t, "spike", meta["sub_category"], "current > baseline should classify as spike")
 }
 
 // TestBuildChangeEventPayload_TruncatesChangedResourceName ensures we don't
@@ -108,4 +124,84 @@ func TestBuildChangeEventPayload_NoImpactedResourcesWhenEmpty(t *testing.T) {
 	inner := payload["data"].(map[string]any)["attributes"].(map[string]any)["attributes"].(map[string]any)
 	_, present := inner["impacted_resources"]
 	assert.False(t, present, "impacted_resources should be omitted when no services are impacted")
+}
+
+// --- classifyCorrelationSubCategory ---
+
+func TestClassifySubCategory_SpikeOnIncrease(t *testing.T) {
+	c := observerdef.ActiveCorrelation{Anomalies: []observerdef.Anomaly{{
+		Type:      observerdef.AnomalyTypeMetric,
+		DebugInfo: &observerdef.AnomalyDebugInfo{CurrentValue: 10, BaselineMean: 2},
+	}}}
+	assert.Equal(t, subCategorySpike, classifyCorrelationSubCategory(c))
+}
+
+func TestClassifySubCategory_DropWhenAllBelowBaseline(t *testing.T) {
+	c := observerdef.ActiveCorrelation{Anomalies: []observerdef.Anomaly{
+		{
+			Type:      observerdef.AnomalyTypeMetric,
+			DebugInfo: &observerdef.AnomalyDebugInfo{CurrentValue: 1, BaselineMean: 5},
+		},
+		{
+			Type:      observerdef.AnomalyTypeMetric,
+			DebugInfo: &observerdef.AnomalyDebugInfo{CurrentValue: 0.5, BaselineMean: 3},
+		},
+	}}
+	assert.Equal(t, subCategoryDrop, classifyCorrelationSubCategory(c))
+}
+
+func TestClassifySubCategory_SpikeWhenMixedDirections(t *testing.T) {
+	// One spike, one drop — not a uniform drop, so we default to spike
+	// (the more eye-catching framing for a heterogeneous correlation).
+	c := observerdef.ActiveCorrelation{Anomalies: []observerdef.Anomaly{
+		{
+			Type:      observerdef.AnomalyTypeMetric,
+			DebugInfo: &observerdef.AnomalyDebugInfo{CurrentValue: 1, BaselineMean: 5},
+		},
+		{
+			Type:      observerdef.AnomalyTypeMetric,
+			DebugInfo: &observerdef.AnomalyDebugInfo{CurrentValue: 10, BaselineMean: 2},
+		},
+	}}
+	assert.Equal(t, subCategorySpike, classifyCorrelationSubCategory(c))
+}
+
+func TestClassifySubCategory_NewPatternForLogWithoutBaseline(t *testing.T) {
+	c := observerdef.ActiveCorrelation{Anomalies: []observerdef.Anomaly{{
+		Type:   observerdef.AnomalyTypeLog,
+		Source: observerdef.SeriesDescriptor{Namespace: "log_detector"},
+	}}}
+	assert.Equal(t, subCategoryNewPattern, classifyCorrelationSubCategory(c))
+}
+
+func TestClassifySubCategory_NewPatternForLogDerivedZeroBaseline(t *testing.T) {
+	// A log-pattern metric anomaly with BaselineMean=0 means the pattern
+	// didn't exist before — classify as new_pattern, not spike.
+	c := observerdef.ActiveCorrelation{Anomalies: []observerdef.Anomaly{{
+		Type:   observerdef.AnomalyTypeMetric,
+		Source: observerdef.SeriesDescriptor{Namespace: logPatternExtractorNamespace},
+		Context: &observerdef.MetricContext{
+			Pattern: "connection refused",
+		},
+		DebugInfo: &observerdef.AnomalyDebugInfo{CurrentValue: 5, BaselineMean: 0},
+	}}}
+	assert.Equal(t, subCategoryNewPattern, classifyCorrelationSubCategory(c))
+}
+
+func TestClassifySubCategory_LogDerivedWithBaselineStaysAsSpikeOrDrop(t *testing.T) {
+	// Log-pattern metric anomaly with a real baseline behaves like a normal
+	// rate change: classified by direction, not as new_pattern.
+	c := observerdef.ActiveCorrelation{Anomalies: []observerdef.Anomaly{{
+		Type:   observerdef.AnomalyTypeMetric,
+		Source: observerdef.SeriesDescriptor{Namespace: logPatternExtractorNamespace},
+		Context: &observerdef.MetricContext{
+			Pattern: "connection refused",
+		},
+		DebugInfo: &observerdef.AnomalyDebugInfo{CurrentValue: 50, BaselineMean: 5},
+	}}}
+	assert.Equal(t, subCategorySpike, classifyCorrelationSubCategory(c))
+}
+
+func TestClassifySubCategory_EmptyCorrelationDefaultsToSpike(t *testing.T) {
+	assert.Equal(t, subCategorySpike, classifyCorrelationSubCategory(observerdef.ActiveCorrelation{}))
 }
