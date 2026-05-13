@@ -142,7 +142,7 @@ Package diagnose provides the diagnose suite for the agent.
 
 *Datadog Team*: agent-configuration
 
-Package flare implements a component to generate flares from the agent.
+Package flare defines the flare component interface and its parameters.
 
 ### [comp/core/fxinstrumentation](https://pkg.go.dev/github.com/DataDog/datadog-agent/comp/core/fxinstrumentation)
 

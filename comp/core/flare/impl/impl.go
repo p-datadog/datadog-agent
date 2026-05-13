@@ -75,7 +75,7 @@ type flareImpl struct {
 }
 
 // filterNilProviders removes nil entries from the providers slice.
-// fxutil.GetAndFilterGroup cannot be used directly here as impl must not import fxutil.
+// GetAndFilterGroup from the fx utility package cannot be used here as impl packages must not import it.
 func filterNilProviders(providers []*flaretypes.FlareFiller) []*flaretypes.FlareFiller {
 	result := make([]*flaretypes.FlareFiller, 0, len(providers))
 	for _, p := range providers {
