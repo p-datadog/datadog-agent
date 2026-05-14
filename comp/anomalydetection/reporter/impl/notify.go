@@ -13,6 +13,7 @@ import (
 	"sort"
 	"strings"
 	"time"
+	"unicode/utf8"
 
 	observerdef "github.com/DataDog/datadog-agent/comp/anomalydetection/observer/def"
 	log "github.com/DataDog/datadog-agent/comp/core/log/def"
@@ -76,9 +77,6 @@ var splitTagKeyOrder = []string{"source", "service", "env", "host"}
 // through the event-platform forwarder (event-management intake). Events are
 // sent as raw JSON matching the v2 Events API shape so we don't have to depend
 // on the heavyweight datadog-api-client-go module.
-//
-// When forwarder is nil, send prints to stdout (dry-run mode) instead of
-// dispatching to the intake.
 type eventSender struct {
 	forwarder eventplatform.Forwarder
 	logger    log.Component
@@ -160,11 +158,6 @@ func (s *eventSender) send(c observerdef.ActiveCorrelation) error {
 	body, err := json.Marshal(payload)
 	if err != nil {
 		return fmt.Errorf("marshal change-event payload: %w", err)
-	}
-
-	if s.forwarder == nil {
-		fmt.Printf("[dry-run] change event: pattern=%s title=%q aggKey=%s timestamp=%s\n%s\n\n", c.Pattern, c.Title, aggKey, ts, msg)
-		return nil
 	}
 
 	epMsg := message.NewMessage(body, nil, "", time.Now().UnixNano())
@@ -253,10 +246,7 @@ func BuildEventTags(c observerdef.ActiveCorrelation) []string {
 // changed_resource (required), author, impacted_resources, prev_value,
 // new_value, change_metadata.
 func buildChangeAttributes(c observerdef.ActiveCorrelation) map[string]any {
-	name := c.Pattern
-	if len(name) > changedResourceNameMaxLen {
-		name = name[:changedResourceNameMaxLen]
-	}
+	name := truncateChars(c.Pattern, changedResourceNameMaxLen)
 	attrs := map[string]any{
 		"changed_resource": map[string]any{
 			"name": name,
@@ -397,17 +387,23 @@ func buildChangeMetadata(c observerdef.ActiveCorrelation) map[string]any {
 		}
 	}
 
+	// Always emit both arrays (possibly empty) so the wire payload's shape
+	// matches the spec's ChangeEvent entity: metric_anomalies and log_anomalies
+	// are List<AnomalyInventoryEntry>, not optional.
+	if metricAnomalies == nil {
+		metricAnomalies = []any{}
+	}
+	if logAnomalies == nil {
+		logAnomalies = []any{}
+	}
+
 	meta := map[string]any{
-		"anomaly_count": len(c.Anomalies),
-		"first_seen":    time.Unix(c.FirstSeen, 0).UTC().Format(time.RFC3339),
-		"last_updated":  time.Unix(c.LastUpdated, 0).UTC().Format(time.RFC3339),
-		"sub_category":  classifyCorrelationSubCategory(c),
-	}
-	if len(metricAnomalies) > 0 {
-		meta["metric_anomalies"] = metricAnomalies
-	}
-	if len(logAnomalies) > 0 {
-		meta["log_anomalies"] = logAnomalies
+		"anomaly_count":    len(c.Anomalies),
+		"first_seen":       time.Unix(c.FirstSeen, 0).UTC().Format(time.RFC3339),
+		"last_updated":     time.Unix(c.LastUpdated, 0).UTC().Format(time.RFC3339),
+		"sub_category":     classifyCorrelationSubCategory(c),
+		"metric_anomalies": metricAnomalies,
+		"log_anomalies":    logAnomalies,
 	}
 	if len(c.Members) > 0 {
 		members := make([]string, len(c.Members))
@@ -423,10 +419,6 @@ func buildChangeMetadata(c observerdef.ActiveCorrelation) map[string]any {
 // (Datadog change events, testbench JSON output, and replay-reported events).
 // storage may be nil; log-rate annotations fall back to DebugInfo.CurrentValue.
 func BuildChangeMessage(c observerdef.ActiveCorrelation, storage observerdef.StorageReader) string {
-	var lines []string
-	lines = append(lines, fmt.Sprintf("Correlated behavior change detected: %d anomalies in pattern %q", len(c.Anomalies), c.Pattern))
-	lines = append(lines, "")
-
 	anomalyLines := []string{}
 	for _, a := range c.Anomalies {
 		if IsLogDerivedAnomaly(a) {
@@ -441,14 +433,47 @@ func BuildChangeMessage(c observerdef.ActiveCorrelation, storage observerdef.Sto
 		}
 	}
 
-	// Ensure anomalies are unique and sorted (could be duplicate if 2 anomalies on the same series at a similar timestamp)
+	// Ensure anomaly bullets are unique and sorted (two anomalies on the
+	// same series at a similar timestamp render to the same bullet). The
+	// header reports the deduplicated count so it matches the rendered list.
 	slices.Sort(anomalyLines)
-	lines = append(lines, slices.Compact(anomalyLines)...)
+	anomalyLines = slices.Compact(anomalyLines)
+
+	var lines []string
+	lines = append(lines, fmt.Sprintf("Correlated behavior change detected: %d anomalies in pattern %q", len(anomalyLines), c.Pattern))
+	lines = append(lines, "")
+	lines = append(lines, anomalyLines...)
 	text := strings.Join(lines, "\n")
-	if len(text) > changeEventMessageMaxLen {
-		text = text[:changeEventMessageMaxLen-3] + "..."
+	return truncateBytesValidUTF8(text, changeEventMessageMaxLen)
+}
+
+// truncateChars returns s unchanged when it is at most maxChars runes long.
+// Otherwise it returns the first (maxChars-1) runes of s followed by an
+// ellipsis rune, so the result is exactly maxChars characters and remains
+// valid UTF-8. maxChars must be at least 1.
+func truncateChars(s string, maxChars int) string {
+	if utf8.RuneCountInString(s) <= maxChars {
+		return s
 	}
-	return text
+	runes := []rune(s)
+	return string(runes[:maxChars-1]) + "…"
+}
+
+// truncateBytesValidUTF8 returns s unchanged when its byte length does not
+// exceed maxBytes. Otherwise it truncates s to at most (maxBytes-3) bytes,
+// backing up to a rune boundary, and appends a 3-byte ASCII ellipsis ("...")
+// so the result is at most maxBytes bytes and remains valid UTF-8. maxBytes
+// must be at least 4.
+func truncateBytesValidUTF8(s string, maxBytes int) string {
+	if len(s) <= maxBytes {
+		return s
+	}
+	cut := maxBytes - 3
+	// Back up to a rune boundary if cut lands mid-rune.
+	for cut > 0 && !utf8.RuneStart(s[cut]) {
+		cut--
+	}
+	return s[:cut] + "..."
 }
 
 // anomalyDisplayKey returns a human-readable key for an anomaly's source series.

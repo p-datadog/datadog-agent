@@ -7,7 +7,9 @@ package reporterimpl
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
+	"unicode/utf8"
 
 	"github.com/stretchr/testify/assert"
 
@@ -98,7 +100,9 @@ func TestBuildChangeEventPayload_WireShape(t *testing.T) {
 }
 
 // TestBuildChangeEventPayload_TruncatesChangedResourceName ensures we don't
-// emit a name longer than the v2 API accepts (128 chars).
+// emit a name longer than the v2 API accepts (128 chars), that truncated
+// names end with an ellipsis to signal the cut, and that the result remains
+// valid UTF-8 even when the cut would land mid-rune.
 func TestBuildChangeEventPayload_TruncatesChangedResourceName(t *testing.T) {
 	long := make([]byte, 200)
 	for i := range long {
@@ -110,7 +114,75 @@ func TestBuildChangeEventPayload_TruncatesChangedResourceName(t *testing.T) {
 
 	inner := payload["data"].(map[string]any)["attributes"].(map[string]any)["attributes"].(map[string]any)
 	changed := inner["changed_resource"].(map[string]any)
-	assert.Len(t, changed["name"].(string), changedResourceNameMaxLen)
+	name := changed["name"].(string)
+	assert.Equal(t, changedResourceNameMaxLen, utf8.RuneCountInString(name), "truncated name should be exactly maxChars runes long")
+	assert.True(t, strings.HasSuffix(name, "\u2026"), "truncated name should end with an ellipsis")
+}
+
+// TestBuildChangeEventPayload_TruncatesAtRuneBoundary checks that a pattern
+// whose final rune (before maxChars) is multi-byte is not cut mid-codepoint:
+// the resulting name must stay valid UTF-8 and contain exactly maxChars runes.
+func TestBuildChangeEventPayload_TruncatesAtRuneBoundary(t *testing.T) {
+	// Build a pattern of 200 three-byte runes; any byte-indexed truncation at
+	// changedResourceNameMaxLen would land inside a rune.
+	var b strings.Builder
+	for i := 0; i < 200; i++ {
+		b.WriteRune('☃') // U+2603, 3 bytes
+	}
+	c := observerdef.ActiveCorrelation{Pattern: b.String(), Title: "t"}
+
+	payload := buildChangeEventPayload(c, "m", "2024-01-01T00:00:00Z", "k")
+
+	inner := payload["data"].(map[string]any)["attributes"].(map[string]any)["attributes"].(map[string]any)
+	name := inner["changed_resource"].(map[string]any)["name"].(string)
+	assert.True(t, utf8.ValidString(name), "truncated name must remain valid UTF-8")
+	assert.Equal(t, changedResourceNameMaxLen, utf8.RuneCountInString(name), "truncated name should be exactly maxChars runes long")
+	assert.True(t, strings.HasSuffix(name, "\u2026"), "truncated name should end with an ellipsis")
+}
+
+// TestBuildChangeEventPayload_AnomalyInventoryAlwaysPresent asserts that both
+// metric_anomalies and log_anomalies are present in change_metadata regardless
+// of which categories the correlation contains. The spec's ChangeEvent entity
+// declares both as List<AnomalyInventoryEntry> (always-present, possibly
+// empty); intake consumers should not need to handle field absence.
+func TestBuildChangeEventPayload_AnomalyInventoryAlwaysPresent(t *testing.T) {
+	cases := map[string]observerdef.ActiveCorrelation{
+		"metric only": {
+			Pattern: "p",
+			Anomalies: []observerdef.Anomaly{{
+				Type:      observerdef.AnomalyTypeMetric,
+				Source:    observerdef.SeriesDescriptor{Namespace: "dogstatsd"},
+				DebugInfo: &observerdef.AnomalyDebugInfo{CurrentValue: 5, BaselineMean: 1},
+			}},
+		},
+		"log only": {
+			Pattern: "p",
+			Anomalies: []observerdef.Anomaly{{
+				Type:   observerdef.AnomalyTypeLog,
+				Source: observerdef.SeriesDescriptor{Namespace: "log_detector"},
+			}},
+		},
+		"empty": {Pattern: "p"},
+	}
+
+	for name, c := range cases {
+		t.Run(name, func(t *testing.T) {
+			payload := buildChangeEventPayload(c, "m", "2024-01-01T00:00:00Z", "k")
+			inner := payload["data"].(map[string]any)["attributes"].(map[string]any)["attributes"].(map[string]any)
+			meta := inner["change_metadata"].(map[string]any)
+			assert.Contains(t, meta, "metric_anomalies", "metric_anomalies must be present")
+			assert.Contains(t, meta, "log_anomalies", "log_anomalies must be present")
+			// Round-trip through JSON to confirm both arrays serialise as [] rather
+			// than being elided or marshalled to null when empty.
+			blob, err := json.Marshal(payload)
+			assert.NoError(t, err)
+			var decoded map[string]any
+			assert.NoError(t, json.Unmarshal(blob, &decoded))
+			rtMeta := decoded["data"].(map[string]any)["attributes"].(map[string]any)["attributes"].(map[string]any)["change_metadata"].(map[string]any)
+			assert.NotNil(t, rtMeta["metric_anomalies"], "metric_anomalies must serialise as an array, not null")
+			assert.NotNil(t, rtMeta["log_anomalies"], "log_anomalies must serialise as an array, not null")
+		})
+	}
 }
 
 // TestBuildChangeEventPayload_NoImpactedResourcesWhenEmpty makes sure we omit

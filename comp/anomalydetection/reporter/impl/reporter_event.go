@@ -53,11 +53,16 @@ func (r *EventReporter) Report(output reporterdef.ReportOutput) {
 		currentlyActive[ac.Pattern] = true
 	}
 
-	// Send an event for each newly-seen correlation.
+	// Send an event for each newly-seen correlation. Mark the pattern as
+	// seen only after a successful send: a transient forwarder error leaves
+	// the pattern unmarked so the next advance retries publication. A
+	// persistent failure will keep producing one error log per advance until
+	// either the forwarder recovers or the correlation goes inactive.
 	for _, ac := range activeCorrelations {
 		if !r.seenCorrelations[ac.Pattern] {
 			if err := r.sender.send(ac); err != nil {
 				r.logger.Errorf("[observer] failed to send event for pattern %s: %v", ac.Pattern, err)
+				continue
 			}
 			r.seenCorrelations[ac.Pattern] = true
 		}
