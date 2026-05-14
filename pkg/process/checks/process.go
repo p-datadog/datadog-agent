@@ -305,7 +305,7 @@ func (p *ProcessCheck) run(groupID int32, collectRealTime bool) (RunResult, erro
 	pidToGPUTags := p.gpuSubscriber.GetGPUTags()
 
 	now := time.Now()
-	zombiesByPPID := aggregateZombiesByParent(procs, p.lastProcs, now, p.lastRun)
+	zombiesByPPID := p.aggregateZombiesByParent(procs, now)
 	procsByCtr := fmtProcesses(p.scrubber, p.disallowList, procs, p.lastProcs, pidToCid, cpuTimes[0], p.lastCPUTime, p.lastRun, p.lookupIdProbe, zombiesByPPID, p.serviceExtractor, pidToGPUTags, p.tagger, now)
 	messages, totalProcs, totalContainers := createProcCtrMessages(p.hostInfo, procsByCtr, containers, p.maxBatchSize, p.maxBatchBytes, groupID, p.networkID, collectorProcHints)
 
@@ -380,17 +380,17 @@ type zombieAggregate struct {
 }
 
 // aggregateZombiesByParent returns per-parent zombie aggregates keyed by PPID,
-// comparing the current poll's zombies against the previous poll. The result
-// is lazily allocated; a nil return is safe to index.
+// comparing the current poll's zombies against the previous poll (p.lastProcs,
+// p.lastRun). The result is lazily allocated; a nil return is safe to index.
 //
 // Re-parenting works naturally because the create credit uses the current
 // PPID and the reap debit uses the previous PPID.
-func aggregateZombiesByParent(procs, lastProcs map[int32]*procutil.Process, now, lastRun time.Time) map[int32]zombieAggregate {
+func (p *ProcessCheck) aggregateZombiesByParent(procs map[int32]*procutil.Process, now time.Time) map[int32]zombieAggregate {
 	var agg map[int32]zombieAggregate
 
 	var interval float64
-	if !lastRun.IsZero() && now.After(lastRun) {
-		interval = now.Sub(lastRun).Seconds()
+	if !p.lastRun.IsZero() && now.After(p.lastRun) {
+		interval = now.Sub(p.lastRun).Seconds()
 	}
 
 	for pid, proc := range procs {
@@ -402,14 +402,14 @@ func aggregateZombiesByParent(procs, lastProcs map[int32]*procutil.Process, now,
 		}
 		a := agg[proc.Ppid]
 		a.count++
-		if interval > 0 && !lastProcs[pid].IsZombie() {
+		if interval > 0 && !p.lastProcs[pid].IsZombie() {
 			a.netRate += 1.0 / interval
 		}
 		agg[proc.Ppid] = a
 	}
 
 	if interval > 0 {
-		for pid, proc := range lastProcs {
+		for pid, proc := range p.lastProcs {
 			if !proc.IsZombie() || procs[pid].IsZombie() {
 				continue
 			}

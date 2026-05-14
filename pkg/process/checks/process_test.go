@@ -916,7 +916,8 @@ func TestAggregateZombiesByParent(t *testing.T) {
 	for _, tc := range cases {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			got := aggregateZombiesByParent(tc.procs, tc.lastProcs, now, tc.lastRun)
+			p := &ProcessCheck{lastProcs: tc.lastProcs, lastRun: tc.lastRun}
+			got := p.aggregateZombiesByParent(tc.procs, now)
 			if tc.want == nil {
 				assert.Nil(t, got, "expected nil map for no-zombie case (allocation-free path)")
 				return
@@ -950,7 +951,8 @@ func TestAggregateZombiesByParent_NilStats(t *testing.T) {
 		201: {Pid: 201, Ppid: 100, Stats: nil}, // previous: nil stats — must not be counted as zombie
 	}
 
-	got := aggregateZombiesByParent(procs, lastProcs, now, lastRun)
+	p := &ProcessCheck{lastProcs: lastProcs, lastRun: lastRun}
+	got := p.aggregateZombiesByParent(procs, now)
 	require.NotNil(t, got)
 	require.Contains(t, got, int32(100))
 	// Only pid=201 is a real zombie in current; pid=200 has nil Stats so it's
