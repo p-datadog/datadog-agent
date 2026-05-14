@@ -135,7 +135,7 @@ func TestBuildEventTags_LogMetricsExtractorTreatedAsLog(t *testing.T) {
 func TestBuildEventTags_BaseTagsAlwaysPresent(t *testing.T) {
 	c := observerdef.ActiveCorrelation{Pattern: "kernel_bottleneck"}
 	tags := BuildEventTags(c)
-	assert.Contains(t, tags, "source:agent-q-branch-observer")
+	assert.Contains(t, tags, "source:edge-intelligence")
 	assert.Contains(t, tags, "pattern:kernel_bottleneck")
 }
 
@@ -278,7 +278,7 @@ func TestBuildEventTags_SourceAndPatternAreFirstTwo(t *testing.T) {
 		},
 	}
 	tags := BuildEventTags(c)
-	assert.Equal(t, "source:agent-q-branch-observer", tags[0])
+	assert.Equal(t, "source:edge-intelligence", tags[0])
 	assert.Equal(t, "pattern:mypat", tags[1])
 	// Remaining tags are sorted
 	rest := tags[2:]

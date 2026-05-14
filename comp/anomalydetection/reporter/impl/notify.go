@@ -56,14 +56,11 @@ const (
 	changeEventSourceTypeID  = 78252213
 
 	// changedResourceType is the resource classification carried in
-	// data.attributes.attributes.changed_resource.type. `anomaly` was added
-	// to Event Management's validation explicitly for this publisher; the
-	// previous `configuration` value is invalid for anomaly-detection events.
+	// data.attributes.attributes.changed_resource.type.
 	changedResourceType = "anomaly"
 
 	// Change-event sub-categories carried in change_metadata.sub_category.
-	// The Event Management UI uses this to group events by the nature of the
-	// detected change. The set is intentionally small and extensible.
+	// The set is intentionally small and extensible.
 	subCategorySpike      = "spike"
 	subCategoryDrop       = "drop"
 	subCategoryNewPattern = "new_pattern"
@@ -190,7 +187,7 @@ func buildChangeEventPayload(c observerdef.ActiveCorrelation, msg, ts, aggKey st
 }
 
 // BuildEventTags returns the Datadog event tags for a correlation.
-// It always includes "source:agent-q-branch-observer" and "pattern:{pattern}".
+// It always includes "source:edge-intelligence" and "pattern:{pattern}".
 // It adds "anomaly_type:metric" and/or "anomaly_type:log" depending on which
 // anomaly types are present (log-derived metric anomalies count as log).
 // It also propagates "service:", "env:", and "host:" dimensions collected from
@@ -227,7 +224,7 @@ func BuildEventTags(c observerdef.ActiveCorrelation) []string {
 		}
 	}
 
-	tags := []string{"source:agent-q-branch-observer", "pattern:" + c.Pattern}
+	tags := []string{"source:edge-intelligence", "pattern:" + c.Pattern}
 	if hasMetric {
 		tags = append(tags, "anomaly_type:metric")
 	}
@@ -460,20 +457,25 @@ func truncateChars(s string, maxChars int) string {
 }
 
 // truncateBytesValidUTF8 returns s unchanged when its byte length does not
-// exceed maxBytes. Otherwise it truncates s to at most (maxBytes-3) bytes,
-// backing up to a rune boundary, and appends a 3-byte ASCII ellipsis ("...")
-// so the result is at most maxBytes bytes and remains valid UTF-8. maxBytes
-// must be at least 4.
+// exceed maxBytes. Otherwise it truncates s at a rune boundary and appends a
+// 3-byte ASCII ellipsis ("...") so the result is at most maxBytes bytes and
+// remains valid UTF-8. maxBytes must be at least 4.
 func truncateBytesValidUTF8(s string, maxBytes int) string {
 	if len(s) <= maxBytes {
 		return s
 	}
-	cut := maxBytes - 3
-	// Back up to a rune boundary if cut lands mid-rune.
-	for cut > 0 && !utf8.RuneStart(s[cut]) {
-		cut--
+	const ellipsis = "..."
+	budget := maxBytes - len(ellipsis)
+	// Range over a string yields rune-aligned byte indices, so the last i
+	// that fits the budget is the correct cut point.
+	cut := 0
+	for i := range s {
+		if i > budget {
+			break
+		}
+		cut = i
 	}
-	return s[:cut] + "..."
+	return s[:cut] + ellipsis
 }
 
 // anomalyDisplayKey returns a human-readable key for an anomaly's source series.

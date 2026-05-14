@@ -407,7 +407,7 @@ rule DropExpiredSeenPatterns {
 -- which workload the anomalies belong to.
 --
 --   Always present:
---     source:agent-q-branch-observer
+--     source:edge-intelligence
 --     pattern:{c.pattern}
 --
 --   Anomaly-type tags (zero, one, or both):
