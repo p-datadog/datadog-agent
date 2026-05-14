@@ -220,9 +220,16 @@ variant StdoutReporter : Reporter {
 -- Publishes change events to the Event Management intake. Tracks which
 -- correlations have already been published in the current active episode
 -- so it fires at most once per pattern until the pattern goes inactive
--- and reappears.
+-- and reappears. Patterns delivered only via correlation_history (e.g.
+-- batch-detector clusters whose changepoint timestamps are already
+-- evicted from the active set) are published exactly once for the run.
 variant EventReporter : Reporter {
     seen_patterns: Set<String>
+    -- previously_active tracks patterns observed in active_correlations on
+    -- a prior advance. Only entries marked here are eligible for recurrence
+    -- cleanup; batch-only patterns never enter this set and therefore
+    -- remain in seen_patterns for the lifetime of the agent.
+    previously_active: Set<String>
 }
 
 ------------------------------------------------------------
@@ -297,7 +304,7 @@ rule WireReportersOnStartup {
 -- without prescribing format.
 
 rule ReportCorrelationsToStdout {
-    when: ObserverAdvanced(active_correlations, new_anomalies)
+    when: ObserverAdvanced(active_correlations, _correlation_history, new_anomalies)
 
     for reporter in StdoutReporters:
         ensures: StdoutTraceWritten(
@@ -313,17 +320,20 @@ rule ReportCorrelationsToStdout {
         -- form is unspecified.
 }
 
--- A correlation that the EventReporter has not yet published in the
--- current active episode is published exactly once and recorded as seen.
--- This is the only path that produces a ChangeEvent. Iterating over
--- EventReporters (a 0-or-1 element collection) makes the rule a no-op
--- when reporting is not enabled, without an explicit guard.
+-- A correlation that the EventReporter has not yet published is published
+-- exactly once and recorded as seen. Emission iterates correlation_history
+-- (which is a superset of active_correlations) so that batch-detector
+-- clusters whose changepoint timestamps are already old enough to be
+-- evicted from active_correlations still fire. This is the only path that
+-- produces a ChangeEvent. Iterating over EventReporters (a 0-or-1 element
+-- collection) makes the rule a no-op when reporting is not enabled, without
+-- an explicit guard.
 
 rule PublishNewCorrelation {
-    when: ObserverAdvanced(active_correlations, _)
+    when: ObserverAdvanced(_active_correlations, correlation_history, _new_anomalies)
 
     for reporter in EventReporters:
-        for c in active_correlations:
+        for c in correlation_history:
             if c.pattern not in reporter.seen_patterns:
                 ensures: ChangeEvent.created(
                     title: c.title,
@@ -365,17 +375,27 @@ rule PublishNewCorrelation {
         -- correlation goes inactive.
 }
 
--- When a previously-seen pattern is absent from the active set, the
+-- When a previously-active pattern is absent from the active set, the
 -- EventReporter forgets it so that a fresh occurrence (after the episode
--- ends) is treated as a new event and republished.
+-- ends) is treated as a new event and republished. Patterns that have
+-- never been in active_correlations (batch-only history entries) are not
+-- eligible for cleanup and remain in seen_patterns for the run.
 
 rule DropExpiredSeenPatterns {
-    when: ObserverAdvanced(active_correlations, _)
+    when: ObserverAdvanced(active_correlations, _correlation_history, _new_anomalies)
 
     for reporter in EventReporters:
         let active_patterns = map_to_pattern_set(active_correlations)
+        -- Streaming patterns that have left the active set are dropped from
+        -- both seen_patterns and previously_active so the next reappearance
+        -- triggers fresh emission.
         ensures: reporter.seen_patterns =
-            reporter.seen_patterns.filter(p => p in active_patterns)
+            reporter.seen_patterns.filter(p =>
+                p in active_patterns or p not in reporter.previously_active
+            )
+        ensures: reporter.previously_active =
+            reporter.previously_active.filter(p => p in active_patterns)
+            ∪ active_patterns
 }
 
 ------------------------------------------------------------
@@ -523,14 +543,16 @@ invariant GracefulDegradationWithoutForwarder {
 -- single-point-in-time invariants; they constrain how state evolves
 -- across advance cycles.
 --
--- SeenPatternsBoundedByActive: after every advance cycle, each
--- EventReporter's seen_patterns retains only patterns present in the
--- active correlation set delivered by that cycle. Cardinality is
--- bounded by the active set.
+-- SeenPatternsBoundedByHistory: after every advance cycle, each
+-- EventReporter's seen_patterns is a subset of the correlation_history
+-- delivered by that cycle (or any prior cycle). Cardinality is bounded by
+-- the cumulative history, not by the live active set.
 --
 -- PublishAtMostOncePerEpisode: within a single contiguous active episode
 -- for a pattern, the EventReporter emits exactly one ChangeEvent. A new
 -- episode begins after the pattern leaves the active set and reappears.
+-- Batch-only patterns (never in active_correlations) constitute a single
+-- episode that lasts for the lifetime of the agent.
 
 ------------------------------------------------------------
 -- Surfaces
@@ -538,16 +560,18 @@ invariant GracefulDegradationWithoutForwarder {
 
 -- The boundary between the observer's engine and any Reporter. The observer
 -- calls Report once per advance cycle on every subscribed reporter,
--- carrying the active correlation set and the new anomalies from this
+-- carrying the active correlation set, the cumulative correlation history
+-- (a superset including batch-detector clusters whose changepoints may
+-- already be evicted from the active set), and the new anomalies from this
 -- cycle. Reporters must not block the calling goroutine.
 surface ObserverReportBoundary {
     facing _: ObserverEngine
 
     exposes:
-        Report(active_correlations: List<Correlation>, new_anomalies: List<Anomaly>)
+        Report(active_correlations: List<Correlation>, correlation_history: List<Correlation>, new_anomalies: List<Anomaly>)
 
     provides:
-        ObserverAdvanced(active_correlations: List<Correlation>, new_anomalies: List<Anomaly>)
+        ObserverAdvanced(active_correlations: List<Correlation>, correlation_history: List<Correlation>, new_anomalies: List<Anomaly>)
 
     @guarantee SingleAdvancePerCall
         -- Report is invoked exactly once per advance cycle per subscribed
@@ -555,9 +579,14 @@ surface ObserverReportBoundary {
         -- does not interleave Report invocations on the same reporter).
 
     @guarantee ActiveSetIsAuthoritative
-        -- active_correlations is the complete current active set. Reporters
-        -- do not need to track deltas; the EventReporter derives "new"
-        -- patterns by comparing against its own seen_patterns set.
+        -- active_correlations is the complete current active set; reporters
+        -- use it to detect when a streaming pattern has gone inactive.
+        -- correlation_history is the cumulative set of every pattern the
+        -- engine has ever detected during the current run and is a superset
+        -- of active_correlations. The EventReporter derives "new" patterns
+        -- by comparing correlation_history against its own seen_patterns
+        -- set, and uses active_correlations to detect when a previously
+        -- emitted pattern has gone inactive (re-arming it for recurrence).
 
     @guarantee CorrelationsAreOpaque
         -- The reporter treats Correlation and Anomaly as read-only data
