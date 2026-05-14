@@ -6,5 +6,10 @@
   "v1.35.1": {
     "tag": "v1.35.1",
     "digest": "sha256:05d7bcdefbda08b4e038f644c4df690cdac3fba8b06f8289f30e10026720a1ab"
+  },
+  "v1.36.0-rc.1": {
+    "tag": "v1.36.0-rc.1",
+    "digest": "sha256:fd7c482cd13a5126ec8c9ec2c4af788f3f823fc6f9c27a83689cd2fa92da1a82",
+    "kind_version": "v0.31.0"
   }
 }
