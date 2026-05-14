@@ -419,6 +419,57 @@ func (b *Buffer) NotePanicUnwoundRange(
 	return readys
 }
 
+// NotePanicUnwoundRangeLost records a PANIC_UNWOUND_LOST drop notification:
+// the synthetic recovery event for the goroutine's unwound (lo, hi] range
+// could not reach userspace. BPF has already evicted the matching
+// in_progress_calls slots, so for every buffered invocation on goid whose
+// StackByteDepth ∈ (loDepth, hiDepth] the return uprobe will never fire.
+// Mark each such invocation as return-lost + panic-unwound and finalize
+// whatever can finalize now; the rest will surface as truncated when
+// their entry side completes or budget/time eviction fires.
+//
+// Returns the Readys for invocations that finalized as a result of the
+// range scan, in tree order.
+func (b *Buffer) NotePanicUnwoundRangeLost(
+	goid uint64, loDepth, hiDepth uint32,
+) []Ready {
+	// Collect matching entries first, then mutate; the btree iterator
+	// does not support mutation in-place.
+	var matches []*bufferedEvent
+	pivot := &bufferedEvent{key: Key{Goid: goid, StackByteDepth: loDepth + 1}}
+	b.tree.AscendGreaterOrEqual(pivot, func(be *bufferedEvent) bool {
+		if be.key.Goid != goid {
+			return false
+		}
+		if be.key.StackByteDepth > hiDepth {
+			return false
+		}
+		matches = append(matches, be)
+		return true
+	})
+
+	var readys []Ready
+	for _, be := range matches {
+		if be.returnList != nil {
+			// Same invariant as NotePanicUnwoundRange: a frame whose
+			// return uprobe fired cannot be in the unwound range.
+			log.Errorf(
+				"eventbuf: panic-unwound-lost range hit key %+v with %d return fragments already present; skipping",
+				be.key, be.returnFragments,
+			)
+			continue
+		}
+		b.touch(be)
+		be.returnLost = true
+		be.expectReturn = true
+		be.panicUnwound = true
+		if ready, done := b.tryFinalize(be); done {
+			readys = append(readys, ready)
+		}
+	}
+	return readys
+}
+
 // NoteReturnLost records a RETURN_LOST drop notification: the return side
 // had no fragments reach userspace. If the entry is already complete the
 // invocation finalizes immediately.

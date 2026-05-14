@@ -83,6 +83,9 @@ struct {
 // On failure (drop_notify_ringbuf full), stamps drop_notify_lost_at with
 // the current ktime so userspace can later reconcile the stuck eventbuf
 // entry.
+//
+// panic_lo_depth / panic_hi_depth are only meaningful for
+// DROP_REASON_PANIC_UNWOUND_LOST; pass 0 for other reasons.
 static inline void send_drop_notification(
     uint32_t prog_id,
     uint32_t probe_id,
@@ -90,7 +93,9 @@ static inline void send_drop_notification(
     uint32_t stack_byte_depth,
     uint16_t last_seq,
     uint64_t entry_ktime_ns,
-    uint8_t drop_reason) {
+    uint8_t drop_reason,
+    uint32_t panic_lo_depth,
+    uint32_t panic_hi_depth) {
   di_drop_notification_t notif = {
       .prog_id = prog_id,
       .probe_id = probe_id,
@@ -99,6 +104,8 @@ static inline void send_drop_notification(
       .drop_reason = drop_reason,
       .last_seq = last_seq,
       .entry_ktime_ns = entry_ktime_ns,
+      .panic_lo_depth = panic_lo_depth,
+      .panic_hi_depth = panic_hi_depth,
   };
   if (bpf_ringbuf_output(&drop_notify_ringbuf, &notif, sizeof(notif), 0) !=
       0) {

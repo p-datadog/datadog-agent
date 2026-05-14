@@ -147,11 +147,12 @@ func (s *sink) HandleEvent(msg dispatcher.Message) error {
 		readys := s.buffer.NotePanicUnwoundRange(
 			h.Goid, h.Panic_lo_depth, h.Panic_hi_depth, shared,
 		)
-		if len(readys) == 0 {
-			// No matching in-flight invocations; release the synthetic
-			// payload directly so the underlying ringbuf slot recycles.
-			shared.ReleaseBase()
-		}
+		// End the Acquire phase. If no matches acquired a handle, this
+		// releases the underlying now; otherwise the last handle's
+		// Release does it. Don't gate on len(readys) — a match can
+		// acquire a handle without finalizing (incomplete entry side),
+		// so len(readys)==0 doesn't imply zero handles.
+		shared.ReleaseBase()
 		for _, ready := range readys {
 			s.emit(ready)
 		}
@@ -196,13 +197,27 @@ func (s *sink) HandleEvent(msg dispatcher.Message) error {
 }
 
 // HandleDropNotification applies a side-channel drop notification to the
-// event buffer, finalizing the invocation it references if the resulting
+// event buffer, finalizing the invocation(s) it references if the resulting
 // state is now complete. Blocks on s.mu so a quiescent probe still gets its
 // truncated capture emitted promptly without waiting for the next main-channel
 // event.
 func (s *sink) HandleDropNotification(n output.DropNotification) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	switch output.DropReason(n.Drop_reason) {
+	case output.DropReasonPanicUnwoundLost:
+		// Range notification: one drop affects every buffered invocation on
+		// n.Goid whose depth is in (Panic_lo_depth, Panic_hi_depth]. The
+		// per-invocation key fields (Probe_id, Stack_byte_depth,
+		// Entry_ktime_ns) are not meaningful here.
+		readys := s.buffer.NotePanicUnwoundRangeLost(
+			n.Goid, n.Panic_lo_depth, n.Panic_hi_depth,
+		)
+		for _, r := range readys {
+			s.emit(r)
+		}
+		return
+	}
 	key := eventbuf.Key{
 		Goid:           n.Goid,
 		StackByteDepth: n.Stack_byte_depth,

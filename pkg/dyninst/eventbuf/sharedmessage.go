@@ -27,9 +27,11 @@ import (
 //     decrements. When the last handle Releases, the underlying Message's
 //     Release is called once.
 //
-// If no handles are ever Acquired, call ReleaseBase() to release the
-// underlying message immediately. Not safe to use a SharedMessage for new
-// Acquires after the refcount has reached zero.
+// After the last Acquire call has happened, the caller signals "no more
+// Acquires" by invoking ReleaseBase(). If any handles were taken, the
+// last handle's Release() will release the underlying; if none were
+// taken, ReleaseBase() releases it immediately. Not safe to call Acquire
+// after ReleaseBase().
 type SharedMessage struct {
 	underlying Message
 	refs       atomic.Int32
@@ -48,11 +50,16 @@ func (s *SharedMessage) Acquire() Message {
 	return sharedMessageHandle{shared: s}
 }
 
-// ReleaseBase releases the underlying message when no Acquire has been
-// called. Safe to call exactly once; after this returns the SharedMessage
-// must not be used.
+// ReleaseBase signals the end of the Acquire phase. If no handles were
+// taken (refs == 0), the underlying message is released now. If handles
+// were taken, this is a no-op: the last handle's Release() decrements
+// refs to zero and releases the underlying. Must be called exactly once,
+// after all Acquires have happened, and before any new Acquires (none
+// are valid after this returns).
 func (s *SharedMessage) ReleaseBase() {
-	s.underlying.Release()
+	if s.refs.Load() == 0 {
+		s.underlying.Release()
+	}
 }
 
 func (s *SharedMessage) release() {

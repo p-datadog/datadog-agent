@@ -250,7 +250,8 @@ probe_run(uint64_t start_ns, const probe_params_t* params, struct pt_regs* regs)
         LOG(1, "probe_run: failed to submit condition-failed signal for return event");
         send_drop_notification(
             prog_id, params->probe_id, header->goid, header->stack_byte_depth,
-            0, global_ctx.stack_machine->entry_ktime_ns, DROP_REASON_RETURN_LOST);
+            0, global_ctx.stack_machine->entry_ktime_ns, DROP_REASON_RETURN_LOST,
+            /* panic_lo_depth */ 0, /* panic_hi_depth */ 0);
       }
     }
     // Entry: in_progress_calls insertion was deferred, so nothing to clean up.
@@ -268,7 +269,8 @@ probe_run(uint64_t start_ns, const probe_params_t* params, struct pt_regs* regs)
         LOG(1, "probe_run: failed to submit throttled condition-failed signal");
         send_drop_notification(
             prog_id, params->probe_id, header->goid, header->stack_byte_depth,
-            0, global_ctx.stack_machine->entry_ktime_ns, DROP_REASON_RETURN_LOST);
+            0, global_ctx.stack_machine->entry_ktime_ns, DROP_REASON_RETURN_LOST,
+            /* panic_lo_depth */ 0, /* panic_hi_depth */ 0);
       }
     }
     // Entry: in_progress_calls insertion was deferred, so nothing to clean up.
@@ -318,13 +320,15 @@ probe_run(uint64_t start_ns, const probe_params_t* params, struct pt_regs* regs)
                            : DROP_REASON_PARTIAL_ENTRY;
       send_drop_notification(
           prog_id, params->probe_id, header->goid, header->stack_byte_depth,
-          sm->last_submitted_seq, sm->entry_ktime_ns, reason);
+          sm->last_submitted_seq, sm->entry_ktime_ns, reason,
+          /* panic_lo_depth */ 0, /* panic_hi_depth */ 0);
     } else if (params->kind == EVENT_KIND_RETURN) {
       // The very first flush failed; no return fragments are in flight.
       // Tell userspace to emit the matching entry alone.
       send_drop_notification(
           prog_id, params->probe_id, header->goid, header->stack_byte_depth,
-          0, sm->entry_ktime_ns, DROP_REASON_RETURN_LOST);
+          0, sm->entry_ktime_ns, DROP_REASON_RETURN_LOST,
+          /* panic_lo_depth */ 0, /* panic_hi_depth */ 0);
     }
     // Entry probe with no fragments: no userspace state to clean up.
     LOG(1, "probe_run: continuation aborted at seq=%d", sm->last_submitted_seq);
@@ -345,15 +349,34 @@ probe_run(uint64_t start_ns, const probe_params_t* params, struct pt_regs* regs)
                            : DROP_REASON_PARTIAL_ENTRY;
       send_drop_notification(
           prog_id, params->probe_id, header->goid, header->stack_byte_depth,
-          sm->last_submitted_seq, sm->entry_ktime_ns, reason);
+          sm->last_submitted_seq, sm->entry_ktime_ns, reason,
+          /* panic_lo_depth */ 0, /* panic_hi_depth */ 0);
+    } else if (header->event_pairing_expectation ==
+               EVENT_PAIRING_RETURN_PANIC_UNWOUND) {
+      // Recovery synthetic event was dropped. BPF has already evicted the
+      // matching in_progress_calls slots (via SM_OP_PANIC_UNWIND_EVICT_SLOTS),
+      // so we can't reconstruct the affected invocations from BPF state.
+      // Tell userspace to range-scan its own buffer for (lo, hi] on goid
+      // and emit every matching invocation as a truncated panic-unwound
+      // capture.
+      stats_t* stats = bpf_map_lookup_elem(&stats_buf, &zero_uint32);
+      if (stats) {
+        stats->recovery_submit_failures++;
+      }
+      send_drop_notification(
+          prog_id, /* probe_id */ 0, header->goid, /* stack_byte_depth */ 0,
+          0, /* entry_ktime_ns */ 0, DROP_REASON_PANIC_UNWOUND_LOST,
+          header->panic_lo_depth, header->panic_hi_depth);
     } else if (params->kind == EVENT_KIND_RETURN) {
       // No fragments were submitted; the return probe produced nothing in
       // userspace. Tell userspace to emit the matching entry alone.
       send_drop_notification(
           prog_id, params->probe_id, header->goid, header->stack_byte_depth,
-          0, sm->entry_ktime_ns, DROP_REASON_RETURN_LOST);
+          0, sm->entry_ktime_ns, DROP_REASON_RETURN_LOST,
+          /* panic_lo_depth */ 0, /* panic_hi_depth */ 0);
     }
-    // Entry probe with no fragments: no userspace state to clean up.
+    // Entry probe with no fragments (and not the recovery probe): no
+    // userspace state to clean up.
   } else {
     sm->last_submitted_seq = sm->continuation_seq;
     if (stack_hash != 0) {
