@@ -3471,6 +3471,17 @@ func validateNonOverlappingPCRanges(
 	return nil
 }
 
+// unsupportedFeatureError is a typed error indicating that a probe uses a
+// feature that we recognise but have not implemented. It propagates from
+// the resolver/emitter up to the Issue-emission sites, where errors.As
+// surfaces it as ir.IssueKindUnsupportedFeature instead of the default
+// ir.IssueKindConditionExpressionUnresolvable.
+type unsupportedFeatureError struct {
+	message string
+}
+
+func (e *unsupportedFeatureError) Error() string { return e.message }
+
 type inlinedInstanceError struct {
 	abstractOrigin dwarf.Offset
 	concreteOffset dwarf.Offset
@@ -4099,9 +4110,17 @@ func exploreTypesForExpressions(
 				if _, err := exploreExpressionTypes(
 					sub, rootVar.Type, tc, "",
 				); err != nil {
-					ap.conditionIssue = ir.Issue{
-						Kind:    ir.IssueKindConditionExpressionUnresolvable,
-						Message: fmt.Sprintf("condition type exploration failed: %v", err),
+					var unsup *unsupportedFeatureError
+					if errors.As(err, &unsup) {
+						ap.conditionIssue = ir.Issue{
+							Kind:    ir.IssueKindUnsupportedFeature,
+							Message: unsup.message,
+						}
+					} else {
+						ap.conditionIssue = ir.Issue{
+							Kind:    ir.IssueKindConditionExpressionUnresolvable,
+							Message: fmt.Sprintf("condition type exploration failed: %v", err),
+						}
 					}
 					ap.condition = nil
 					break
@@ -4347,6 +4366,14 @@ func exploreExpressionTypes(
 				Right: litExpr,
 			}
 			if _, err := exploreAnyAllTypes(e.Base, eq, currentType, tc, exprPath); err != nil {
+				return nil, err
+			}
+			if tc.boolType == 0 {
+				return nil, errors.New("bool type not found")
+			}
+			return tc.typesByID[tc.boolType], nil
+		case *ir.GoStringHeaderType:
+			if err := checkContainsStringBase(litExpr); err != nil {
 				return nil, err
 			}
 			if tc.boolType == 0 {
@@ -4991,6 +5018,30 @@ func resolveExpression(
 	}
 }
 
+// checkContainsStringBase validates the key literal for a `contains` call
+// whose base is a Go string. Substring containment is a recognised feature
+// we have not implemented yet — when the key is a string literal we return
+// an *unsupportedFeatureError so the surrounding probe surfaces an
+// IssueKindUnsupportedFeature. Other literal kinds (null, int, float, bool)
+// are reported as a type mismatch via the default
+// IssueKindConditionExpressionUnresolvable path.
+func checkContainsStringBase(litExpr *exprlang.LiteralExpr) error {
+	if litExpr.Value == nil {
+		return errors.New(
+			"contains: substring search expects a string literal; got null",
+		)
+	}
+	if _, ok := litExpr.Value.(string); ok {
+		return &unsupportedFeatureError{
+			message: "contains: substring containment on a string base is not yet supported",
+		}
+	}
+	return fmt.Errorf(
+		"contains: substring search expects a string literal; got %T (value %v)",
+		litExpr.Value, litExpr.Value,
+	)
+}
+
 // resolveContainsExpression resolves contains(map, literalKey) into IR ops
 // that produce a single bool: 1 if the key is present, 0 otherwise (including
 // for nil maps). See ir.SwissMapLookupOp.ExistenceOnly for runtime semantics.
@@ -4998,7 +5049,8 @@ func resolveExpression(
 // For a slice or array base, contains is only valid in condition (when:)
 // position — the loop-based desugaring runs through emitContainsLeaf, not
 // this function. In expression / template / capture position this returns
-// an error.
+// an error. For a string base (substring containment) the call is rejected
+// with an *unsupportedFeatureError, regardless of position.
 func resolveContainsExpression(
 	e *exprlang.ContainsExpr,
 	rootVar *ir.Variable,
@@ -5020,6 +5072,14 @@ func resolveContainsExpression(
 			"contains over an array is only valid in when: clauses; use any() in expression context (got %s)",
 			baseExpr.Type.GetName(),
 		)
+	case *ir.GoStringHeaderType:
+		litExpr, ok := e.Key.(*exprlang.LiteralExpr)
+		if !ok {
+			return ir.Expression{}, fmt.Errorf(
+				"contains: key must be a literal, got %T", e.Key,
+			)
+		}
+		return ir.Expression{}, checkContainsStringBase(litExpr)
 	}
 	mapType, ok := canonical.(*ir.GoMapType)
 	if !ok {
@@ -6537,6 +6597,14 @@ func emitContainsLeaf(
 			Right: litExpr,
 		}
 		return emitAnyAllLoop(ce.Base, pred, ir.QuantifierAny, rootVar, tc, la)
+	case *ir.GoStringHeaderType:
+		litExpr, ok := ce.Key.(*exprlang.LiteralExpr)
+		if !ok {
+			return nil, fmt.Errorf(
+				"contains: key must be a literal, got %T", ce.Key,
+			)
+		}
+		return nil, checkContainsStringBase(litExpr)
 	}
 	expr, err := resolveContainsExpression(ce, rootVar, tc)
 	if err != nil {
@@ -7090,6 +7158,13 @@ func populateInstanceExpressions(
 						cond.entryLeafSlotIndex, typeCatalog,
 					)
 					if err != nil {
+						var unsup *unsupportedFeatureError
+						if errors.As(err, &unsup) {
+							return ir.Issue{
+								Kind:    ir.IssueKindUnsupportedFeature,
+								Message: unsup.message,
+							}
+						}
 						return ir.Issue{
 							Kind:    ir.IssueKindConditionExpressionUnresolvable,
 							Message: fmt.Sprintf("failed to resolve entry-side condition: %v", err),
@@ -7102,6 +7177,13 @@ func populateInstanceExpressions(
 						cond.entryLeafSlotIndex, typeCatalog,
 					)
 					if err != nil {
+						var unsup *unsupportedFeatureError
+						if errors.As(err, &unsup) {
+							return ir.Issue{
+								Kind:    ir.IssueKindUnsupportedFeature,
+								Message: unsup.message,
+							}
+						}
 						return ir.Issue{
 							Kind:    ir.IssueKindConditionExpressionUnresolvable,
 							Message: fmt.Sprintf("failed to resolve return-side condition: %v", err),
@@ -7112,6 +7194,13 @@ func populateInstanceExpressions(
 			} else if cond.eventKind == event.Kind {
 				resolved, err := resolveCondition(cond.expr, cond.leafRoots, typeCatalog)
 				if err != nil {
+					var unsup *unsupportedFeatureError
+					if errors.As(err, &unsup) {
+						return ir.Issue{
+							Kind:    ir.IssueKindUnsupportedFeature,
+							Message: unsup.message,
+						}
+					}
 					return ir.Issue{
 						Kind:    ir.IssueKindConditionExpressionUnresolvable,
 						Message: fmt.Sprintf("failed to resolve condition: %v", err),
