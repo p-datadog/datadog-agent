@@ -7,7 +7,11 @@
 
 package api
 
-import "github.com/DataDog/datadog-agent/pkg/trace/config"
+import (
+	"net/http"
+
+	"github.com/DataDog/datadog-agent/pkg/trace/config"
+)
 
 type DebugServer struct{}
 
@@ -15,5 +19,6 @@ func NewDebugServer(conf *config.AgentConfig) *DebugServer {
 	return new(DebugServer)
 }
 
-func (*DebugServer) Start() {}
-func (*DebugServer) Stop()  {}
+func (*DebugServer) Start()                              {}
+func (*DebugServer) Stop()                               {}
+func (*DebugServer) AddRoute(string, http.Handler)       {}

@@ -131,6 +131,10 @@ type HTTPReceiver struct {
 	timing   timing.Reporter
 	info     *watchdog.CurrentInfo
 	Handlers map[string]http.Handler
+
+	// debuggerCounters tracks payload counts for the /debugger/* proxy
+	// endpoints. Exposed via /1337 and /1337.json on the DebugServer.
+	debuggerCounters *debuggerCounters
 }
 
 // NewHTTPReceiver returns a pointer to a new HTTPReceiver
@@ -189,6 +193,8 @@ func NewHTTPReceiver(
 		timing:   timing,
 		info:     watchdog.NewCurrentInfo(),
 		Handlers: make(map[string]http.Handler),
+
+		debuggerCounters: &debuggerCounters{},
 	}
 }
 
@@ -218,6 +224,9 @@ func (r *HTTPReceiver) buildMux() *http.ServeMux {
 			timeout = e.TimeoutOverride(r.conf)
 		}
 		h := replyWithVersion(hash, r.conf.AgentVersion, timeoutMiddleware(timeout, e.Handler(r)))
+		if isDebuggerEndpoint(e.Pattern) {
+			h = r.debuggerCounters.wrap(h)
+		}
 		r.Handlers[e.Pattern] = h
 		mux.Handle(e.Pattern, h)
 	}

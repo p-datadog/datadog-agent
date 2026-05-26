@@ -218,6 +218,10 @@ func NewAgent(ctx context.Context, conf *config.AgentConfig, telemetryCollector 
 	}
 	agnt.SamplerMetrics.Add(agnt.PrioritySampler, agnt.ErrorsSampler, agnt.NoPrioritySampler, agnt.RareSampler)
 	agnt.Receiver = api.NewHTTPReceiver(conf, dynConf, in, inV1, agnt, telemetryCollector, statsd, timing)
+	// /1337 and /1337.json expose debugger-proxy payload counters. See
+	// projects/datadog-agent-diagnostics/requirements.md in claude-projects.
+	agnt.DebugServer.AddRoute("/1337", agnt.Receiver.DebuggerCountersHandlerText())
+	agnt.DebugServer.AddRoute("/1337.json", agnt.Receiver.DebuggerCountersHandlerJSON())
 	agnt.OTLPReceiver = api.NewOTLPReceiver(in, conf, statsd, timing)
 	agnt.RemoteConfigHandler = remoteconfighandler.New(conf, agnt.PrioritySampler, agnt.RareSampler, agnt.ErrorsSampler)
 	agnt.TraceWriter = writer.NewTraceWriter(conf, agnt.PrioritySampler, agnt.ErrorsSampler, agnt.RareSampler, telemetryCollector, statsd, timing, comp)
