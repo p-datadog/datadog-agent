@@ -97,37 +97,16 @@ func FetchIPCCert(config configModel.Reader) (*tls.Config, *tls.Config, *tls.Con
 	return clientConfig, serverConfig, clusterClientConfig, nil
 }
 
-// FetchOrCreateIPCCert loads or creates certificate file used to authenticate IPC communicates
-// It takes a context to allow for cancellation or timeout of the operation
-func FetchOrCreateIPCCert(ctx context.Context, config configModel.Reader) (*tls.Config, *tls.Config, *tls.Config, error) {
-	// Read cluster CA configuration and files once
-	caData, err := readClusterCAConfig(config)
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("error reading cluster CA config: %w", err)
-	}
-
-	// Build cluster client TLS configuration using pre-read CA data
-	clusterClientConfig, err := caData.buildClusterClientTLSConfig()
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("error building cluster client TLS config: %w", err)
-	}
-
-	// Setup certificate factory with cluster CA and SANs
-	var certificateFactory certificateFactory
-	if err := caData.setupCertificateFactoryWithClusterCA(config, &certificateFactory); err != nil {
-		return nil, nil, nil, fmt.Errorf("error setting up certificate factory with cluster CA: %w", err)
-	}
-
-	cert, err := filesystem.FetchOrCreateArtifact(ctx, getCertFilepath(config), certificateFactory)
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("error while fetching or creating IPC cert: %w", err)
-	}
-
-	clientConfig, serverConfig, err := GetTLSConfigFromCert(cert.cert, cert.key)
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("error while setting TLS configs: %w", err)
-	}
-	return clientConfig, serverConfig, clusterClientConfig, err
+// FetchOrCreateIPCCert loads the IPC certificate from disk.
+//
+// Certificate creation has been disabled in this build: the agent does not
+// write to /etc/datadog-agent (or the equivalent config directory) at
+// runtime. The IPC cert/key file must be provisioned out of band (by the
+// installer, by configuration management, or by an init container in
+// containerized deployments) and pointed at via the ipc_cert_file_path or
+// auth_token_file_path settings.
+func FetchOrCreateIPCCert(_ context.Context, config configModel.Reader) (*tls.Config, *tls.Config, *tls.Config, error) {
+	return FetchIPCCert(config)
 }
 
 // GetTLSConfigFromCert returns the TLS configs for the client and server using the provided IPC certificate and key.

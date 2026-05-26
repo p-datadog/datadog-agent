@@ -13,17 +13,7 @@
 package installinfo
 
 import (
-	"encoding/json"
-	"fmt"
-	"os"
 	"path/filepath"
-	"strconv"
-	"strings"
-	"time"
-
-	"github.com/DataDog/datadog-agent/pkg/util/log"
-	"github.com/google/uuid"
-	"go.yaml.in/yaml/v2"
 )
 
 var (
@@ -32,55 +22,14 @@ var (
 	installSigFile  = filepath.Join(configDir, "install.json")
 )
 
-// WriteInstallInfo write install info and signature files
-func WriteInstallInfo(tool, toolVersion, installType string) error {
-	// avoid rewriting the files if they already exist
-	if _, err := os.Stat(installInfoFile); err == nil {
-		return nil
-	}
-	if err := writeInstallInfo(tool, toolVersion, installType); err != nil {
-		return fmt.Errorf("failed to write install info file: %v", err)
-	}
-	if err := writeInstallSignature(installType); err != nil {
-		return fmt.Errorf("failed to write install signature file: %v", err)
-	}
+// WriteInstallInfo is a no-op in this build.
+//
+// The agent no longer writes to /etc/datadog-agent at runtime. install_info
+// and install.json must be provisioned by the packaging layer (deb/rpm/msi
+// postinst, container image, or configuration management).
+func WriteInstallInfo(_, _, _ string) error {
 	return nil
 }
 
-// RmInstallInfo removes the install info and signature files
-func RmInstallInfo() {
-	if err := os.Remove(installInfoFile); err != nil && !os.IsNotExist(err) {
-		log.Warnf("Failed to remove install info file: %s", err)
-	}
-	if err := os.Remove(installSigFile); err != nil && !os.IsNotExist(err) {
-		log.Warnf("Failed to remove install signature file: %s", err)
-	}
-}
-
-func writeInstallInfo(tool, version, installerVersion string) error {
-	info := installInfoMethod{
-		Method: InstallInfo{
-			Tool:             tool,
-			ToolVersion:      version,
-			InstallerVersion: installerVersion,
-		},
-	}
-	yamlData, err := yaml.Marshal(info)
-	if err != nil {
-		panic(err)
-	}
-	return os.WriteFile(installInfoFile, yamlData, 0644)
-}
-
-func writeInstallSignature(installType string) error {
-	installSignature := map[string]string{
-		"install_id":   strings.ToLower(uuid.New().String()),
-		"install_type": installType,
-		"install_time": strconv.FormatInt(time.Now().Unix(), 10),
-	}
-	jsonData, err := json.Marshal(installSignature)
-	if err != nil {
-		panic(err)
-	}
-	return os.WriteFile(installSigFile, jsonData, 0644)
-}
+// RmInstallInfo is a no-op in this build. See WriteInstallInfo.
+func RmInstallInfo() {}

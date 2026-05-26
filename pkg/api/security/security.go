@@ -146,11 +146,16 @@ func FetchAuthToken(config configModel.Reader) (string, error) {
 	return filesystem.TryFetchArtifact(GetAuthTokenFilepath(config), &authtokenFactory{}) // TODO IPC: replace this call by FetchArtifact to retry until the artifact is successfully retrieved or the context is done
 }
 
-// FetchOrCreateAuthToken gets the authentication token from the auth token file & creates one if it doesn't exist
-// Requires that the config has been set up before calling
-// It takes a context to allow for cancellation or timeout of the operation
-func FetchOrCreateAuthToken(ctx context.Context, config configModel.Reader) (string, error) {
-	return filesystem.FetchOrCreateArtifact(ctx, GetAuthTokenFilepath(config), &authtokenFactory{})
+// FetchOrCreateAuthToken gets the authentication token from the auth token file.
+//
+// Token creation has been disabled in this build: the agent does not write to
+// /etc/datadog-agent (or the equivalent config directory) at runtime. The
+// auth_token file must be provisioned out of band (by the installer, by
+// configuration management, or by an init container in containerized
+// deployments) and pointed at via the auth_token_file_path setting or the
+// DD_AUTH_TOKEN_FILE_PATH environment variable.
+func FetchOrCreateAuthToken(_ context.Context, config configModel.Reader) (string, error) {
+	return FetchAuthToken(config)
 }
 
 // GetClusterAgentAuthToken load the authentication token from:
@@ -179,12 +184,16 @@ func getClusterAgentAuthToken(ctx context.Context, config configModel.Reader, to
 		return authToken, validateAuthToken(authToken)
 	}
 
-	// load the cluster agent auth token from filesystem
+	// load the cluster agent auth token from filesystem.
+	//
+	// Token creation on disk has been disabled in this build: the agent does
+	// not write to /etc/datadog-agent at runtime. The cluster_agent.auth_token
+	// file must be provisioned out of band, or the token must be supplied via
+	// the cluster_agent.auth_token configuration setting.
+	_ = ctx
+	_ = tokenCreationAllowed
 	location := filepath.Join(configUtils.ConfFileDirectory(config), clusterAgentAuthTokenFilename)
 	log.Debugf("Empty cluster_agent.auth_token, loading from %s", location)
-	if tokenCreationAllowed {
-		return filesystem.FetchOrCreateArtifact(ctx, location, &authtokenFactory{})
-	}
 	authToken, err := filesystem.TryFetchArtifact(location, &authtokenFactory{})
 	if err != nil {
 		return "", fmt.Errorf("failed to load cluster agent auth token: %v", err)
