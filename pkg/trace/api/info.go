@@ -208,6 +208,7 @@ func (r *HTTPReceiver) makeInfoHandler() (hash string, handler http.HandlerFunc)
 			hash := computeContainerTagsHash(containerTags)
 			w.Header().Add(containerTagsHashHeader, hash)
 		}
+		w.Header().Set("Content-Type", "application/json")
 		fmt.Fprintf(w, "%s", txt)
 	}
 }
